@@ -199,7 +199,6 @@ export function CreateTaskDialog({ projectId, boardId, open, onOpenChange }: Cre
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) => date < new Date()}
-                          initialFocus
                         />
                       </PopoverContent>
                     </Popover>
@@ -256,4 +255,4 @@ export function CreateTaskDialog({ projectId, boardId, open, onOpenChange }: Cre
       </DialogContent>
     </Dialog>
   )
-} 
+}
