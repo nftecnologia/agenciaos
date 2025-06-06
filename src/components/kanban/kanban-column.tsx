@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, MoreHorizontal } from 'lucide-react'
-import { Board, Task } from '@/generated/prisma'
+import { Board, Task } from '@prisma/client'
 
 interface TaskWithAssignee extends Task {
   assignee?: {
@@ -87,4 +87,4 @@ export function KanbanColumn({ board, onCreateTask }: KanbanColumnProps) {
       </CardContent>
     </Card>
   )
-} 
+}

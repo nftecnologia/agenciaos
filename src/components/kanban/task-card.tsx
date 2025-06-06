@@ -13,7 +13,7 @@ import {
   Circle,
   MoreHorizontal
 } from 'lucide-react'
-import { Task } from '@/generated/prisma'
+import { Task } from '@prisma/client'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -171,4 +171,4 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
       </CardContent>
     </Card>
   )
-} 
+}
