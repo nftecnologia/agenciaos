@@ -96,10 +96,20 @@ export async function canAccessResource(
  * Middleware para garantir que o usuário está autenticado e tem acesso ao tenant
  */
 export async function requireTenant(): Promise<TenantContext> {
+  const session = await auth()
+  
+  if (!session?.user?.id) {
+    throw new Error('Acesso negado: usuário não autenticado')
+  }
+
+  if (!session.user.agencyId) {
+    throw new Error('Acesso negado: usuário sem agência associada')
+  }
+
   const context = await getTenantContext()
   
   if (!context) {
-    throw new Error('Acesso negado: usuário não autenticado ou sem agência')
+    throw new Error('Acesso negado: erro ao obter contexto da agência')
   }
 
   return context
