@@ -1,171 +1,113 @@
+'use client'
+
 import { PageHeader } from '@/components/layout/page-header'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { StatsCard } from '@/components/dashboard/stats-card'
+import { RecentProjects } from '@/components/dashboard/recent-projects'
+import { PendingTasks } from '@/components/dashboard/pending-tasks'
+import { useDashboard } from '@/hooks/use-dashboard'
 import { 
   Users, 
   FolderOpen, 
   DollarSign, 
-  TrendingUp,
-  Clock,
-  CheckCircle
+  Bot,
+  RefreshCw
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
-export default function Dashboard() {
+export default function DashboardPage() {
+  const { stats, loading, error, refresh } = useDashboard()
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value)
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Dashboard"
+          description="Visão geral da sua agência"
+        />
+        <div className="text-center py-12">
+          <p className="text-red-600 mb-4">Erro ao carregar dados: {error}</p>
+          <Button onClick={refresh} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Tentar Novamente
+          </Button>
+        </div>
+      </div>
+    )
+  }
   return (
-    <div>
-      <PageHeader 
-        title="Dashboard" 
+    <div className="space-y-6">
+      <PageHeader
+        title="Dashboard"
         description="Visão geral da sua agência"
+        action={
+          <Button onClick={refresh} variant="outline" size="sm" disabled={loading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Atualizar
+          </Button>
+        }
       />
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Clientes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +2 novos este mês
-            </p>
-          </CardContent>
-        </Card>
+      {/* Cards de Estatísticas */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Total de Clientes"
+          value={stats?.clients.total || 0}
+          growth={stats?.clients.growth}
+          icon={<Users className="h-4 w-4" />}
+          loading={loading}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Projetos Ativos</CardTitle>
-            <FolderOpen className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">
-              3 em desenvolvimento
-            </p>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Projetos Ativos"
+          value={stats?.projects.active || 0}
+          subtitle={`${stats?.projects.total || 0} total`}
+          growth={stats?.projects.growth}
+          icon={<FolderOpen className="h-4 w-4" />}
+          loading={loading}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receita Mensal</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R$ 45.230</div>
-            <p className="text-xs text-muted-foreground">
-              +12% em relação ao mês anterior
-            </p>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Receita Mensal"
+          value={stats ? formatCurrency(Number(stats.revenue.monthly)) : 'R$ 0,00'}
+          subtitle={`Total: ${stats ? formatCurrency(Number(stats.revenue.total)) : 'R$ 0,00'}`}
+          growth={stats?.revenue.growth}
+          icon={<DollarSign className="h-4 w-4" />}
+          loading={loading}
+        />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">IA Utilizadas</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">247</div>
-            <p className="text-xs text-muted-foreground">
-              de 500 disponíveis
-            </p>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="IA Utilizada"
+          value={stats ? `${stats.ai.used}/${stats.ai.limit}` : '0/20'}
+          subtitle={stats ? `${stats.ai.percentage}% do limite` : '0% do limite'}
+          icon={<Bot className="h-4 w-4" />}
+          loading={loading}
+        />
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Projetos Recentes</CardTitle>
-            <CardDescription>
-              Últimos projetos criados ou atualizados
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Campanha Black Friday - Loja XYZ
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Cliente: Loja XYZ
-                </p>
-              </div>
-              <Badge variant="secondary">Em Progresso</Badge>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Redesign Website - Tech Corp
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Cliente: Tech Corp
-                </p>
-              </div>
-              <Badge variant="outline">Planejamento</Badge>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Social Media - Restaurante ABC
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Cliente: Restaurante ABC
-                </p>
-              </div>
-              <Badge>Concluído</Badge>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Seção de Projetos e Tarefas */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* Projetos Recentes */}
+        <div className="col-span-4">
+          <RecentProjects 
+            projects={stats?.recentProjects || []} 
+            loading={loading} 
+          />
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Tarefas Pendentes</CardTitle>
-            <CardDescription>
-              Tarefas que precisam da sua atenção
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <Clock className="h-4 w-4 text-orange-500" />
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Revisar proposta comercial
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Vence em 2 dias
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Clock className="h-4 w-4 text-red-500" />
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Entrega de criativos
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Vence hoje
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Reunião de alinhamento
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Agendada para amanhã
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Tarefas Pendentes */}
+        <div className="col-span-3">
+          <PendingTasks 
+            tasks={stats?.pendingTasks || []} 
+            loading={loading} 
+          />
+        </div>
       </div>
     </div>
   )

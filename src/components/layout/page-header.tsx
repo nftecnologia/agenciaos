@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 interface PageHeaderProps {
   title: string
   description?: string
-  action?: {
+  action?: React.ReactNode | {
     label: string
     onClick: () => void
   }
@@ -20,9 +20,13 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
       </div>
       
       {action && (
-        <Button onClick={action.onClick}>
-          {action.label}
-        </Button>
+        typeof action === 'object' && 'label' in action ? (
+          <Button onClick={action.onClick}>
+            {action.label}
+          </Button>
+        ) : (
+          action
+        )
       )}
     </div>
   )
