@@ -19,7 +19,7 @@ export const createClientAction = authenticatedAction
           email,
           phone,
           company,
-          address: address ? JSON.stringify(address) : null,
+          address: address || null,
         },
       })
 
@@ -61,7 +61,7 @@ export const updateClientAction = authenticatedAction
         where: { id },
         data: {
           ...updateData,
-          address: updateData.address ? JSON.stringify(updateData.address) : undefined,
+          address: updateData.address || undefined,
         },
       })
 

@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
         email,
         phone,
         company,
-        address: address ? JSON.stringify(address) : undefined,
+        address: address || undefined,
         agencyId: context.agencyId,
       },
       include: {
