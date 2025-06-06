@@ -1,172 +1,224 @@
-import { NextResponse } from 'next/server'
 import { requireTenant } from '@/lib/tenant'
 import { db } from '@/lib/db'
+import { createSuccessResponse } from '@/lib/api-validation'
+import { applyRateLimit } from '@/lib/rate-limit'
+import { NextRequest } from 'next/server'
 
 export const runtime = 'nodejs'
 
-// GET /api/dashboard/stats - Estatísticas do dashboard
-export async function GET() {
+// GET /api/dashboard/stats - Obter estatísticas do dashboard
+export async function GET(request: NextRequest) {
   try {
+    // Aplicar rate limiting
+    const rateLimitResult = await applyRateLimit(request, 'dashboard')
+    if (!rateLimitResult.success && rateLimitResult.error) {
+      throw rateLimitResult.error
+    }
+
     const context = await requireTenant()
+    
+    // Obter período da query string
+    const { searchParams } = new URL(request.url)
+    const period = searchParams.get('period') || '30d'
+
+    // Calcular data de início baseada no período
+    const now = new Date()
+    const startDate = new Date()
+    
+    switch (period) {
+      case '7d':
+        startDate.setDate(now.getDate() - 7)
+        break
+      case '30d':
+        startDate.setDate(now.getDate() - 30)
+        break
+      case '90d':
+        startDate.setDate(now.getDate() - 90)
+        break
+      case '1y':
+        startDate.setFullYear(now.getFullYear() - 1)
+        break
+      default:
+        startDate.setDate(now.getDate() - 30)
+    }
 
     // Buscar estatísticas em paralelo
     const [
-      clientsCount,
-      projectsCount,
-      activeProjectsCount,
-      totalRevenue,
-      monthlyRevenue,
-      aiUsageCount,
-      recentProjects,
-      pendingTasks,
+      clientsStats,
+      projectsStats,
+      revenuesStats,
+      expensesStats,
     ] = await Promise.all([
-      // Total de clientes
+      // Estatísticas de clientes
+      Promise.all([
+        db.client.count({
+          where: { agencyId: context.agencyId }
+        }),
+        db.client.count({
+          where: {
+            agencyId: context.agencyId,
+            createdAt: { gte: startDate }
+          }
+        }),
+      ]),
+
+      // Estatísticas de projetos
+      Promise.all([
+        db.project.count({
+          where: { agencyId: context.agencyId }
+        }),
+        db.project.count({
+          where: {
+            agencyId: context.agencyId,
+            status: 'IN_PROGRESS'
+          }
+        }),
+        db.project.count({
+          where: {
+            agencyId: context.agencyId,
+            status: 'COMPLETED'
+          }
+        }),
+        db.project.count({
+          where: {
+            agencyId: context.agencyId,
+            createdAt: { gte: startDate }
+          }
+        }),
+      ]),
+
+      // Estatísticas de receitas
+      Promise.all([
+        db.revenue.aggregate({
+          where: { agencyId: context.agencyId },
+          _sum: { amount: true },
+          _count: true,
+        }),
+        db.revenue.aggregate({
+          where: {
+            agencyId: context.agencyId,
+            date: { gte: startDate }
+          },
+          _sum: { amount: true },
+          _count: true,
+        }),
+      ]),
+
+      // Estatísticas de despesas
+      Promise.all([
+        db.expense.aggregate({
+          where: { agencyId: context.agencyId },
+          _sum: { amount: true },
+          _count: true,
+        }),
+        db.expense.aggregate({
+          where: {
+            agencyId: context.agencyId,
+            date: { gte: startDate }
+          },
+          _sum: { amount: true },
+          _count: true,
+        }),
+      ]),
+    ])
+
+    // Calcular período anterior para comparação
+    const previousStartDate = new Date(startDate)
+    const periodDays = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+    previousStartDate.setDate(startDate.getDate() - periodDays)
+
+    // Buscar dados do período anterior para comparação
+    const [previousRevenues, previousExpenses, previousClients, previousProjects] = await Promise.all([
+      db.revenue.aggregate({
+        where: {
+          agencyId: context.agencyId,
+          date: { gte: previousStartDate, lt: startDate }
+        },
+        _sum: { amount: true },
+      }),
+      db.expense.aggregate({
+        where: {
+          agencyId: context.agencyId,
+          date: { gte: previousStartDate, lt: startDate }
+        },
+        _sum: { amount: true },
+      }),
       db.client.count({
-        where: { agencyId: context.agencyId },
+        where: {
+          agencyId: context.agencyId,
+          createdAt: { gte: previousStartDate, lt: startDate }
+        }
       }),
-
-      // Total de projetos
-      db.project.count({
-        where: { agencyId: context.agencyId },
-      }),
-
-      // Projetos ativos (em progresso)
       db.project.count({
         where: {
           agencyId: context.agencyId,
-          status: 'IN_PROGRESS',
-        },
-      }),
-
-      // Receita total
-      db.revenue.aggregate({
-        where: { agencyId: context.agencyId },
-        _sum: { amount: true },
-      }),
-
-      // Receita do mês atual
-      db.revenue.aggregate({
-        where: {
-          agencyId: context.agencyId,
-          date: {
-            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-          },
-        },
-        _sum: { amount: true },
-      }),
-
-      // Uso de IA do mês
-      db.aIUsage.aggregate({
-        where: {
-          agencyId: context.agencyId,
-          createdAt: {
-            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-          },
-        },
-        _sum: { tokensUsed: true },
-      }),
-
-      // Projetos recentes
-      db.project.findMany({
-        where: { agencyId: context.agencyId },
-        include: {
-          client: {
-            select: { name: true },
-          },
-        },
-        orderBy: { updatedAt: 'desc' },
-        take: 5,
-      }),
-
-      // Tarefas pendentes
-      db.task.findMany({
-        where: {
-          project: { agencyId: context.agencyId },
-          dueDate: {
-            lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Próximos 7 dias
-          },
-        },
-        include: {
-          project: {
-            select: { name: true },
-          },
-          assignee: {
-            select: { name: true },
-          },
-        },
-        orderBy: { dueDate: 'asc' },
-        take: 10,
+          createdAt: { gte: previousStartDate, lt: startDate }
+        }
       }),
     ])
 
-    // Calcular crescimento mensal (comparar com mês anterior)
-    const lastMonth = new Date()
-    lastMonth.setMonth(lastMonth.getMonth() - 1)
-    
-    const lastMonthRevenue = await db.revenue.aggregate({
-      where: {
-        agencyId: context.agencyId,
-        date: {
-          gte: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1),
-          lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        },
-      },
-      _sum: { amount: true },
-    })
-
-    const currentMonthAmount = Number(monthlyRevenue._sum.amount || 0)
-    const lastMonthAmount = Number(lastMonthRevenue._sum.amount || 0)
-    const revenueGrowth = lastMonthAmount > 0 
-      ? ((currentMonthAmount - lastMonthAmount) / lastMonthAmount) * 100
-      : 0
-
-    // Calcular limite de IA baseado no plano
-    const aiLimit = context.agency.plan === 'PRO' ? 500 : 20
-    const aiUsed = aiUsageCount._sum.tokensUsed || 0
-
-    const stats = {
-      clients: {
-        total: clientsCount,
-        growth: 0, // TODO: Calcular crescimento
-      },
-      projects: {
-        total: projectsCount,
-        active: activeProjectsCount,
-        growth: 0, // TODO: Calcular crescimento
-      },
-      revenue: {
-        total: Number(totalRevenue._sum.amount || 0),
-        monthly: currentMonthAmount,
-        growth: Math.round(revenueGrowth * 100) / 100,
-      },
-      ai: {
-        used: aiUsed,
-        limit: aiLimit,
-        percentage: Math.round((aiUsed / aiLimit) * 100),
-      },
-      recentProjects: recentProjects.map(project => ({
-        id: project.id,
-        name: project.name,
-        client: project.client.name,
-        status: project.status,
-        updatedAt: project.updatedAt,
-      })),
-      pendingTasks: pendingTasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        project: task.project.name,
-        assignee: task.assignee?.name || 'Não atribuído',
-        dueDate: task.dueDate,
-        priority: task.priority,
-      })),
+    // Calcular variações percentuais
+    const calculateChange = (current: number, previous: number): number => {
+      if (previous === 0) return current > 0 ? 100 : 0
+      return Math.round(((current - previous) / previous) * 100)
     }
 
-    return NextResponse.json(stats)
+    const currentRevenue = Number(revenuesStats[1]._sum.amount || 0)
+    const previousRevenue = Number(previousRevenues._sum.amount || 0)
+    const currentExpense = Number(expensesStats[1]._sum.amount || 0)
+    const previousExpense = Number(previousExpenses._sum.amount || 0)
+
+    // Montar resposta
+    const stats = {
+      period,
+      clients: {
+        total: clientsStats[0],
+        new: clientsStats[1],
+        change: calculateChange(clientsStats[1], previousClients),
+      },
+      projects: {
+        total: projectsStats[0],
+        active: projectsStats[1],
+        completed: projectsStats[2],
+        new: projectsStats[3],
+        change: calculateChange(projectsStats[3], previousProjects),
+      },
+      revenue: {
+        total: Number(revenuesStats[0]._sum.amount || 0),
+        current: currentRevenue,
+        count: revenuesStats[1]._count,
+        change: calculateChange(currentRevenue, previousRevenue),
+      },
+      expenses: {
+        total: Number(expensesStats[0]._sum.amount || 0),
+        current: currentExpense,
+        count: expensesStats[1]._count,
+        change: calculateChange(currentExpense, previousExpense),
+      },
+      profit: {
+        current: currentRevenue - currentExpense,
+        change: calculateChange(
+          currentRevenue - currentExpense,
+          previousRevenue - previousExpense
+        ),
+      },
+      tasks: {
+        total: 0,
+        completed: 0,
+        inProgress: 0,
+        completionRate: 0,
+      },
+      summary: {
+        totalClients: clientsStats[0],
+        activeProjects: projectsStats[1],
+        monthlyRevenue: currentRevenue,
+        monthlyProfit: currentRevenue - currentExpense,
+      }
+    }
+
+    return createSuccessResponse(stats)
   } catch (error) {
-    console.error('Erro ao buscar estatísticas:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erro interno do servidor' },
-      { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
-    )
+    console.error('Erro ao buscar estatísticas do dashboard:', error)
+    throw error
   }
-} 
+}
