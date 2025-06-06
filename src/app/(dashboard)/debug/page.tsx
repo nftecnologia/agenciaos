@@ -1,11 +1,11 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useTenant } from '@/hooks/use-tenant'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, LogOut } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 
 export default function DebugPage() {
@@ -59,23 +59,11 @@ export default function DebugPage() {
     }
   }
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/signin' })
-  }
-
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Debug - Estado da Sessão</h1>
-          <p className="text-muted-foreground">Informações para debug do sistema de autenticação</p>
-        </div>
-        {session && (
-          <Button onClick={handleLogout} variant="destructive" className="flex items-center gap-2">
-            <LogOut className="h-4 w-4" />
-            Sair do Sistema
-          </Button>
-        )}
+      <div>
+        <h1 className="text-2xl font-bold">Debug - Estado da Sessão</h1>
+        <p className="text-muted-foreground">Informações para debug do sistema de autenticação</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
