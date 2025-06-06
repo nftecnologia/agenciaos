@@ -23,9 +23,9 @@ export async function GET(request: NextRequest) {
     // Extrair parâmetros de query
     const { searchParams } = new URL(request.url)
     const queryData = {
-      search: searchParams.get('search') || '',
-      page: parseInt(searchParams.get('page') || '1'),
-      limit: parseInt(searchParams.get('limit') || '10'),
+      search: searchParams.get('search') || undefined,
+      page: searchParams.get('page') || '1',
+      limit: searchParams.get('limit') || '10',
     }
 
     // Validar query parameters
