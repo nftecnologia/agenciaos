@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requirePermission } from '@/lib/tenant'
 import { db } from '@/lib/db'
-import { Role } from '@/generated/prisma'
+import { Role } from '@prisma/client'
 
 export const runtime = 'nodejs'
 
@@ -166,4 +166,4 @@ export async function DELETE(
       { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
     )
   }
-} 
+}

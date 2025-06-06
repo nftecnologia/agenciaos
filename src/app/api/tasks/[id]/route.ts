@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireTenant } from '@/lib/tenant'
-import { Priority } from '@/generated/prisma'
+import { Priority } from '@prisma/client'
 
 const updateTaskSchema = z.object({
   title: z.string().min(1, 'Título é obrigatório').optional(),
@@ -147,4 +147,4 @@ export async function DELETE(
       { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
     )
   }
-} 
+}

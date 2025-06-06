@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 import { requireTenant } from '@/lib/tenant'
-import { Priority } from '@/generated/prisma'
+import { Priority } from '@prisma/client'
 
 const createTaskSchema = z.object({
   projectId: z.string().cuid(),
@@ -261,4 +261,4 @@ export async function PATCH(request: NextRequest) {
       { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
     )
   }
-} 
+}

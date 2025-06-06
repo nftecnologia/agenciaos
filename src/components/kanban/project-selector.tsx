@@ -4,7 +4,7 @@ import { useProjects } from '@/hooks/use-projects'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ProjectStatus } from '@/generated/prisma'
+import { ProjectStatus } from '@prisma/client'
 
 interface ProjectSelectorProps {
   selectedProjectId: string | null
@@ -122,4 +122,4 @@ export function ProjectSelector({ selectedProjectId, onProjectSelect }: ProjectS
       )}
     </div>
   )
-} 
+}
