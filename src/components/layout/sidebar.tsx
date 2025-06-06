@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
+import { usePermissions } from '@/hooks/use-tenant'
+import { AdminOnly } from '@/components/auth/permission-guard'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -73,6 +75,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const { role } = usePermissions()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   async function handleSignOut() {
@@ -154,6 +157,18 @@ export function Sidebar() {
               <span className="font-medium">Configurações</span>
             </Link>
 
+            {/* Gestão de Usuários - Apenas para Admins */}
+            <AdminOnly>
+              <Link
+                href="/usuarios"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <User className="w-5 h-5" />
+                <span className="font-medium">Usuários</span>
+              </Link>
+            </AdminOnly>
+
             {/* User Menu */}
             {session?.user && (
               <DropdownMenu>
@@ -168,14 +183,19 @@ export function Sidebar() {
                         {session.user.name?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 text-left">
-                      <p className="text-sm font-medium text-gray-900">
-                        {session.user.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {session.user.email}
-                      </p>
-                    </div>
+                                         <div className="flex-1 text-left">
+                       <p className="text-sm font-medium text-gray-900">
+                         {session.user.name}
+                       </p>
+                       <p className="text-xs text-gray-500">
+                         {session.user.email}
+                       </p>
+                       {role && (
+                         <p className="text-xs text-blue-600 font-medium">
+                           {role === 'OWNER' ? 'Proprietário' : role === 'ADMIN' ? 'Administrador' : 'Membro'}
+                         </p>
+                       )}
+                     </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
