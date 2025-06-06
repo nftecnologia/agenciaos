@@ -408,7 +408,7 @@ export function RevenuesList() {
           <DialogHeader>
             <DialogTitle>Deletar Receita</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja deletar a receita "{selectedRevenue?.description}"?
+              Tem certeza que deseja deletar a receita &quot;{selectedRevenue?.description}&quot;?
               Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>

@@ -330,7 +330,7 @@ export function ExpensesList() {
           <DialogHeader>
             <DialogTitle>Deletar Despesa</DialogTitle>
             <DialogDescription>
-              Tem certeza que deseja deletar a despesa "{selectedExpense?.description}"?
+              Tem certeza que deseja deletar a despesa &quot;{selectedExpense?.description}&quot;?
               Esta ação não pode ser desfeita.
             </DialogDescription>
           </DialogHeader>

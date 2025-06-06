@@ -170,7 +170,7 @@ export function FinancialDashboard() {
           <CardContent>
             <div className="space-y-3">
               {stats.topCategories.revenue.length > 0 ? (
-                stats.topCategories.revenue.map((category, index) => (
+                stats.topCategories.revenue.map((category) => (
                   <div key={category.category} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -201,7 +201,7 @@ export function FinancialDashboard() {
           <CardContent>
             <div className="space-y-3">
               {stats.topCategories.expense.length > 0 ? (
-                stats.topCategories.expense.map((category, index) => (
+                stats.topCategories.expense.map((category) => (
                   <div key={category.category} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-red-500" />
