@@ -1,120 +1,150 @@
+import { NextRequest, NextResponse } from 'next/server'
 import { requireTenant } from '@/lib/tenant'
 import { db } from '@/lib/db'
-import { withValidation, createSuccessResponse } from '@/lib/api-validation'
-import { createExpenseSchema, expensesQuerySchema, type CreateExpenseInput, type ExpensesQuery } from '@/lib/validations'
+import { createExpenseSchema, expensesQuerySchema } from '@/lib/validations'
 import { applyRateLimit } from '@/lib/rate-limit'
-import { appErrors } from '@/lib/errors'
 
 export const runtime = 'nodejs'
 
 // GET /api/expenses - Listar despesas
-export const GET = withValidation<never, ExpensesQuery>(
-  async (request, { query }) => {
-    try {
-      // Aplicar rate limiting
-      const rateLimitResult = await applyRateLimit(request, 'api')
-      if (!rateLimitResult.success && rateLimitResult.error) {
-        throw rateLimitResult.error
-      }
-
-      const context = await requireTenant()
-      
-      // Usar query validada ou valores padrão
-      const { 
-        category, 
-        startDate, 
-        endDate, 
-        page = 1, 
-        limit = 10 
-      } = query || {}
-      
-      const offset = (page - 1) * limit
-
-      // Construir filtros de busca
-      const where = {
-        agencyId: context.agencyId,
-        ...(category && { category: { contains: category, mode: 'insensitive' as const } }),
-        ...(startDate && endDate && {
-          date: {
-            gte: new Date(startDate),
-            lte: new Date(endDate),
-          },
-        }),
-      }
-
-      // Buscar despesas com paginação
-      const [expenses, total] = await Promise.all([
-        db.expense.findMany({
-          where,
-          orderBy: { date: 'desc' },
-          skip: offset,
-          take: limit,
-        }),
-        db.expense.count({ where }),
-      ])
-
-      const totalPages = Math.ceil(total / limit)
-
-      return createSuccessResponse({
-        expenses,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        },
-      })
-    } catch (error) {
-      console.error('Erro ao buscar despesas:', error)
-      throw error
+export async function GET(request: NextRequest) {
+  try {
+    // Aplicar rate limiting
+    const rateLimitResult = await applyRateLimit(request, 'api')
+    if (!rateLimitResult.success && rateLimitResult.error) {
+      return NextResponse.json(
+        { error: rateLimitResult.error.message },
+        { status: 429 }
+      )
     }
-  },
-  {
-    querySchema: expensesQuerySchema
+
+    const context = await requireTenant()
+    
+    // Extrair parâmetros de query
+    const { searchParams } = new URL(request.url)
+    const queryData = {
+      category: searchParams.get('category') || '',
+      startDate: searchParams.get('startDate') || '',
+      endDate: searchParams.get('endDate') || '',
+      page: parseInt(searchParams.get('page') || '1'),
+      limit: parseInt(searchParams.get('limit') || '10'),
+    }
+
+    // Validar query parameters
+    const validationResult = expensesQuerySchema.safeParse(queryData)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Parâmetros inválidos', 
+          details: validationResult.error.errors 
+        },
+        { status: 400 }
+      )
+    }
+
+    const { category, startDate, endDate, page, limit } = validationResult.data
+    const offset = (page - 1) * limit
+
+    // Construir filtros de busca
+    const where = {
+      agencyId: context.agencyId,
+      ...(category && { category: { contains: category, mode: 'insensitive' as const } }),
+      ...(startDate && endDate && {
+        date: {
+          gte: new Date(startDate),
+          lte: new Date(endDate),
+        },
+      }),
+    }
+
+    // Buscar despesas com paginação
+    const [expenses, total] = await Promise.all([
+      db.expense.findMany({
+        where,
+        orderBy: { date: 'desc' },
+        skip: offset,
+        take: limit,
+      }),
+      db.expense.count({ where }),
+    ])
+
+    const totalPages = Math.ceil(total / limit)
+
+    return NextResponse.json({
+      expenses,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    })
+  } catch (error) {
+    console.error('Erro ao buscar despesas:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Erro interno do servidor' },
+      { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
+    )
   }
-)
+}
 
 // POST /api/expenses - Criar despesa
-export const POST = withValidation<CreateExpenseInput>(
-  async (request, { body }) => {
-    try {
-      // Aplicar rate limiting
-      const rateLimitResult = await applyRateLimit(request, 'api')
-      if (!rateLimitResult.success && rateLimitResult.error) {
-        throw rateLimitResult.error
-      }
-
-      const context = await requireTenant()
-
-      if (!body) {
-        throw appErrors.INVALID_INPUT
-      }
-
-      const { description, amount, category, date } = body
-
-      // Validar data
-      const parsedDate = new Date(date)
-
-      // Criar despesa
-      const expense = await db.expense.create({
-        data: {
-          agencyId: context.agencyId,
-          description,
-          amount,
-          category,
-          date: parsedDate,
-        },
-      })
-
-      return createSuccessResponse(expense, 201, 'Despesa criada com sucesso')
-    } catch (error) {
-      console.error('Erro ao criar despesa:', error)
-      throw error
+export async function POST(request: NextRequest) {
+  try {
+    // Aplicar rate limiting
+    const rateLimitResult = await applyRateLimit(request, 'api')
+    if (!rateLimitResult.success && rateLimitResult.error) {
+      return NextResponse.json(
+        { error: rateLimitResult.error.message },
+        { status: 429 }
+      )
     }
-  },
-  {
-    bodySchema: createExpenseSchema
+
+    const context = await requireTenant()
+    const body = await request.json()
+
+    // Validar dados de entrada
+    const validationResult = createExpenseSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Dados inválidos', 
+          details: validationResult.error.errors 
+        },
+        { status: 400 }
+      )
+    }
+
+    const { description, amount, category, date } = validationResult.data
+
+    // Validar data
+    const parsedDate = new Date(date)
+
+    // Criar despesa
+    const expense = await db.expense.create({
+      data: {
+        agencyId: context.agencyId,
+        description,
+        amount,
+        category,
+        date: parsedDate,
+      },
+    })
+
+    return NextResponse.json(
+      {
+        message: 'Despesa criada com sucesso',
+        expense,
+      },
+      { status: 201 }
+    )
+  } catch (error) {
+    console.error('Erro ao criar despesa:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Erro interno do servidor' },
+      { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
+    )
   }
-)
+}
