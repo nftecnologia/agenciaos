@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { usePermissions } from '@/hooks/use-tenant'
+import { useTenant } from '@/hooks/use-tenant'
 import { AdminOnly } from '@/components/auth/permission-guard'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -75,7 +75,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const { role } = usePermissions()
+  const { tenant } = useTenant()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   async function handleSignOut() {
@@ -190,9 +190,9 @@ export function Sidebar() {
                        <p className="text-xs text-gray-500">
                          {session.user.email}
                        </p>
-                       {role && (
+                       {tenant?.role && (
                          <p className="text-xs text-blue-600 font-medium">
-                           {role === 'OWNER' ? 'Proprietário' : role === 'ADMIN' ? 'Administrador' : 'Membro'}
+                           {tenant.role === 'OWNER' ? 'Proprietário' : tenant.role === 'ADMIN' ? 'Administrador' : 'Membro'}
                          </p>
                        )}
                      </div>
@@ -223,4 +223,4 @@ export function Sidebar() {
       </aside>
     </>
   )
-} 
+}
