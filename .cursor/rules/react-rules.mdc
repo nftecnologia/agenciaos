@@ -1,0 +1,101 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Regras e Convenções para Projeto React/Next.js
+
+## Idioma
+- Sempre responda em português.
+
+## Para Aplicações React/Next.js
+- Use componentes funcionais e interfaces TypeScript.
+- Utilize JSX declarativo.
+- Declare componentes com `function`, não `const`.
+- Use Shadcn UI, Radix e Tailwind Aria para componentes e estilização.
+- Implemente design responsivo com Tailwind (mobile‑first).
+- Coloque conteúdo estático e interfaces ao final do arquivo.
+- Coloque variáveis de conteúdo fora das funções de renderização.
+- Minimize `use client`, `useEffect` e `setState`; prefira RSC.
+- Use Zod para validação de formulários.
+- Envolva componentes client em `Suspense` com `fallback`.
+- Carregue dinamicamente componentes não críticos.
+- Otimize imagens (WebP, tamanho, lazy loading).
+- Modele erros esperados como valores de retorno (evite `try/catch` em Server Actions); use `useActionState`.
+- Use Error Boundaries (`error.tsx`, `global-error.tsx`) para erros inesperados.
+- Combine `useActionState` com `react-hook-form` para validação.
+- Código em `services/` deve lançar erros amigáveis capturados pelo TanStack Query.
+- Use **next-safe-action** em todas as server actions:
+  - Crie actions tipadas com validação robusta usando Zod.
+  - Todas retornam `ActionResponse`.
+  - Trate erros de forma consistente.
+
+### Exemplo de server action
+```typescript
+'use server'
+
+import { createSafeActionClient } from 'next-safe-action'
+import { z } from 'zod'
+import type { ActionResponse } from '@/app/actions/actions'
+
+const schema = z.object({ value: z.string() })
+
+export const someAction = createSafeActionClient()
+  .schema(schema)
+  .action(async (input): Promise<ActionResponse> => {
+    try {
+      // lógica da action
+      return { success: true, data: /* result */ }
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof AppError
+          ? error
+          : appErrors.UNEXPECTED_ERROR,
+      }
+    }
+  })
+```
+
+### Convenções‑chave
+1. Use App Router do Next.js para mudanças de estado.
+2. Priorize Web Vitals (LCP, CLS, FID).
+3. Minimize `use client`:
+   - Prefira Server Components e SSR.
+   - Use apenas para Web APIs em componentes pequenos.
+   - Não use para fetch ou state global.
+
+### Regras adicionais
+- **React components sem Next**: verifique se já existe componente; se não, gere prompt detalhado, crie link `[ComponentName](mdc:https:/v0.dev/chat?q=...)`.
+- **React Query**: siga melhores práticas (QueryClient, hooks, cache, SWR, optimistic updates, etc.).
+- **Mensagens de commit**: siga prefixos `Feat|Fix|Docs|Refactor|Style|Test|Chore`; última linha com "Don't forget to commit" e comando.
+- Instale Shadcn com `npx install shadcn@latest`.
+
+## Regras Gerais de Código
+- Pensar passo a passo em pseudocódigo antes de codar.
+- Código completo, funcional, sem TODOs.
+- Use Tailwind; evite CSS externo.
+- Use nomes descritivos e prefixo `handle` para eventos.
+- Acessibilidade: `tabindex="0"`, `aria-label`, handlers de teclado.
+- Use guard clauses para erros.
+- Sem desculpas ou confirmações desnecessárias.
+- Preserve código existente; edite em único bloco.
+
+## AI SDK (Vercel)
+- Utilize Vercel AI SDK (UI/Core/RSC).
+- Tratamento de erros, fallback de modelos, rate limit, sanitização.
+- Use variáveis de ambiente para chaves.
+
+## Estrutura & Convenções
+- Monorepo: código compartilhado em `packages`, apps em `apps`.
+- Use Taskfile para tasks.
+- Respeite esquema de banco, use enums.
+- Nomes: booleans com `is/has`, arquivos em dash‑case e extensões adequadas.
+- Componentes pequenos, compostos, micro‑pastas.
+- Data fetching com Server Components, preload pattern, Neon Postgres como fonte única de dados, Redis (Upstash) para pub/sub quando necessário, Vercel KV quando útil.
+
+## Boas Práticas Complementares
+- Test coverage, modularidade, segurança.
+- Evite magic numbers; use constantes.
+- Considere edge cases e assertivas.
+- Log de erros e mensagens amigáveis.

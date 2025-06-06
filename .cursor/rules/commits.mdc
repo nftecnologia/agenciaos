@@ -1,0 +1,74 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Formato das Mensagens de Commit
+
+**Princípio:** Cada tarefa ou correção deve resultar em um único commit. As mensagens de commit devem seguir um formato claro e consistente para melhorar a legibilidade do histórico do projeto.
+
+---
+
+## Formato da Mensagem
+
+Sempre utilize **um dos prefixos abaixo**, seguido por uma descrição concisa da alteração:
+
+| Tipo      | Quando usar | Exemplo |
+|-----------|-------------|---------|
+| **`feat:`**  | Nova funcionalidade | `feat: adiciona login com OAuth` |
+| **`fix:`**   | Correção de bug | `fix: corrige erro de validação no formulário de usuário` |
+| **`docs:`**  | Alterações somente na documentação | `docs: atualiza instruções de setup no README` |
+| **`style:`** | Alterações de estilo que não afetam lógica | `style: aplica formatação do Prettier em todo o projeto` |
+| **`refactor:`** | Refatoração sem mudar comportamento | `refactor: melhora performance da função de busca de dados` |
+| **`test:`** | Adição ou correção de testes | `test: adiciona testes unitários para o serviço de autenticação` |
+| **`chore:`** | Tarefas de manutenção (deps, CI/CD, etc.) | `chore: atualiza versão do React para 18.2.0` |
+
+---
+
+### Escopo Opcional
+
+Você pode adicionar um **escopo** para dar contexto:
+
+```text
+feat(auth): implementa funcionalidade de "lembrar‑me"
+fix(api): resolve problema de CORS na rota de usuários
+```
+
+---
+
+### Corpo e Rodapé (Opcional)
+
+Para commits complexos, adicione detalhes:
+
+```text
+fix: corrige cálculo incorreto de totais no carrinho
+
+O cálculo anterior não considerava corretamente os descontos
+aplicados a itens promocionais, resultando em um total
+incorreto para o cliente. Esta correção ajusta a lógica
+para aplicar os descontos antes da soma final.
+
+Closes #123
+```
+
+---
+
+## Boas Práticas
+
+- **Linha de assunto** concisa (até 50 caracteres).  
+- Use **imperativo no presente** na linha de assunto (“adiciona”, não “adicionado”).  
+- Se o commit fechar uma issue, mencione-a (`Closes #123`).  
+
+---
+
+### Exemplos rápidos
+
+```text
+feat: adiciona suporte a múltiplos idiomas
+fix(login): corrige bug de redirecionamento após logout
+docs(readme): adiciona seção de configuração de ambiente
+style(eslint): aplica nova regra de import/order
+refactor(api): extrai lógica de autenticação para middleware
+test: adiciona testes E2E para fluxo de checkout
+chore(deps): atualiza @next/font para 0.3.0
+```

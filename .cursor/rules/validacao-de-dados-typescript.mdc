@@ -1,0 +1,109 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Validação de Dados de Entrada com TypeScript e Zod
+
+**Princípio Core:** Garantir a integridade e a segurança dos dados que entram no sistema é fundamental. Todas as entradas externas (formulários, parâmetros de API, etc.) devem ser rigorosamente validadas antes do processamento. TypeScript e Zod fornecem uma base sólida para essa validação.
+
+## Diretrizes
+
+### 1. TypeScript para Tipagem Estática
+- Todo o código deve utilizar TypeScript para aproveitar a verificação de tipos em tempo de desenvolvimento e compilação.
+- Defina **interfaces** ou **tipos** claros para todas as estruturas de dados de entrada esperadas.
+
+### 2. Zod para Validação Runtime
+- Utilize a biblioteca **Zod** para definir esquemas de validação para todos os dados de entrada:
+  - Corpos de requisição (request bodies) em APIs.
+  - Parâmetros de query e de rota.
+  - Dados de formulários no frontend.
+  - Argumentos de Server Actions (Next.js).
+  - Qualquer outra fonte de dados externa.
+- Os esquemas Zod devem ser específicos, validando tipos, formatos, comprimentos, limites numéricos, etc.
+- Use `z.object({...})`, `z.string()`, `z.number()`, `z.boolean()`, `z.enum()`, e refinamentos (`.min()`, `.email()`, `.optional()`, etc.).
+
+### 3. Validação Antecipada (Fail Fast)
+- Valide dados **o mais cedo possível** no fluxo.
+- Se a validação falhar, interrompa imediatamente e retorne um erro; não processe dados inválidos.
+
+### 4. Tratamento de Erros de Validação e Mensagens Claras
+- **APIs**  
+  - Em falha, retorne HTTP `400` ou `422` com JSON detalhando erros (campo, mensagem, código opcional).  
+  - Utilize `.safeParse()` para obter detalhes.
+- **Formulários (Frontend)**  
+  - Exiba mensagens próximas aos campos inválidos, claras e concisas.  
+  - Use libs como `react-hook-form` + Zod.
+- **Server Actions (Next.js)**  
+  - Use `next-safe-action` com esquemas Zod.  
+  - Retorne `ActionResponse` `{ success: false, error }` para exibir mensagens amigáveis.
+
+### 5. Consistência
+- Mantenha padrão consistente para esquemas e tratamento de erros.
+
+---
+
+## Exemplo: API com Express.js
+
+```typescript
+import express, { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
+
+const app = express();
+app.use(express.json());
+
+const createUserSchema = z.object({
+  username: z.string().min(3, "O nome de usuário deve ter pelo menos 3 caracteres."),
+  email: z.string().email("O email fornecido é inválido."),
+  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres."),
+});
+
+app.post('/users', (req: Request, res: Response, next: NextFunction) => {
+  const validationResult = createUserSchema.safeParse(req.body);
+
+  if (!validationResult.success) {
+    const errors = validationResult.error.errors.map(err => ({
+      field: err.path.join('.'),
+      message: err.message,
+    }));
+    return res.status(400).json({ errors });
+  }
+
+  // Processar dados válidos
+  const { username, email, password } = validationResult.data;
+  // ... lógica para criar usuário
+  return res.status(201).json({ message: 'Usuário criado com sucesso!', data: validationResult.data });
+});
+```
+
+---
+
+## Exemplo: Server Action com `next-safe-action`
+
+```typescript
+'use server';
+
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+
+const updateUserProfileSchema = z.object({
+  userId: z.string().uuid("ID de usuário inválido."),
+  bio: z.string().max(200, "A biografia não pode exceder 200 caracteres.").optional(),
+  website: z.string().url("O website deve ser uma URL válida.").optional(),
+});
+
+export const updateUserProfile = createSafeActionClient()
+  .schema(updateUserProfileSchema)
+  .action(async (input): Promise<ActionResponse<typeof updateUserProfileSchema>> => {
+    try {
+      // 'input' já validado
+      // await db.updateUser(input.userId, { bio: input.bio, website: input.website });
+      return { success: true, data: { message: "Perfil atualizado com sucesso!", user: input } };
+    } catch (error) {
+      return { success: false, error: { message: error instanceof Error ? error.message : 'Falha ao atualizar o perfil.' } };
+    }
+  });
+```
+
+> **Nota:** `next-safe-action` já retorna erros de validação de forma estruturada; a `ActionResponse` acima é para erros após validação (ex.: banco de dados).

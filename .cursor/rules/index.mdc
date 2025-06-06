@@ -1,0 +1,141 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Índice de Regras do Projeto
+
+Este arquivo serve como índice central para todas as regras e convenções do projeto, organizadas por categoria e prioridade.
+
+---
+
+## 🏗️ Arquitetura e Stack
+
+### [Stack de Dados Unificada](./stack-dados.mdc)
+- **Prioridade:** 🔴 Crítica
+- **Conteúdo:** Neon Postgres, Next Auth, Redis, remoção do Supabase
+- **Atualização:** Sempre que houver mudanças na stack de dados
+
+### [Práticas de TypeScript](./praticastypescript.mdc)
+- **Prioridade:** 🔴 Crítica  
+- **Conteúdo:** Regras estritas de tipagem, proibição de @ts-ignore
+- **Atualização:** Baixa frequência
+
+### [Validação de Dados](./validacao-de-dados-typescript.mdc)
+- **Prioridade:** 🟡 Alta
+- **Conteúdo:** Zod, validação runtime, tratamento de erros
+- **Atualização:** Média frequência
+
+---
+
+## ⚛️ Frontend e UI
+
+### [Regras React/Next.js](./react-rules.mdc)
+- **Prioridade:** 🔴 Crítica
+- **Conteúdo:** Componentes, Server Actions, Shadcn UI, Tailwind
+- **Atualização:** Alta frequência
+
+---
+
+## 🔧 Qualidade e Manutenção
+
+### [Codificação de Qualidade](./codificacao-de-qualidade.mdc)
+- **Prioridade:** 🟡 Alta
+- **Conteúdo:** DRY, SOLID, segurança, performance, testes
+- **Atualização:** Média frequência
+
+### [Formato de Commits](./commits.mdc)
+- **Prioridade:** 🟢 Média
+- **Conteúdo:** Conventional commits, prefixos, exemplos
+- **Atualização:** Baixa frequência
+
+---
+
+## 📚 Documentação e Memória
+
+### [Memory Bank v2.0](./memorybank-v2.mdc) ⭐ **NOVO**
+- **Prioridade:** 🟡 Alta
+- **Conteúdo:** Sistema de documentação inteligente com templates, automação e métricas
+- **Atualização:** Evolução contínua
+- **Versão anterior:** [Memory Bank v1](./memorybank.mdc)
+
+---
+
+## 🔄 Hierarquia de Aplicação
+
+### Ordem de Prioridade (em caso de conflito):
+1. **Stack de Dados** - Decisões arquiteturais fundamentais
+2. **Práticas TypeScript** - Integridade do sistema de tipos
+3. **Regras React/Next.js** - Padrões de desenvolvimento
+4. **Validação de Dados** - Segurança e robustez
+5. **Codificação de Qualidade** - Manutenibilidade
+6. **Memory Bank** - Continuidade e documentação
+7. **Formato de Commits** - Organização do histórico
+
+### Resolução de Conflitos:
+- Em caso de conflito entre regras, a regra de **maior prioridade** prevalece
+- Conflitos devem ser documentados e resolvidos através de atualização das regras
+- Mudanças arquiteturais requerem atualização em cascata das regras dependentes
+
+---
+
+## 📋 Checklist de Consistência
+
+### ✅ Verificações Regulares:
+- [ ] Todas as regras estão alinhadas com a stack de dados atual (Neon Postgres)
+- [ ] Não há menções ao Supabase fora do contexto de remoção
+- [ ] Exemplos de código estão atualizados com as práticas atuais
+- [ ] Não há duplicação de regras entre arquivos
+- [ ] Links e referências estão funcionando
+
+### ✅ Antes de Cada Sessão:
+- [ ] Verificar se há conflitos entre regras
+- [ ] Confirmar que a stack tecnológica está atualizada
+- [ ] Revisar regras de maior prioridade
+- [ ] Verificar se há novas práticas a serem incorporadas
+
+### ✅ Após Mudanças Significativas:
+- [ ] Atualizar regras afetadas
+- [ ] Verificar impacto em cascata
+- [ ] Documentar decisões no Memory Bank
+- [ ] Comunicar mudanças para toda a equipe
+
+---
+
+## 🎯 Metas de Melhoria
+
+### Curto Prazo (1-2 semanas):
+- [ ] Implementar Memory Bank estruturado
+- [ ] Criar regras específicas de testes
+- [ ] Documentar configuração de ambiente
+
+### Médio Prazo (1 mês):
+- [ ] Sistema de versionamento de regras
+- [ ] Automação de verificação de consistência
+- [ ] Templates de código baseados nas regras
+
+### Longo Prazo (3 meses):
+- [ ] Sistema de métricas de aderência às regras
+- [ ] Integração com ferramentas de CI/CD
+- [ ] Documentação interativa das regras
+
+---
+
+## 📞 Contatos e Responsabilidades
+
+### Mantenedores das Regras:
+- **Stack de Dados:** Arquiteto de Software
+- **Frontend:** Lead Frontend Developer  
+- **Qualidade:** Tech Lead
+- **Documentação:** Product Owner
+
+### Processo de Atualização:
+1. Proposta de mudança via issue/PR
+2. Revisão pelos mantenedores relevantes
+3. Teste de impacto em projeto piloto
+4. Atualização da documentação
+5. Comunicação para toda a equipe
+
+---
+
+> **Nota:** Este índice deve ser atualizado sempre que novas regras forem adicionadas ou regras existentes forem modificadas significativamente.

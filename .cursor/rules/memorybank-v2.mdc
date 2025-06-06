@@ -1,0 +1,1329 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Memory Bank v2.0 - Sistema de Documentação Inteligente
+
+**Princípio Core:** Transformar conhecimento tácito em documentação estruturada que sobrevive ao reset de memória entre sessões, garantindo continuidade total do projeto.
+
+---
+
+## 🚀 Quick Start - Implementação em 5 Minutos
+
+### 1. Criar Estrutura Base
+```bash
+# Executar no root do projeto
+mkdir -p memory-bank/{core,context,tracking,archive}
+mkdir -p memory-bank/templates
+```
+
+### 2. Inicializar Arquivos Essenciais
+```bash
+# Copiar templates base
+cp .cursor/rules/templates/* memory-bank/
+```
+
+### 3. Configurar Git Hooks (Opcional)
+```bash
+# Auto-backup do Memory Bank a cada commit
+echo "cp -r memory-bank/ .memory-backup-$(date +%Y%m%d)" >> .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+---
+
+## 📁 Estrutura Otimizada
+
+```
+memory-bank/
+├── core/                    # Documentos fundamentais (raramente mudam)
+│   ├── projectbrief.md     # Visão e objetivos do projeto
+│   ├── techstack.md        # Stack tecnológico e decisões arquiteturais
+│   └── teamcontext.md      # Contexto da equipe e responsabilidades
+├── context/                 # Contexto dinâmico (atualizado frequentemente)
+│   ├── activecontext.md    # Estado atual e próximos passos
+│   ├── decisions.md        # Log de decisões importantes
+│   ├── blockers.md         # Bloqueios atuais e soluções tentadas
+│   └── tasks.md            # Sistema de tasks e subtasks detalhado
+├── tracking/               # Métricas e acompanhamento
+│   ├── progress.md         # Progresso de funcionalidades
+│   ├── metrics.md          # KPIs técnicos e de qualidade
+│   ├── changelog.md        # Histórico de mudanças significativas
+│   └── timeline.md         # Timeline e estimativas do projeto
+├── archive/                # Histórico e versionamento
+│   ├── snapshots/          # Backups periódicos
+│   └── deprecated/         # Decisões e código descontinuado
+└── templates/              # Templates para novos arquivos
+    ├── feature-template.md
+    ├── decision-template.md
+    ├── task-template.md
+    └── session-template.md
+```
+
+---
+
+## 📋 Templates Prontos para Uso
+
+### Template: projectbrief.md
+```markdown
+# Project Brief - [Nome do Projeto]
+
+## Visão Geral
+**Problema:** [Qual problema estamos resolvendo?]
+**Solução:** [Como vamos resolver?]
+**Valor:** [Qual o valor entregue?]
+
+## Objetivos SMART
+- [ ] **Específico:** [Objetivo claro e específico]
+- [ ] **Mensurável:** [Como medir sucesso?]
+- [ ] **Atingível:** [É realista?]
+- [ ] **Relevante:** [Por que é importante?]
+- [ ] **Temporal:** [Prazo definido]
+
+## Stack Tecnológico
+- **Frontend:** Next.js 14 + TypeScript + Tailwind
+- **Backend:** Next.js API Routes + Server Actions
+- **Database:** Neon Postgres
+- **Auth:** Next Auth
+- **Deploy:** Vercel
+
+## Critérios de Sucesso
+1. [Critério 1 - métrica específica]
+2. [Critério 2 - métrica específica]
+3. [Critério 3 - métrica específica]
+
+## Limitações Conhecidas
+- [Limitação 1 e como contornar]
+- [Limitação 2 e como contornar]
+
+## 📊 Escopo Total do Projeto
+### Funcionalidades Principais (Peso: 70%)
+- [ ] **[Funcionalidade 1]** - Estimativa: [X horas] - Peso: [Y%]
+- [ ] **[Funcionalidade 2]** - Estimativa: [X horas] - Peso: [Y%]
+- [ ] **[Funcionalidade 3]** - Estimativa: [X horas] - Peso: [Y%]
+
+### Funcionalidades Secundárias (Peso: 20%)
+- [ ] **[Feature A]** - Estimativa: [X horas] - Peso: [Y%]
+- [ ] **[Feature B]** - Estimativa: [X horas] - Peso: [Y%]
+
+### Polimento e Deploy (Peso: 10%)
+- [ ] **Testes** - Estimativa: [X horas] - Peso: [Y%]
+- [ ] **Deploy** - Estimativa: [X horas] - Peso: [Y%]
+- [ ] **Documentação** - Estimativa: [X horas] - Peso: [Y%]
+
+**📈 Progresso Total:** 0% (0/[total] horas estimadas)
+**⏱️ Tempo Restante:** [total] horas (~[X] dias úteis)
+
+---
+**Última atualização:** [Data]
+**Próxima revisão:** [Data]
+```
+
+### Template: activecontext.md
+```markdown
+# Contexto Ativo - Sessão [Data]
+
+## 🎯 Foco da Sessão
+**Objetivo principal:** [O que queremos alcançar hoje?]
+**Prioridade:** [Alta/Média/Baixa]
+**Tempo estimado:** [X horas]
+
+## 📊 Progresso do Projeto
+**📈 Progresso Total:** [X]% ([Y]/[Z] horas concluídas)
+**⏱️ Tempo Restante:** [X] horas (~[Y] dias úteis)
+**🎯 Próximo Marco:** [Nome do marco] - [Data estimada]
+
+### 🔥 Task Ativa Atual
+**Task:** [Nome da task principal]
+**Progresso:** [X]% ([Y]/[Z] subtasks concluídas)
+**Próximo Subtask:** [Descrição específica do próximo passo]
+**Tempo estimado para conclusão:** [X] horas
+
+## 📊 Estado Atual
+### ✅ Concluído Recentemente
+- [Item 1 - quando foi concluído - tempo gasto]
+- [Item 2 - quando foi concluído - tempo gasto]
+
+### 🔄 Em Progresso
+- [Item 1 - % de progresso - próximo subtask específico - tempo restante]
+- [Item 2 - % de progresso - próximo subtask específico - tempo restante]
+
+### ⏳ Próximos Passos (Ordenados por Prioridade)
+1. **[Passo 1]** - Prioridade: Alta - Estimativa: [X]h - Dependência: [Y]
+2. **[Passo 2]** - Prioridade: Média - Estimativa: [X]h - Dependência: [Y]
+3. **[Passo 3]** - Prioridade: Baixa - Estimativa: [X]h - Dependência: [Y]
+
+## 🚫 Bloqueios Atuais
+| Bloqueio | Impacto | Solução Tentada | Status | Tempo Perdido |
+|----------|---------|-----------------|--------|---------------|
+| [Descrição] | [Alto/Médio/Baixo] | [O que foi tentado] | [Pendente/Resolvido] | [X horas] |
+
+## 💡 Decisões da Sessão
+- **[Decisão 1]:** [Contexto e justificativa] - Impacto no timeline: [+/-X horas]
+- **[Decisão 2]:** [Contexto e justificativa] - Impacto no timeline: [+/-X horas]
+
+## 🔍 Descobertas Importantes
+- [Insight 1 - impacto no projeto - ajuste de estimativa]
+- [Insight 2 - impacto no projeto - ajuste de estimativa]
+
+## 📝 Notas para Próxima Sessão
+- [Lembrete importante 1]
+- [Lembrete importante 2]
+- [Contexto que não pode ser perdido]
+
+## ⚡ Próximo Passo Imediato
+**O que fazer assim que abrir o projeto:**
+1. [Ação específica e detalhada]
+2. [Arquivo/função/linha exata para trabalhar]
+3. [Contexto necessário para continuar]
+
+---
+**Sessão anterior:** [Link ou data]
+**Duração da sessão:** [Tempo gasto]
+**Próxima sessão planejada:** [Data/objetivo]
+**Velocidade atual:** [X] horas/dia útil
+```
+
+### Template: tasks.md
+```markdown
+# Sistema de Tasks e Subtasks
+
+## 📊 Resumo Geral
+**📈 Progresso Total:** [X]% ([Y]/[Z] tasks concluídas)
+**⏱️ Tempo Total Estimado:** [X] horas
+**⏱️ Tempo Gasto:** [Y] horas
+**⏱️ Tempo Restante:** [Z] horas (~[W] dias úteis)
+**🎯 Data Estimada de Conclusão:** [Data]
+
+---
+
+## 🔥 Task Ativa
+### [TASK-001] - [Nome da Task Principal]
+**Status:** 🔄 Em Progresso ([X]% concluído)
+**Prioridade:** Alta
+**Estimativa Total:** [X] horas
+**Tempo Gasto:** [Y] horas
+**Tempo Restante:** [Z] hours
+**Dependências:** [Lista de dependências]
+
+#### 📋 Subtasks Detalhadas
+- [x] **[SUBTASK-001.1]** - [Descrição] - ✅ Concluído ([X]h)
+- [x] **[SUBTASK-001.2]** - [Descrição] - ✅ Concluído ([X]h)
+- [ ] **[SUBTASK-001.3]** - [Descrição] - 🔄 **PRÓXIMO PASSO** - Est: [X]h
+  - **Detalhes:** [Descrição específica do que fazer]
+  - **Arquivos:** [Lista de arquivos a modificar]
+  - **Critério de conclusão:** [Como saber que está pronto]
+- [ ] **[SUBTASK-001.4]** - [Descrição] - ⏳ Pendente - Est: [X]h
+- [ ] **[SUBTASK-001.5]** - [Descrição] - ⏳ Pendente - Est: [X]h
+
+**🎯 Próximo Passo Imediato:** [SUBTASK-001.3] - [Descrição específica]
+
+---
+
+## 📋 Backlog de Tasks
+
+### 🔴 Prioridade Alta
+#### [TASK-002] - [Nome da Task]
+**Status:** ⏳ Pendente
+**Estimativa:** [X] horas
+**Dependências:** [TASK-001]
+**Descrição:** [Breve descrição]
+
+##### Subtasks Planejadas:
+- [ ] **[SUBTASK-002.1]** - [Descrição] - Est: [X]h
+- [ ] **[SUBTASK-002.2]** - [Descrição] - Est: [X]h
+- [ ] **[SUBTASK-002.3]** - [Descrição] - Est: [X]h
+
+### 🟡 Prioridade Média
+#### [TASK-003] - [Nome da Task]
+**Status:** ⏳ Pendente
+**Estimativa:** [X] horas
+**Dependências:** [TASK-002]
+**Descrição:** [Breve descrição]
+
+### 🟢 Prioridade Baixa
+#### [TASK-004] - [Nome da Task]
+**Status:** ⏳ Pendente
+**Estimativa:** [X] horas
+**Dependências:** Nenhuma
+**Descrição:** [Breve descrição]
+
+---
+
+## ✅ Tasks Concluídas
+
+### [TASK-000] - [Nome da Task Concluída]
+**Status:** ✅ Concluído
+**Tempo Estimado:** [X] horas
+**Tempo Real:** [Y] horas
+**Variação:** [+/-Z] horas ([+/-W]%)
+**Data de Conclusão:** [Data]
+
+#### Subtasks Concluídas:
+- [x] **[SUBTASK-000.1]** - [Descrição] - ✅ ([X]h)
+- [x] **[SUBTASK-000.2]** - [Descrição] - ✅ ([X]h)
+
+#### Lições Aprendidas:
+- [Insight 1 sobre estimativas]
+- [Insight 2 sobre implementação]
+
+---
+
+## 📊 Métricas de Velocidade
+
+### Histórico de Velocidade
+| Semana | Tasks Concluídas | Horas Trabalhadas | Horas/Task | Precisão Estimativa |
+|--------|------------------|-------------------|------------|-------------------|
+| [Data] | [X] | [Y]h | [Z]h | [W]% |
+
+### Tendências
+- **Velocidade Média:** [X] horas/task
+- **Precisão de Estimativa:** [Y]% (média de variação)
+- **Produtividade:** [Z] tasks/semana
+
+---
+
+## 🎯 Marcos do Projeto
+
+### Marco 1: [Nome do Marco]
+**Data Alvo:** [Data]
+**Status:** [Em Progresso/Concluído/Atrasado]
+**Tasks Incluídas:** [TASK-001, TASK-002, ...]
+**Progresso:** [X]% ([Y]/[Z] tasks concluídas)
+
+### Marco 2: [Nome do Marco]
+**Data Alvo:** [Data]
+**Status:** [Pendente]
+**Tasks Incluídas:** [TASK-003, TASK-004, ...]
+**Progresso:** [X]% ([Y]/[Z] tasks concluídas)
+
+---
+
+## 🔄 Template para Nova Task
+
+```markdown
+### [TASK-XXX] - [Nome da Task]
+**Status:** ⏳ Pendente
+**Prioridade:** [Alta/Média/Baixa]
+**Estimativa:** [X] horas
+**Dependências:** [Lista]
+**Descrição:** [Descrição detalhada]
+
+#### Subtasks:
+- [ ] **[SUBTASK-XXX.1]** - [Descrição específica] - Est: [X]h
+  - **Detalhes:** [O que exatamente fazer]
+  - **Arquivos:** [Quais arquivos modificar]
+  - **Critério:** [Como saber que está pronto]
+- [ ] **[SUBTASK-XXX.2]** - [Descrição específica] - Est: [X]h
+- [ ] **[SUBTASK-XXX.3]** - [Descrição específica] - Est: [X]h
+
+**Critério de Aceitação:**
+- [ ] [Critério 1]
+- [ ] [Critério 2]
+- [ ] [Critério 3]
+```
+
+---
+**Última atualização:** [Data e hora]
+**Próxima revisão:** [Data]
+```
+
+### Template: timeline.md
+```markdown
+# Timeline e Estimativas do Projeto
+
+## 📊 Visão Geral do Projeto
+**📅 Data de Início:** [Data]
+**📅 Data Estimada de Conclusão:** [Data]
+**📅 Data Alvo:** [Data]
+**⏱️ Duração Total Estimada:** [X] semanas ([Y] dias úteis)
+
+## 🎯 Status Atual
+**📈 Progresso Geral:** [X]% concluído
+**⏱️ Tempo Gasto:** [Y] horas ([Z] dias úteis)
+**⏱️ Tempo Restante:** [W] horas ([V] dias úteis)
+**🚀 Velocidade Atual:** [X] horas/dia útil
+**📊 Tendência:** [Adiantado/No Prazo/Atrasado] por [X] dias
+
+---
+
+## 📅 Cronograma Detalhado
+
+### Semana 1: [Data início] - [Data fim]
+**Foco:** [Tema principal da semana]
+**Horas Planejadas:** [X]h
+**Horas Reais:** [Y]h
+**Status:** [Concluída/Em Progresso/Pendente]
+
+#### Tasks da Semana:
+- [x] **[TASK-001]** - [Nome] - ✅ Concluído ([X]h)
+- [x] **[TASK-002]** - [Nome] - ✅ Concluído ([X]h)
+- [ ] **[TASK-003]** - [Nome] - 🔄 Em Progresso ([X]h restantes)
+
+#### Marcos Atingidos:
+- ✅ [Marco 1] - [Descrição]
+
+### Semana 2: [Data início] - [Data fim]
+**Foco:** [Tema principal da semana]
+**Horas Planejadas:** [X]h
+**Status:** [Em Progresso/Pendente]
+
+#### Tasks Planejadas:
+- [ ] **[TASK-004]** - [Nome] - Est: [X]h
+- [ ] **[TASK-005]** - [Nome] - Est: [X]h
+
+#### Marcos Esperados:
+- 🎯 [Marco 2] - [Descrição]
+
+### Semana 3: [Data início] - [Data fim]
+**Foco:** [Tema principal da semana]
+**Horas Planejadas:** [X]h
+**Status:** Pendente
+
+---
+
+## 🎯 Marcos Principais
+
+### 🏁 Marco 1: MVP Básico
+**Data Alvo:** [Data]
+**Data Real:** [Data] ✅
+**Status:** Concluído
+**Critérios:**
+- [x] [Critério 1]
+- [x] [Critério 2]
+- [x] [Critério 3]
+
+### 🏁 Marco 2: Funcionalidades Core
+**Data Alvo:** [Data]
+**Status:** 🔄 Em Progresso ([X]%)
+**Critérios:**
+- [x] [Critério 1]
+- [ ] [Critério 2]
+- [ ] [Critério 3]
+
+### 🏁 Marco 3: Polimento e Deploy
+**Data Alvo:** [Data]
+**Status:** ⏳ Pendente
+**Critérios:**
+- [ ] [Critério 1]
+- [ ] [Critério 2]
+- [ ] [Critério 3]
+
+---
+
+## 📊 Análise de Velocidade
+
+### Métricas Semanais
+| Semana | Horas Planejadas | Horas Reais | Eficiência | Tasks Concluídas | Desvio |
+|--------|------------------|-------------|------------|------------------|--------|
+| 1 | [X]h | [Y]h | [Z]% | [W] | [+/-V]h |
+| 2 | [X]h | [Y]h | [Z]% | [W] | [+/-V]h |
+
+### Tendências Identificadas
+- **Velocidade Média:** [X] horas/semana
+- **Eficiência Média:** [Y]% (horas reais vs planejadas)
+- **Precisão de Estimativa:** [Z]% de acerto
+- **Padrões:** [Observações sobre produtividade]
+
+---
+
+## 🔮 Projeções e Ajustes
+
+### Cenário Atual
+**Com velocidade atual de [X]h/semana:**
+- **Data de conclusão projetada:** [Data]
+- **Desvio do prazo original:** [+/-X] dias
+- **Confiança na estimativa:** [Alta/Média/Baixa]
+
+### Cenário Otimista (+20% velocidade)
+- **Data de conclusão:** [Data]
+- **Economia de tempo:** [X] dias
+
+### Cenário Pessimista (-20% velocidade)
+- **Data de conclusão:** [Data]
+- **Atraso adicional:** [X] dias
+
+### Ações Recomendadas
+- [ ] [Ação 1 para manter/acelerar cronograma]
+- [ ] [Ação 2 para mitigar riscos]
+- [ ] [Ação 3 para otimizar processo]
+
+---
+
+## 🚨 Alertas e Riscos
+
+### Riscos Identificados
+| Risco | Probabilidade | Impacto | Mitigação | Status |
+|-------|---------------|---------|-----------|--------|
+| [Descrição] | [Alta/Média/Baixa] | [+/-X dias] | [Plano de ação] | [Ativo/Mitigado] |
+
+### Alertas Atuais
+- 🔴 **[Alerta Crítico]:** [Descrição e ação necessária]
+- 🟡 **[Alerta Moderado]:** [Descrição e monitoramento]
+
+---
+
+## 📈 Dashboard de Progresso
+
+```
+Progresso Geral: [████████░░] 80%
+
+Por Categoria:
+Frontend:     [██████████] 100% ✅
+Backend:      [██████░░░░]  60% 🔄
+Database:     [████░░░░░░]  40% ⏳
+Deploy:       [░░░░░░░░░░]   0% ⏳
+
+Tempo:
+Gasto:        [██████░░░░]  60% ([X]/[Y] horas)
+Restante:     [░░░░██████]  40% ([Z] horas)
+```
+
+---
+**Última atualização:** [Data e hora]
+**Próxima revisão:** [Data]
+**Responsável:** [Nome]
+```
+
+---
+
+## 🤖 Automação e Scripts
+
+### Script de Inicialização
+```bash
+#!/bin/bash
+# setup-memory-bank.sh
+
+echo "🧠 Configurando Memory Bank..."
+
+# Criar estrutura de pastas
+mkdir -p memory-bank/{core,context,tracking,archive/snapshots,templates}
+
+# Copiar templates
+cp .cursor/rules/templates/* memory-bank/templates/ 2>/dev/null || echo "Templates não encontrados"
+
+# Criar arquivos iniciais se não existirem
+if [ ! -f memory-bank/core/projectbrief.md ]; then
+    cp memory-bank/templates/projectbrief-template.md memory-bank/core/projectbrief.md
+    echo "✅ projectbrief.md criado"
+fi
+
+if [ ! -f memory-bank/context/activecontext.md ]; then
+    cp memory-bank/templates/activecontext-template.md memory-bank/context/activecontext.md
+    echo "✅ activecontext.md criado"
+fi
+
+# Configurar Git para ignorar snapshots grandes
+echo "memory-bank/archive/snapshots/" >> .gitignore
+
+echo "🎉 Memory Bank configurado com sucesso!"
+echo "📝 Edite memory-bank/core/projectbrief.md para começar"
+```
+
+### Script de Backup Automático
+```bash
+#!/bin/bash
+# backup-memory-bank.sh
+
+BACKUP_DIR="memory-bank/archive/snapshots"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_NAME="memory-bank-backup-$TIMESTAMP"
+
+# Criar backup
+cp -r memory-bank/core memory-bank/context memory-bank/tracking "$BACKUP_DIR/$BACKUP_NAME/"
+
+# Manter apenas últimos 10 backups
+cd "$BACKUP_DIR"
+ls -t | tail -n +11 | xargs rm -rf
+
+echo "💾 Backup criado: $BACKUP_NAME"
+```
+
+### Script de Cálculo de Progresso
+```bash
+#!/bin/bash
+# calculate-progress.sh
+
+echo "🧮 Calculando progresso do projeto..."
+
+TASKS_FILE="memory-bank/context/tasks.md"
+TIMELINE_FILE="memory-bank/tracking/timeline.md"
+ACTIVE_CONTEXT="memory-bank/context/activecontext.md"
+
+# Função para extrair dados das tasks
+calculate_task_progress() {
+    if [ ! -f "$TASKS_FILE" ]; then
+        echo "❌ Arquivo tasks.md não encontrado"
+        return 1
+    fi
+    
+    # Contar tasks concluídas vs total
+    COMPLETED_TASKS=$(grep -c "✅ Concluído" "$TASKS_FILE")
+    TOTAL_TASKS=$(grep -c "### \[TASK-" "$TASKS_FILE")
+    
+    # Contar subtasks concluídas vs total
+    COMPLETED_SUBTASKS=$(grep -c "\[x\].*SUBTASK" "$TASKS_FILE")
+    TOTAL_SUBTASKS=$(grep -c "\[ \].*SUBTASK\|\[x\].*SUBTASK" "$TASKS_FILE")
+    
+    # Calcular horas
+    COMPLETED_HOURS=$(grep "✅ Concluído" "$TASKS_FILE" | grep -o "([0-9]*h)" | sed 's/[^0-9]//g' | awk '{sum+=$1} END {print sum+0}')
+    ESTIMATED_HOURS=$(grep -o "Est: [0-9]*h\|Estimativa: [0-9]*h" "$TASKS_FILE" | sed 's/[^0-9]//g' | awk '{sum+=$1} END {print sum+0}')
+    
+    # Calcular percentuais
+    if [ $TOTAL_TASKS -gt 0 ]; then
+        TASK_PROGRESS=$((COMPLETED_TASKS * 100 / TOTAL_TASKS))
+    else
+        TASK_PROGRESS=0
+    fi
+    
+    if [ $TOTAL_SUBTASKS -gt 0 ]; then
+        SUBTASK_PROGRESS=$((COMPLETED_SUBTASKS * 100 / TOTAL_SUBTASKS))
+    else
+        SUBTASK_PROGRESS=0
+    fi
+    
+    if [ $ESTIMATED_HOURS -gt 0 ]; then
+        HOUR_PROGRESS=$((COMPLETED_HOURS * 100 / ESTIMATED_HOURS))
+        REMAINING_HOURS=$((ESTIMATED_HOURS - COMPLETED_HOURS))
+    else
+        HOUR_PROGRESS=0
+        REMAINING_HOURS=0
+    fi
+    
+    echo "📊 Progresso Calculado:"
+    echo "  Tasks: $COMPLETED_TASKS/$TOTAL_TASKS ($TASK_PROGRESS%)"
+    echo "  Subtasks: $COMPLETED_SUBTASKS/$TOTAL_SUBTASKS ($SUBTASK_PROGRESS%)"
+    echo "  Horas: $COMPLETED_HOURS/$ESTIMATED_HOURS ($HOUR_PROGRESS%)"
+    echo "  Restante: $REMAINING_HOURS horas"
+    
+    # Atualizar activecontext.md com progresso
+    update_active_context
+}
+
+# Função para atualizar contexto ativo
+update_active_context() {
+    if [ ! -f "$ACTIVE_CONTEXT" ]; then
+        echo "❌ Arquivo activecontext.md não encontrado"
+        return 1
+    fi
+    
+    # Backup do arquivo original
+    cp "$ACTIVE_CONTEXT" "$ACTIVE_CONTEXT.backup"
+    
+    # Atualizar progresso no activecontext.md
+    sed -i.bak "s/\*\*📈 Progresso Total:\*\* \[.*\]/\*\*📈 Progresso Total:\*\* ${HOUR_PROGRESS}% (${COMPLETED_HOURS}\/${ESTIMATED_HOURS} horas concluídas)/" "$ACTIVE_CONTEXT"
+    sed -i.bak "s/\*\*⏱️ Tempo Restante:\*\* \[.*\]/\*\*⏱️ Tempo Restante:\*\* ${REMAINING_HOURS} horas (~$((REMAINING_HOURS / 8)) dias úteis)/" "$ACTIVE_CONTEXT"
+    
+    echo "✅ Contexto ativo atualizado"
+}
+
+# Função para encontrar próximo passo
+find_next_step() {
+    NEXT_SUBTASK=$(grep -A 3 "🔄 \*\*PRÓXIMO PASSO\*\*" "$TASKS_FILE" | head -4)
+    
+    if [ ! -z "$NEXT_SUBTASK" ]; then
+        echo "🎯 Próximo Passo Identificado:"
+        echo "$NEXT_SUBTASK"
+        
+        # Extrair detalhes específicos
+        TASK_ID=$(echo "$NEXT_SUBTASK" | grep -o "SUBTASK-[0-9]*\.[0-9]*")
+        DESCRIPTION=$(echo "$NEXT_SUBTASK" | grep -o "\*\*SUBTASK.*\*\*" | sed 's/\*\*//g')
+        
+        echo ""
+        echo "📝 Para atualizar activecontext.md:"
+        echo "  Task ID: $TASK_ID"
+        echo "  Descrição: $DESCRIPTION"
+    else
+        echo "⚠️ Nenhum próximo passo marcado encontrado"
+        echo "💡 Verifique se há subtasks marcadas com '🔄 **PRÓXIMO PASSO**'"
+    fi
+}
+
+# Função para gerar relatório de velocidade
+generate_velocity_report() {
+    echo ""
+    echo "📈 Relatório de Velocidade:"
+    
+    # Calcular dias desde início (assumindo que há uma data de início)
+    START_DATE=$(grep "Data de Início" "$TIMELINE_FILE" 2>/dev/null | grep -o "[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]" | head -1)
+    
+    if [ ! -z "$START_DATE" ]; then
+        # Converter para timestamp (formato brasileiro DD/MM/YYYY)
+        START_TIMESTAMP=$(date -j -f "%d/%m/%Y" "$START_DATE" "+%s" 2>/dev/null || echo "0")
+        CURRENT_TIMESTAMP=$(date "+%s")
+        
+        if [ $START_TIMESTAMP -gt 0 ]; then
+            DAYS_ELAPSED=$(( (CURRENT_TIMESTAMP - START_TIMESTAMP) / 86400 ))
+            WORK_DAYS_ELAPSED=$(( DAYS_ELAPSED * 5 / 7 )) # Aproximação de dias úteis
+            
+            if [ $WORK_DAYS_ELAPSED -gt 0 ]; then
+                VELOCITY=$(( COMPLETED_HOURS / WORK_DAYS_ELAPSED ))
+                REMAINING_WORK_DAYS=$(( REMAINING_HOURS / VELOCITY ))
+                
+                echo "  Dias decorridos: $DAYS_ELAPSED (~$WORK_DAYS_ELAPSED úteis)"
+                echo "  Velocidade atual: $VELOCITY horas/dia útil"
+                echo "  Estimativa de conclusão: $REMAINING_WORK_DAYS dias úteis"
+                
+                # Calcular data estimada de conclusão
+                COMPLETION_DATE=$(date -v +${REMAINING_WORK_DAYS}d "+%d/%m/%Y")
+                echo "  Data estimada: $COMPLETION_DATE"
+            fi
+        fi
+    fi
+}
+
+# Executar todas as funções
+calculate_task_progress
+find_next_step
+generate_velocity_report
+
+echo ""
+echo "🎉 Cálculo de progresso concluído!"
+echo "📝 Verifique memory-bank/context/activecontext.md para ver as atualizações"
+```
+
+### Script de Atualização de Task
+```bash
+#!/bin/bash
+# update-task.sh
+
+# Script para marcar subtask como concluída e calcular próximo passo
+# Uso: ./update-task.sh SUBTASK-001.3 2.5
+
+if [ $# -ne 2 ]; then
+    echo "❌ Uso: $0 <SUBTASK-ID> <HORAS_GASTAS>"
+    echo "   Exemplo: $0 SUBTASK-001.3 2.5"
+    exit 1
+fi
+
+SUBTASK_ID="$1"
+HOURS_SPENT="$2"
+TASKS_FILE="memory-bank/context/tasks.md"
+
+if [ ! -f "$TASKS_FILE" ]; then
+    echo "❌ Arquivo tasks.md não encontrado"
+    exit 1
+fi
+
+echo "✅ Marcando $SUBTASK_ID como concluída ($HOURS_SPENT horas)..."
+
+# Backup do arquivo
+cp "$TASKS_FILE" "$TASKS_FILE.backup"
+
+# Marcar subtask como concluída
+sed -i.bak "s/- \[ \] \*\*\[$SUBTASK_ID\]\*\*.*/- [x] **[$SUBTASK_ID]** - [Descrição] - ✅ Concluído (${HOURS_SPENT}h)/" "$TASKS_FILE"
+
+# Encontrar próxima subtask pendente na mesma task
+TASK_PREFIX=$(echo "$SUBTASK_ID" | cut -d'.' -f1)
+NEXT_SUBTASK=$(grep -A 10 "$TASK_PREFIX" "$TASKS_FILE" | grep "- \[ \]" | head -1 | grep -o "SUBTASK-[0-9]*\.[0-9]*")
+
+if [ ! -z "$NEXT_SUBTASK" ]; then
+    echo "🎯 Próxima subtask identificada: $NEXT_SUBTASK"
+    
+    # Marcar como próximo passo
+    sed -i.bak "s/- \[ \] \*\*\[$NEXT_SUBTASK\]\*\*/- [ ] **[$NEXT_SUBTASK]** - [Descrição] - 🔄 **PRÓXIMO PASSO**/" "$TASKS_FILE"
+    
+    echo "✅ $NEXT_SUBTASK marcada como próximo passo"
+else
+    echo "🎉 Todas as subtasks desta task foram concluídas!"
+fi
+
+# Recalcular progresso
+./calculate-progress.sh
+
+echo "✅ Task atualizada com sucesso!"
+```
+
+### Script de Nova Task
+```bash
+#!/bin/bash
+# new-task.sh
+
+# Script para criar nova task com subtasks
+# Uso: ./new-task.sh "Nome da Task" 8 "Descrição da task"
+
+if [ $# -ne 3 ]; then
+    echo "❌ Uso: $0 \"<NOME_DA_TASK>\" <HORAS_ESTIMADAS> \"<DESCRIÇÃO>\""
+    echo "   Exemplo: $0 \"Implementar Login\" 8 \"Sistema de autenticação com Next Auth\""
+    exit 1
+fi
+
+TASK_NAME="$1"
+ESTIMATED_HOURS="$2"
+DESCRIPTION="$3"
+TASKS_FILE="memory-bank/context/tasks.md"
+
+# Gerar próximo ID de task
+LAST_TASK_ID=$(grep "### \[TASK-" "$TASKS_FILE" | tail -1 | grep -o "TASK-[0-9]*" | grep -o "[0-9]*")
+NEXT_TASK_ID=$((LAST_TASK_ID + 1))
+TASK_ID=$(printf "TASK-%03d" $NEXT_TASK_ID)
+
+echo "🆕 Criando nova task: [$TASK_ID] $TASK_NAME"
+
+# Template da nova task
+NEW_TASK="
+### [$TASK_ID] - $TASK_NAME
+**Status:** ⏳ Pendente
+**Prioridade:** Alta
+**Estimativa:** $ESTIMATED_HOURS horas
+**Dependências:** [Definir]
+**Descrição:** $DESCRIPTION
+
+#### Subtasks:
+- [ ] **[SUBTASK-$NEXT_TASK_ID.1]** - [Definir subtask 1] - Est: [X]h
+  - **Detalhes:** [O que exatamente fazer]
+  - **Arquivos:** [Quais arquivos modificar]
+  - **Critério:** [Como saber que está pronto]
+- [ ] **[SUBTASK-$NEXT_TASK_ID.2]** - [Definir subtask 2] - Est: [X]h
+- [ ] **[SUBTASK-$NEXT_TASK_ID.3]** - [Definir subtask 3] - Est: [X]h
+
+**Critério de Aceitação:**
+- [ ] [Critério 1]
+- [ ] [Critério 2]
+- [ ] [Critério 3]
+
+---
+"
+
+# Adicionar nova task ao arquivo
+echo "$NEW_TASK" >> "$TASKS_FILE"
+
+echo "✅ Task [$TASK_ID] criada com sucesso!"
+echo "📝 Edite memory-bank/context/tasks.md para definir as subtasks específicas"
+
+# Recalcular progresso
+./calculate-progress.sh
+```
+
+---
+
+## 📊 Métricas de Efetividade
+
+### KPIs do Memory Bank
+```markdown
+# Métricas de Sucesso - Memory Bank
+
+## Continuidade entre Sessões
+- **Meta:** 95% de contexto preservado
+- **Medição:** Tempo para retomar trabalho < 5 minutos
+- **Status:** [Verde/Amarelo/Vermelho]
+
+## Qualidade da Documentação
+- **Meta:** Documentos atualizados em 100% das sessões
+- **Medição:** Data da última atualização < 7 dias
+- **Status:** [Verde/Amarelo/Vermelho]
+
+## Eficiência de Decisões
+- **Meta:** 0 decisões refeitas por falta de contexto
+- **Medição:** Número de decisões revertidas por mês
+- **Status:** [Verde/Amarelo/Vermelho]
+
+## Onboarding de Novos Membros
+- **Meta:** Novo membro produtivo em < 2 dias
+- **Medição:** Tempo até primeira contribuição significativa
+- **Status:** [Verde/Amarelo/Vermelho]
+```
+
+---
+
+## 🔄 Workflows Automatizados
+
+### Workflow de Início de Sessão
+```mermaid
+flowchart TD
+    Start[Início da Sessão] --> Check[Verificar activecontext.md]
+    Check --> Progress[Executar calculate-progress.sh]
+    Progress --> NextStep[Identificar próximo passo]
+    NextStep --> Update[Atualizar contexto atual]
+    Update --> Plan[Planejar sessão]
+    Plan --> Execute[Executar trabalho]
+    Execute --> Document[Documentar progresso]
+    Document --> Backup[Backup automático]
+```
+
+### Workflow de Fim de Sessão
+```mermaid
+flowchart TD
+    End[Fim da Sessão] --> Complete[Marcar subtasks concluídas]
+    Complete --> UpdateTask[Executar update-task.sh]
+    UpdateTask --> Summary[Resumir realizações]
+    Summary --> Update[Atualizar activecontext.md]
+    Update --> Decisions[Documentar decisões]
+    Decisions --> Blockers[Atualizar bloqueios]
+    Blockers --> Next[Definir próximo passo específico]
+    Next --> Backup[Criar snapshot]
+```
+
+### 🚀 Protocolo de Início de Sessão (NUNCA PERCA O PRÓXIMO PASSO)
+
+#### 1. Comando de Inicialização
+```bash
+# Executar SEMPRE ao iniciar uma sessão
+./calculate-progress.sh
+```
+
+#### 2. Checklist de Início (2 minutos)
+- [ ] **Ler activecontext.md** - Seção "🔥 Task Ativa Atual"
+- [ ] **Verificar próximo subtask** - Marcado com "🔄 **PRÓXIMO PASSO**"
+- [ ] **Confirmar arquivos** - Quais arquivos modificar
+- [ ] **Revisar critério** - Como saber que está pronto
+- [ ] **Estimar tempo** - Quanto tempo vai levar
+
+#### 3. Template de Início de Sessão
+```markdown
+## 🚀 Início de Sessão - [Data/Hora]
+
+### ✅ Checklist Executado
+- [x] Executei `./calculate-progress.sh`
+- [x] Li activecontext.md
+- [x] Identifiquei próximo passo: [SUBTASK-XXX.X]
+- [x] Revisei arquivos a modificar: [lista]
+- [x] Entendi critério de conclusão: [descrição]
+
+### 🎯 Foco da Sessão
+**Subtask Ativa:** [SUBTASK-XXX.X] - [Descrição]
+**Tempo Estimado:** [X] horas
+**Arquivos Principais:** [lista]
+**Critério de Sucesso:** [como saber que terminou]
+
+### 📊 Status Atual
+**Progresso Geral:** [X]% ([Y]/[Z] horas)
+**Task Atual:** [X]% ([Y]/[Z] subtasks)
+**Tempo Restante:** [X] horas (~[Y] dias)
+```
+
+### 🏁 Protocolo de Fim de Sessão (SEMPRE DEFINA O PRÓXIMO PASSO)
+
+#### 1. Comandos de Finalização
+```bash
+# Marcar subtask como concluída (se aplicável)
+./update-task.sh SUBTASK-001.3 2.5
+
+# Recalcular progresso
+./calculate-progress.sh
+
+# Criar backup
+./backup-memory-bank.sh
+```
+
+#### 2. Checklist de Fim (3 minutos)
+- [ ] **Marcar progresso** - Subtasks concluídas ou parciais
+- [ ] **Documentar tempo** - Horas gastas na sessão
+- [ ] **Identificar bloqueios** - Problemas encontrados
+- [ ] **Definir próximo passo** - Específico e detalhado
+- [ ] **Atualizar estimativas** - Ajustar se necessário
+
+#### 3. Template de Fim de Sessão
+```markdown
+## 🏁 Fim de Sessão - [Data/Hora]
+
+### ✅ Realizações da Sessão
+- [x] **[SUBTASK-XXX.X]** - Concluído em [X]h
+- [x] **[SUBTASK-XXX.Y]** - 50% concluído ([detalhes])
+- [x] **Descoberta:** [insight importante]
+
+### 🚫 Bloqueios Encontrados
+- **[Bloqueio 1]:** [descrição] - Solução tentada: [X] - Status: [pendente/resolvido]
+
+### 🎯 PRÓXIMO PASSO DEFINIDO
+**Subtask:** [SUBTASK-XXX.Z]
+**Descrição:** [O que fazer exatamente]
+**Arquivos:** [Quais arquivos modificar]
+**Linha/Função:** [Onde começar especificamente]
+**Contexto:** [Informação necessária para continuar]
+**Estimativa:** [X] horas
+
+### 📊 Progresso Atualizado
+**Antes:** [X]% → **Depois:** [Y]%
+**Horas Gastas:** [X]h
+**Velocidade:** [Y]h/dia útil
+**Estimativa de Conclusão:** [Data]
+
+### 📝 Notas para Próxima Sessão
+- [Contexto importante que não pode ser perdido]
+- [Decisão tomada e justificativa]
+- [Referência útil ou documentação]
+```
+
+### 🤖 Automação Inteligente de Próximos Passos
+
+#### Script de Sugestão de Próximo Passo
+```bash
+#!/bin/bash
+# suggest-next-step.sh
+
+echo "🤖 Analisando próximo passo inteligente..."
+
+TASKS_FILE="memory-bank/context/tasks.md"
+ACTIVE_CONTEXT="memory-bank/context/activecontext.md"
+
+# Função para sugerir próximo passo baseado em dependências
+suggest_next_step() {
+    echo "🔍 Analisando dependências e prioridades..."
+    
+    # Encontrar tasks sem dependências ou com dependências resolvidas
+    AVAILABLE_TASKS=$(grep -B 5 -A 10 "Status.*Pendente" "$TASKS_FILE" | grep -B 5 -A 10 "Dependências.*Nenhuma\|Dependências.*\[Concluído\]")
+    
+    if [ ! -z "$AVAILABLE_TASKS" ]; then
+        echo "✅ Tasks disponíveis para execução:"
+        echo "$AVAILABLE_TASKS" | grep "### \[TASK-" | head -3
+    fi
+    
+    # Encontrar subtasks da task ativa
+    ACTIVE_TASK=$(grep -A 20 "🔄 Em Progresso" "$TASKS_FILE" | head -20)
+    NEXT_SUBTASK=$(echo "$ACTIVE_TASK" | grep "- \[ \]" | head -1)
+    
+    if [ ! -z "$NEXT_SUBTASK" ]; then
+        echo ""
+        echo "🎯 Próxima subtask recomendada:"
+        echo "$NEXT_SUBTASK"
+        
+        # Extrair ID da subtask
+        SUBTASK_ID=$(echo "$NEXT_SUBTASK" | grep -o "SUBTASK-[0-9]*\.[0-9]*")
+        
+        if [ ! -z "$SUBTASK_ID" ]; then
+            echo ""
+            echo "🚀 Para marcar como próximo passo, execute:"
+            echo "   sed -i 's/- \[ \] \*\*\[$SUBTASK_ID\]\*\*/- [ ] **[$SUBTASK_ID]** - [Descrição] - 🔄 **PRÓXIMO PASSO**/' $TASKS_FILE"
+        fi
+    fi
+}
+
+# Função para verificar consistência
+check_consistency() {
+    echo ""
+    echo "🔍 Verificando consistência do Memory Bank..."
+    
+    # Verificar se há múltiplos próximos passos
+    NEXT_STEPS_COUNT=$(grep -c "🔄 \*\*PRÓXIMO PASSO\*\*" "$TASKS_FILE")
+    
+    if [ $NEXT_STEPS_COUNT -gt 1 ]; then
+        echo "⚠️ ATENÇÃO: Múltiplos próximos passos encontrados ($NEXT_STEPS_COUNT)"
+        echo "💡 Recomendação: Manter apenas 1 próximo passo ativo"
+    elif [ $NEXT_STEPS_COUNT -eq 0 ]; then
+        echo "⚠️ ATENÇÃO: Nenhum próximo passo definido"
+        echo "💡 Recomendação: Definir próximo passo específico"
+    else
+        echo "✅ Próximo passo único definido corretamente"
+    fi
+    
+    # Verificar se activecontext.md está atualizado
+    CONTEXT_DATE=$(grep "Última atualização" "$ACTIVE_CONTEXT" | grep -o "[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]" || echo "N/A")
+    TODAY=$(date "+%d/%m/%Y")
+    
+    if [ "$CONTEXT_DATE" != "$TODAY" ]; then
+        echo "⚠️ ATENÇÃO: activecontext.md não foi atualizado hoje"
+        echo "💡 Recomendação: Atualizar contexto ativo"
+    else
+        echo "✅ Contexto ativo atualizado hoje"
+    fi
+}
+
+# Executar análises
+suggest_next_step
+check_consistency
+
+echo ""
+echo "🎉 Análise de próximo passo concluída!"
+```
+
+### 📱 Dashboard de Status Rápido
+
+#### Comando de Status Instantâneo
+```bash
+#!/bin/bash
+# status.sh - Dashboard rápido do projeto
+
+echo "📊 DASHBOARD DO PROJETO - $(date '+%d/%m/%Y %H:%M')"
+echo "=================================================="
+
+# Progresso geral
+TASKS_FILE="memory-bank/context/tasks.md"
+COMPLETED_TASKS=$(grep -c "✅ Concluído" "$TASKS_FILE" 2>/dev/null || echo "0")
+TOTAL_TASKS=$(grep -c "### \[TASK-" "$TASKS_FILE" 2>/dev/null || echo "1")
+PROGRESS=$((COMPLETED_TASKS * 100 / TOTAL_TASKS))
+
+echo "🎯 PROGRESSO GERAL: $PROGRESS% ($COMPLETED_TASKS/$TOTAL_TASKS tasks)"
+
+# Próximo passo
+NEXT_STEP=$(grep -A 2 "🔄 \*\*PRÓXIMO PASSO\*\*" "$TASKS_FILE" | head -3)
+if [ ! -z "$NEXT_STEP" ]; then
+    echo "⚡ PRÓXIMO PASSO:"
+    echo "   $(echo "$NEXT_STEP" | head -1 | sed 's/.*\*\*\[/[/' | sed 's/\*\*.*//')"
+else
+    echo "❌ PRÓXIMO PASSO: NÃO DEFINIDO"
+fi
+
+# Velocidade
+COMPLETED_HOURS=$(grep "✅ Concluído" "$TASKS_FILE" | grep -o "([0-9]*h)" | sed 's/[^0-9]//g' | awk '{sum+=$1} END {print sum+0}')
+echo "⏱️ HORAS TRABALHADAS: ${COMPLETED_HOURS}h"
+
+# Bloqueios ativos
+BLOCKERS=$(grep -c "Pendente" "memory-bank/context/activecontext.md" 2>/dev/null || echo "0")
+if [ $BLOCKERS -gt 0 ]; then
+    echo "🚫 BLOQUEIOS ATIVOS: $BLOCKERS"
+else
+    echo "✅ SEM BLOQUEIOS"
+fi
+
+echo "=================================================="
+echo "💡 Para detalhes: ./calculate-progress.sh"
+echo "🚀 Para próximo passo: ./suggest-next-step.sh"
+```
+
+### 🎯 Integração com Cursor Rules
+
+#### Regras Automáticas para Cursor
+```typescript
+// Adicionar ao .cursorrules
+const memoryBankWorkflow = {
+  // Sempre executar no início da sessão
+  onSessionStart: [
+    "Executar: ./calculate-progress.sh",
+    "Ler: memory-bank/context/activecontext.md",
+    "Identificar: próximo subtask marcado com 🔄",
+    "Confirmar: arquivos e critérios de conclusão"
+  ],
+  
+  // Sempre executar ao fazer mudanças
+  onCodeChange: [
+    "Documentar: progresso da subtask atual",
+    "Atualizar: estimativas se necessário",
+    "Verificar: critério de conclusão"
+  ],
+  
+  // Sempre executar no fim da sessão
+  onSessionEnd: [
+    "Executar: ./update-task.sh [SUBTASK-ID] [HORAS]",
+    "Definir: próximo passo específico",
+    "Atualizar: memory-bank/context/activecontext.md",
+    "Executar: ./backup-memory-bank.sh"
+  ],
+  
+  // Lembretes automáticos
+  reminders: [
+    "🎯 Sempre definir próximo passo específico",
+    "📊 Atualizar progresso a cada subtask",
+    "🔄 Manter apenas 1 próximo passo ativo",
+    "📝 Documentar bloqueios e soluções"
+  ]
+}
+```
+
+---
+
+## 🎯 Integração com Ferramentas
+
+### VS Code Extensions
+```json
+{
+  "recommendations": [
+    "yzhang.markdown-all-in-one",
+    "shd101wyy.markdown-preview-enhanced",
+    "bierner.markdown-mermaid",
+    "ms-vscode.vscode-json",
+    "bradlc.vscode-tailwindcss"
+  ]
+}
+```
+
+### Git Hooks
+```bash
+# .git/hooks/post-commit
+#!/bin/bash
+# Auto-atualizar changelog após commits
+echo "$(date): $(git log -1 --pretty=%B)" >> memory-bank/tracking/changelog.md
+
+# Auto-calcular progresso após commits significativos
+if [[ $(git log -1 --pretty=%B) =~ (feat|fix|refactor) ]]; then
+    ./calculate-progress.sh > /dev/null 2>&1
+fi
+```
+
+### Aliases Úteis
+```bash
+# Adicionar ao .bashrc ou .zshrc
+alias mb-status="./status.sh"
+alias mb-progress="./calculate-progress.sh"
+alias mb-next="./suggest-next-step.sh"
+alias mb-backup="./backup-memory-bank.sh"
+alias mb-task="./new-task.sh"
+alias mb-done="./update-task.sh"
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Problemas Comuns
+
+| Problema | Sintoma | Solução |
+|----------|---------|---------|
+| **Contexto perdido** | Tempo > 10min para retomar | Melhorar activecontext.md |
+| **Decisões refeitas** | Mesmo problema resolvido 2x | Consultar decisions.md |
+| **Documentação desatualizada** | Info conflitante | Implementar workflow de atualização |
+| **Sobrecarga de docs** | Muitos arquivos para ler | Priorizar core/ e context/ |
+| **Próximo passo perdido** | Não sabe o que fazer | Executar suggest-next-step.sh |
+| **Progresso incorreto** | Percentuais não batem | Executar calculate-progress.sh |
+
+### Comandos de Diagnóstico
+```bash
+# Verificar saúde do Memory Bank
+find memory-bank -name "*.md" -mtime +7  # Arquivos não atualizados
+wc -l memory-bank/context/*.md           # Tamanho dos arquivos de contexto
+grep -r "TODO\|FIXME" memory-bank/       # Itens pendentes
+
+# Verificar consistência de tasks
+grep -c "🔄 \*\*PRÓXIMO PASSO\*\*" memory-bank/context/tasks.md  # Deve ser 1
+grep -c "### \[TASK-" memory-bank/context/tasks.md              # Total de tasks
+
+# Verificar última atualização
+ls -la memory-bank/context/activecontext.md | awk '{print $6, $7, $8}'
+```
+
+### Script de Diagnóstico Completo
+```bash
+#!/bin/bash
+# diagnose.sh - Verificação completa do Memory Bank
+
+echo "🔍 DIAGNÓSTICO COMPLETO DO MEMORY BANK"
+echo "======================================"
+
+# Verificar estrutura de arquivos
+echo "📁 Estrutura de Arquivos:"
+if [ -f "memory-bank/core/projectbrief.md" ]; then
+    echo "  ✅ projectbrief.md"
+else
+    echo "  ❌ projectbrief.md AUSENTE"
+fi
+
+if [ -f "memory-bank/context/activecontext.md" ]; then
+    echo "  ✅ activecontext.md"
+else
+    echo "  ❌ activecontext.md AUSENTE"
+fi
+
+if [ -f "memory-bank/context/tasks.md" ]; then
+    echo "  ✅ tasks.md"
+else
+    echo "  ❌ tasks.md AUSENTE"
+fi
+
+# Verificar próximos passos
+echo ""
+echo "🎯 Próximos Passos:"
+NEXT_STEPS=$(grep -c "🔄 \*\*PRÓXIMO PASSO\*\*" memory-bank/context/tasks.md 2>/dev/null || echo "0")
+if [ $NEXT_STEPS -eq 1 ]; then
+    echo "  ✅ 1 próximo passo definido"
+elif [ $NEXT_STEPS -eq 0 ]; then
+    echo "  ❌ Nenhum próximo passo definido"
+else
+    echo "  ⚠️ $NEXT_STEPS próximos passos (deveria ser 1)"
+fi
+
+# Verificar atualizações recentes
+echo ""
+echo "📅 Atualizações Recentes:"
+TODAY=$(date "+%d/%m/%Y")
+CONTEXT_DATE=$(grep "Última atualização" memory-bank/context/activecontext.md 2>/dev/null | grep -o "[0-9][0-9]/[0-9][0-9]/[0-9][0-9][0-9][0-9]" || echo "N/A")
+
+if [ "$CONTEXT_DATE" = "$TODAY" ]; then
+    echo "  ✅ activecontext.md atualizado hoje"
+else
+    echo "  ⚠️ activecontext.md não atualizado hoje (última: $CONTEXT_DATE)"
+fi
+
+# Verificar progresso
+echo ""
+echo "📊 Progresso:"
+COMPLETED_TASKS=$(grep -c "✅ Concluído" memory-bank/context/tasks.md 2>/dev/null || echo "0")
+TOTAL_TASKS=$(grep -c "### \[TASK-" memory-bank/context/tasks.md 2>/dev/null || echo "1")
+PROGRESS=$((COMPLETED_TASKS * 100 / TOTAL_TASKS))
+echo "  📈 $PROGRESS% concluído ($COMPLETED_TASKS/$TOTAL_TASKS tasks)"
+
+# Verificar bloqueios
+echo ""
+echo "🚫 Bloqueios:"
+BLOCKERS=$(grep -c "Pendente" memory-bank/context/activecontext.md 2>/dev/null || echo "0")
+if [ $BLOCKERS -eq 0 ]; then
+    echo "  ✅ Sem bloqueios ativos"
+else
+    echo "  ⚠️ $BLOCKERS bloqueios ativos"
+fi
+
+# Recomendações
+echo ""
+echo "💡 RECOMENDAÇÕES:"
+if [ $NEXT_STEPS -ne 1 ]; then
+    echo "  🎯 Definir exatamente 1 próximo passo"
+fi
+if [ "$CONTEXT_DATE" != "$TODAY" ]; then
+    echo "  📝 Atualizar activecontext.md"
+fi
+if [ $BLOCKERS -gt 0 ]; then
+    echo "  🚫 Resolver bloqueios pendentes"
+fi
+
+echo ""
+echo "🎉 Diagnóstico concluído!"
+```
+
+---
+
+## 🎉 Benefícios Esperados
+
+### Imediatos (1-2 sessões)
+- ✅ **Zero perda de contexto** - Sempre sabe exatamente o próximo passo
+- ✅ **Redução de 90% no tempo de warm-up** - Máximo 2 minutos para retomar
+- ✅ **Progresso visível** - Percentual exato de conclusão sempre atualizado
+- ✅ **Decisões rastreáveis** - Histórico completo de escolhas arquiteturais
+
+### Médio Prazo (1-2 semanas)
+- ✅ **Estimativas precisas** - Sabe exatamente quanto falta para terminar
+- ✅ **Velocidade otimizada** - Identifica padrões de produtividade
+- ✅ **Onboarding instantâneo** - Novos membros produtivos em < 1 dia
+- ✅ **Redução de 95% em decisões refeitas** - Contexto sempre preservado
+
+### Longo Prazo (1+ mês)
+- ✅ **Base de conhecimento rica** - Histórico completo do projeto
+- ✅ **Padrões identificados** - Otimizações baseadas em dados reais
+- ✅ **Documentação que evolui** - Sistema que melhora com o uso
+- ✅ **Previsibilidade total** - Estimativas confiáveis de conclusão
+
+---
+
+## 📋 Checklist de Implementação
+
+### ✅ Fase 1: Setup Básico (30 minutos)
+- [ ] Executar `./setup-memory-bank.sh`
+- [ ] Criar `memory-bank/core/projectbrief.md` com escopo total
+- [ ] Criar primeira task em `memory-bank/context/tasks.md`
+- [ ] Definir primeiro próximo passo com 🔄
+- [ ] Testar `./calculate-progress.sh`
+
+### ✅ Fase 2: Automação (1 hora)
+- [ ] Configurar scripts de cálculo de progresso
+- [ ] Implementar workflow de início/fim de sessão
+- [ ] Configurar Git hooks automáticos
+- [ ] Testar `./update-task.sh` e `./new-task.sh`
+- [ ] Configurar aliases úteis
+
+### ✅ Fase 3: Otimização (1 semana)
+- [ ] Refinar estimativas baseadas em velocidade real
+- [ ] Ajustar templates conforme necessidade
+- [ ] Implementar métricas personalizadas
+- [ ] Treinar equipe nos workflows
+- [ ] Documentar lições aprendidas
+
+---
+
+> **💡 Dica Final:** O Memory Bank v2.0 é um sistema vivo. Comece simples com apenas `tasks.md` e `activecontext.md`, depois adicione complexidade gradualmente. O importante é **NUNCA PERDER O PRÓXIMO PASSO** - sempre tenha exatamente uma subtask marcada com 🔄 **PRÓXIMO PASSO**.
+
+**🎯 Com este sistema, você sempre saberá:**
+- ✅ **O que fazer agora** (próximo subtask específico)
+- ✅ **Quanto falta** (percentual exato e horas restantes)  
+- ✅ **Quando vai terminar** (data estimada baseada na velocidade atual)
+- ✅ **Como continuar** (contexto completo preservado)
+
+**Nunca mais perca tempo perguntando "qual é o próximo passo?" - o sistema sempre terá a resposta!** 🚀

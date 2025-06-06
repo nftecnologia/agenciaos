@@ -1,0 +1,46 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Práticas Estritas de TypeScript
+
+**Princípio Core:** Manter a integridade e os benefícios do sistema de tipos do TypeScript é crucial para a qualidade e manutenibilidade do código. Supressões de tipo e warnings devem ser tratados com seriedade.
+
+---
+
+## 1. Proibição de `@ts-ignore` Não Justificado
+- O uso de `// @ts-ignore` ou `// @ts-expect-error` é **fortemente desencorajado**.  
+- **Exceção:** em cenários raros onde não há solução imediata (bibliotecas sem tipos, código legado complexo), o uso é permitido **apenas** com um comentário detalhado **na linha imediatamente anterior** explicando:
+  1. **Motivo exato** da supressão.  
+  2. **Erro específico** suprimido.  
+  3. **Plano ou condição** para remoção futura.
+
+### Exemplo Permitido
+```typescript
+// @ts-ignore - A biblioteca 'old-lib' não possui tipos para 'legacyFunction'.
+// Erro: Property 'legacyFunction' does not exist on type 'OldLibType'.
+// TODO: Remover quando 'old-lib' atualizar seus tipos.
+const result = oldLib.legacyFunction();
+```
+
+### Exemplo Não Permitido
+```typescript
+// @ts-ignore
+const data = unstableApi.getData(); // Sem explicação — inaceitável.
+```
+
+---
+
+## 2. Warnings de TypeScript Devem Ser Tratados Como Erros
+- Todos os warnings do `tsc` ou linters (**typescript-eslint**) devem receber a mesma prioridade que erros.  
+- **Não ignore warnings.** Eles indicam problemas potenciais ou futuras quebras.  
+- Objetivo: **build limpo**, sem erros nem warnings.  
+- Se um warning não puder ser resolvido de imediato, registre a causa e planeje a correção.
+
+---
+
+## Processo de Revisão
+Durante o code review (manual ou automatizado):
+- Presença de `@ts-ignore` **sem justificativa clara** é bloqueadora.  
+- Warnings persistentes devem ser tratados como ação imediata.  

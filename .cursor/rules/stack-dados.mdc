@@ -1,0 +1,268 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Stack de Dados Unificada - Neon Postgres
+
+**Princípio Core:** Neon Postgres é a única fonte de verdade para persistência de dados. Todas as integrações devem apontar exclusivamente para Neon Postgres.
+
+---
+
+## Banco de Dados Principal
+
+### Neon Postgres
+- **Função:** Única fonte de dados para persistência
+- **Uso:** Todas as operações CRUD, migrations, seeds
+- **Configuração:** Via variáveis de ambiente específicas do Neon
+- **Conexão:** Pool de conexões otimizado para serverless
+
+### Remoção Completa do Supabase
+- ❌ **Não usar:** Supabase Auth, Storage, Realtime, Database
+- ❌ **Remover:** Qualquer dependência ou menção ao Supabase
+- ❌ **Migrar:** Dados existentes do Supabase para Neon Postgres
+
+---
+
+## Autenticação
+
+### Next Auth (Auth.js)
+- **Configuração:** Gravar usuários, contas e sessões no Neon Postgres
+- **Provedores suportados:**
+  - Credentials (email/senha)
+  - OAuth (Google, GitHub, Discord, etc.)
+  - Magic Links via email
+- **Configuração:** `next-auth.config.ts` apontando para Neon
+- **Tabelas:** `users`, `accounts`, `sessions`, `verification_tokens`
+
+### Exemplo de Configuração
+```typescript
+import { NextAuthConfig } from 'next-auth'
+import { neonAdapter } from '@auth/neon-adapter'
+import { neon } from '@neondatabase/serverless'
+
+const sql = neon(process.env.DATABASE_URL!)
+
+export const authConfig: NextAuthConfig = {
+  adapter: neonAdapter(sql),
+  providers: [
+    // Seus provedores aqui
+  ],
+  callbacks: {
+    // Seus callbacks aqui
+  }
+}
+```
+
+---
+
+## Funcionalidades em Tempo Real
+
+### Redis (Upstash) para Pub/Sub
+- **Uso:** Notificações em tempo real, chat, atualizações live
+- **Configuração:** Upstash Redis para serverless
+- **Padrão:** Publisher/Subscriber para eventos
+- **Integração:** WebSockets + Redis para comunicação bidirecional
+
+### WebSockets
+- **Implementação:** Socket.io ou WebSockets nativos
+- **Persistência:** Dados salvos no Neon Postgres
+- **Cache:** Redis para estado temporário de conexões
+
+---
+
+## Cache e Performance
+
+### Vercel KV (Redis)
+- **Uso:** Cache de consultas frequentes
+- **TTL:** Configurado por tipo de dado
+- **Invalidação:** Estratégias baseadas em tags
+
+### React Query
+- **Cache cliente:** Gerenciamento de estado assíncrono
+- **Sincronização:** Com Neon Postgres via API Routes
+- **Optimistic Updates:** Para melhor UX
+
+---
+
+## Estrutura de Conexão
+
+### Variáveis de Ambiente
+```bash
+# Neon Postgres
+DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"
+DIRECT_URL="postgresql://user:pass@host/db?sslmode=require"
+
+# Next Auth
+NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Redis (Upstash)
+UPSTASH_REDIS_REST_URL="https://..."
+UPSTASH_REDIS_REST_TOKEN="..."
+
+# Vercel KV
+KV_REST_API_URL="https://..."
+KV_REST_API_TOKEN="..."
+```
+
+### Pool de Conexões
+```typescript
+import { neon, neonConfig } from '@neondatabase/serverless'
+
+neonConfig.fetchConnectionCache = true
+
+export const sql = neon(process.env.DATABASE_URL!)
+```
+
+---
+
+## Migrations e Schema
+
+### Drizzle ORM (Recomendado)
+```typescript
+import { drizzle } from 'drizzle-orm/neon-http'
+import { neon } from '@neondatabase/serverless'
+
+const sql = neon(process.env.DATABASE_URL!)
+export const db = drizzle(sql)
+```
+
+### Prisma (Alternativa)
+```typescript
+import { PrismaClient } from '@prisma/client'
+
+export const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL
+    }
+  }
+})
+```
+
+### Scripts de Migration
+```bash
+# Drizzle
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
+
+# Prisma
+pnpm prisma migrate dev
+pnpm prisma generate
+```
+
+---
+
+## Padrões de Acesso a Dados
+
+### Server Actions
+```typescript
+'use server'
+
+import { createSafeActionClient } from 'next-safe-action'
+import { z } from 'zod'
+import { db } from '@/lib/db'
+
+const schema = z.object({
+  name: z.string().min(1),
+  email: z.string().email()
+})
+
+export const createUser = createSafeActionClient()
+  .schema(schema)
+  .action(async ({ name, email }) => {
+    try {
+      const user = await db.user.create({
+        data: { name, email }
+      })
+      return { success: true, data: user }
+    } catch (error) {
+      return { success: false, error: 'Falha ao criar usuário' }
+    }
+  })
+```
+
+### API Routes
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+
+export async function GET(request: NextRequest) {
+  try {
+    const users = await db.user.findMany()
+    return NextResponse.json(users)
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Falha ao buscar usuários' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+---
+
+## Monitoramento e Logs
+
+### Neon Dashboard
+- Monitoramento de performance
+- Métricas de conexão
+- Logs de queries
+
+### Aplicação
+```typescript
+import { logger } from '@/lib/logger'
+
+// Log de operações críticas
+logger.info('User created', { userId, email })
+logger.error('Database error', { error, query })
+```
+
+---
+
+## Checklist de Migração
+
+### ✅ Remover Supabase
+- [ ] Desinstalar `@supabase/supabase-js`
+- [ ] Remover configurações do Supabase
+- [ ] Migrar dados para Neon Postgres
+- [ ] Atualizar variáveis de ambiente
+
+### ✅ Configurar Neon
+- [ ] Instalar `@neondatabase/serverless`
+- [ ] Configurar pool de conexões
+- [ ] Setup de migrations
+- [ ] Testes de conectividade
+
+### ✅ Configurar Next Auth
+- [ ] Instalar `next-auth` e adapter
+- [ ] Configurar provedores
+- [ ] Criar tabelas de auth
+- [ ] Testar fluxo de login
+
+### ✅ Setup Redis (Opcional)
+- [ ] Configurar Upstash Redis
+- [ ] Implementar pub/sub
+- [ ] Configurar WebSockets
+- [ ] Testes de tempo real
+
+---
+
+## Troubleshooting
+
+### Problemas Comuns
+1. **Timeout de conexão:** Verificar pool de conexões
+2. **SSL errors:** Garantir `sslmode=require`
+3. **Migration failures:** Verificar permissões e schema
+4. **Auth não funciona:** Verificar tabelas e callbacks
+
+### Logs Úteis
+```typescript
+// Debug de conexão
+console.log('Database URL:', process.env.DATABASE_URL?.substring(0, 20) + '...')
+
+// Debug de auth
+console.log('Auth session:', session)
+console.log('Auth user:', user)
+```

@@ -1,0 +1,174 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Regras para Codificação de Qualidade
+
+## Estrutura e Organização do Código
+
+- **Mantenha o código DRY (Don't Repeat Yourself - Não Se Repita)**
+  - Extraia lógica repetida em funções reutilizáveis
+  - Crie funções utilitárias para operações comuns (validação, formatação, etc.)
+  - Use componentes compartilhados para padrões de UI que aparecem várias vezes
+
+- **Divida arquivos grandes**
+  - Utilize SOLID para escrita de código, especialmente em *Single Responsibility* e *Open-Closed Principle*
+  - Divida arquivos maiores que 300‑400 linhas em módulos menores
+  - Separe as responsabilidades: busca de dados, lógica de negócios, renderização de UI
+  - Crie componentes focados que fazem uma coisa bem
+
+- **Use organização lógica de arquivos**
+  - Agrupe arquivos relacionados por recurso ou domínio
+  - Crie diretórios separados para componentes, utilitários, serviços, etc.
+  - Siga convenções de nomenclatura consistentes em todo o projeto
+
+## Práticas de Segurança
+
+- **Validação e sanitização de entrada**
+  - Valide todas as entradas do usuário tanto no cliente quanto no servidor
+  - Use consultas parametrizadas para operações de banco de dados
+  - Sanitize quaisquer dados antes de renderizá‑los para evitar ataques XSS
+
+- **Autenticação e autorização**
+  - Proteja rotas sensíveis com middleware de autenticação
+  - Implemente verificações adequadas de autorização para acesso a dados
+  - Use permissões baseadas em funções para diferentes tipos de usuários
+
+- **Segurança de API**
+  - Implemente limitação de taxa em endpoints de autenticação
+  - Configure cabeçalhos HTTP seguros (CORS, Content‑Security‑Policy)
+  - Pergunte se o cabeçalho CORS terá origem definida ou insegura com `*`
+  - Use HTTPS para todas as conexões
+
+- **Gerenciamento de segredos**
+  - Nunca inclua segredos ou credenciais diretamente no código‑fonte
+  - Armazene valores sensíveis em variáveis de ambiente
+  - Use serviços de gerenciamento de segredos para produção
+  - Crie arquivos `.env-dev`, `.env-homolog`, `.env-prod`
+  - Atribua as variáveis de ambiente criadas nestes arquivos  
+
+## Tratamento de Erros
+
+- **Implemente tratamento abrangente de erros**
+  - Capture e trate diferentes tipos de erros de forma específica
+  - Registre erros com contexto suficiente para depuração
+  - Apresente mensagens de erro amigáveis na interface do usuário
+
+- **Trate operações assíncronas adequadamente**
+  - Use blocos `try/catch` com `async/await`
+  - Trate falhas de rede com elegância
+  - Construa prevenção de timeout e retry
+  - Implemente estados de carregamento para melhor UX
+
+## Otimização de Desempenho
+
+- **Minimize operações caras**
+  - Armazene em cache resultados de cálculos custosos
+  - Use memorização para funções puras
+  - Implemente paginação para grandes conjuntos de dados
+
+- **Evite vazamentos de memória**
+  - Limpe event listeners e inscrições
+  - Cancele requisições pendentes ao desmontar componentes
+  - Limpe intervalos e timeouts desnecessários
+
+- **Otimize a renderização**
+  - Evite re‑renderizações desnecessárias
+  - Use virtualização para listas longas
+  - Implemente divisão de código (code splitting) e lazy loading
+
+## Melhores Práticas de Banco de Dados
+
+- **Use transações para operações relacionadas**
+  - Agrupe operações de banco de dados relacionadas em transações
+  - Garanta consistência de dados
+  - Implemente rollback quando necessário
+
+- **Otimize consultas**
+  - Crie índices para campos frequentemente consultados
+  - Selecione apenas os campos necessários
+  - Use paginação ao buscar grandes conjuntos de dados
+
+- **Trate conexões de banco de dados adequadamente**
+  - Use pools de conexão
+  - Feche conexões após uso
+  - Implemente retry para falhas transitórias
+
+## Design de API
+
+- **Siga princípios RESTful**
+  - Use verbos HTTP apropriados (`GET`, `POST`, `PUT`, `DELETE`, etc.)
+  - Retorne formatos de resposta consistentes
+  - Use códigos de status significativos, por exemplo:  
+    - **2XX** – Success  
+    - **3XX** – Redirect  
+    - **4XX** – Client Error  
+    - **5XX** – Server Error  
+
+- **Projete endpoints claros**
+  - Organize por recurso
+  - Versione sua API
+  - Documente todos os endpoints com exemplos
+
+- **Implemente respostas de erro adequadas**
+  - Retorne objetos de erro estruturados
+  - Inclua códigos de erro e mensagens úteis
+  - Mantenha logs detalhados de erros
+
+## Manutenabilidade
+
+- **Use nomenclatura clara**
+  - Escolha nomes descritivos para variáveis, funções e classes
+  - Evite abreviações e nomes enigmáticos
+
+- **Adicione documentação**
+  - Documente funções complexas
+  - Explique o *porquê* e não apenas o *o quê*
+  - Mantenha a documentação atualizada
+
+- **Escreva testes**
+  - Testes unitários para lógica de negócio
+  - Testes de integração para fluxos importantes
+  - Testes E2E para jornadas críticas
+
+## Específico para Frontend
+
+- **Validação de formulários**
+  - Valide entrada em tempo real
+  - Mensagens de erro claras
+  - Trate erros de envio com elegância
+
+- **Gerenciamento de estado adequado**
+  - Escolha a solução apropriada (Context, Zustand, etc.)
+  - Evite prop drilling
+  - Mantenha estado próximo de onde é usado
+
+- **Garantia de acessibilidade**
+  - Use HTML semântico
+  - Adicione atributos ARIA
+  - Navegação por teclado
+  - Contraste de cor adequado
+
+## Vulnerabilidades de Segurança a Prevenir
+
+- **Injeção SQL/NoSQL**
+  - Nunca concatene entrada do usuário em consultas
+  - Use consultas parametrizadas ou ORM
+  - Exemplos de concatenação correta em diferentes linguagens:  
+    - **C#**: `string sql = $"SELECT {1}, {2} FROM {tableName}";`  
+    - **JS**: `const sql = 'SELECT ?, ? FROM ?';`  
+    - **PHP**: `$sql = "SELECT :campo1, :campo2 FROM :table";`
+
+- **Cross‑site scripting (XSS)**
+  - Sanitize entrada do usuário
+  - Use mecanismos de proteção do framework
+
+- **Cross‑site request forgery (CSRF)**
+  - Implemente tokens anti‑CSRF
+  - Valide origens de requisição
+
+- **Autenticação quebrada**
+  - Gerencie sessões corretamente
+  - Use hash seguro de senha
+  - Políticas de senha forte
