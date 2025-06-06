@@ -1,3 +1,6 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
 import { Sidebar } from './sidebar'
 
 interface MainLayoutProps {
@@ -5,6 +8,16 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
+  const pathname = usePathname()
+  
+  // Páginas que não devem ter sidebar - mais específico
+  const isAuthPage = pathname?.startsWith('/auth/')
+  
+  // Se é página de auth, renderiza apenas o conteúdo
+  if (isAuthPage) {
+    return <>{children}</>
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
