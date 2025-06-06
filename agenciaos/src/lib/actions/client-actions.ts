@@ -4,7 +4,7 @@ import { createSafeActionClient } from "next-safe-action"
 import { z } from "zod"
 import { db } from "@/lib/db"
 import { requirePermission } from "@/lib/tenant"
-import { Role } from "@prisma/client"
+import { Role, Prisma } from "@prisma/client"
 import { appErrors } from "@/lib/errors"
 import { revalidatePath } from "next/cache"
 
@@ -65,7 +65,7 @@ export const createClientAction = authenticatedAction
           email,
           phone,
           company,
-          ...(address && { address: JSON.stringify(address) }),
+          address: address ? JSON.stringify(address) : Prisma.JsonNull,
         },
       })
 
@@ -108,7 +108,7 @@ export const updateClientAction = authenticatedAction
         where: { id },
         data: {
           ...updateData,
-          ...(updateData.address && { address: JSON.stringify(updateData.address) }),
+          address: updateData.address ? JSON.stringify(updateData.address) : undefined,
         },
       })
 
