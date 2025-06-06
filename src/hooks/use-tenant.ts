@@ -168,3 +168,17 @@ export function useTenantFilter<T extends { agencyId: string }>(data: T[]): T[] 
 
   return data.filter(item => item.agencyId === tenant.agencyId)
 }
+
+/**
+ * Hook simplificado para verificar permissões
+ */
+export function usePermissions() {
+  const { hasPermission, isOwner, isAdmin, isMember } = useTenant()
+
+  return {
+    hasPermission,
+    isOwner,
+    isAdmin,
+    isMember,
+  }
+}
