@@ -11,12 +11,12 @@ import { useState } from 'react'
 export default function DebugPage() {
   const { data: session, status } = useSession()
   const tenant = useTenant()
-  const [apiTest, setApiTest] = useState<any>(null)
+  const [apiTest, setApiTest] = useState<{ status: number; data: unknown } | { error: string } | null>(null)
   const [apiLoading, setApiLoading] = useState(false)
-  const [usersData, setUsersData] = useState<any>(null)
+  const [usersData, setUsersData] = useState<{ status: number; data: unknown } | { error: string } | null>(null)
   const [usersLoading, setUsersLoading] = useState(false)
   const [fixLoading, setFixLoading] = useState(false)
-  const [fixResult, setFixResult] = useState<any>(null)
+  const [fixResult, setFixResult] = useState<{ status: number; data: unknown } | { error: string } | null>(null)
 
   const testApi = async () => {
     setApiLoading(true)
