@@ -1,49 +1,133 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { requireTenant } from '@/lib/tenant'
 import { db } from '@/lib/db'
-import { z } from 'zod'
+import { withValidation, createSuccessResponse } from '@/lib/api-validation'
+import { createClientSchema, clientsQuerySchema, type CreateClientInput, type ClientsQuery } from '@/lib/validations'
+import { applyRateLimit } from '@/lib/rate-limit'
+import { appErrors } from '@/lib/errors'
 
 export const runtime = 'nodejs'
 
-// Schema de validação para criação de cliente
-const createClientSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  email: z.string().email('Email inválido').optional(),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-})
-
-// Schema de validação para atualização de cliente (usado em outros arquivos)
-// const updateClientSchema = createClientSchema.partial()
-
 // GET /api/clients - Listar clientes
-export async function GET(request: NextRequest) {
-  try {
-    const context = await requireTenant()
-    const { searchParams } = new URL(request.url)
-    
-    // Parâmetros de busca e paginação
-    const search = searchParams.get('search') || ''
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    const offset = (page - 1) * limit
+export const GET = withValidation<never, ClientsQuery>(
+  async (request, { query }) => {
+    try {
+      // Aplicar rate limiting
+      const rateLimitResult = await applyRateLimit(request, 'api')
+      if (!rateLimitResult.success && rateLimitResult.error) {
+        throw rateLimitResult.error
+      }
 
-    // Construir filtros de busca
-    const where = {
-      agencyId: context.agencyId,
-      ...(search && {
-        OR: [
-          { name: { contains: search, mode: 'insensitive' as const } },
-          { email: { contains: search, mode: 'insensitive' as const } },
-          { company: { contains: search, mode: 'insensitive' as const } },
-        ],
-      }),
+      const context = await requireTenant()
+      
+      // Usar query validada ou valores padrão
+      const { search = '', page = 1, limit = 10 } = query || {}
+      const offset = (page - 1) * limit
+
+      // Construir filtros de busca
+      const where = {
+        agencyId: context.agencyId,
+        ...(search && {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { email: { contains: search, mode: 'insensitive' as const } },
+            { company: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }),
+      }
+
+      // Buscar clientes com contagem total
+      const [clients, total] = await Promise.all([
+        db.client.findMany({
+          where,
+          include: {
+            projects: {
+              select: {
+                id: true,
+                name: true,
+                status: true,
+              },
+            },
+            _count: {
+              select: {
+                projects: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+          skip: offset,
+          take: limit,
+        }),
+        db.client.count({ where }),
+      ])
+
+      // Calcular metadados de paginação
+      const totalPages = Math.ceil(total / limit)
+      const hasNext = page < totalPages
+      const hasPrev = page > 1
+
+      return createSuccessResponse({
+        clients,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNext,
+          hasPrev,
+        },
+      })
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error)
+      throw error
     }
+  },
+  {
+    querySchema: clientsQuerySchema
+  }
+)
 
-    // Buscar clientes com contagem total
-    const [clients, total] = await Promise.all([
-      db.client.findMany({
-        where,
+// POST /api/clients - Criar cliente
+export const POST = withValidation<CreateClientInput>(
+  async (request, { body }) => {
+    try {
+      // Aplicar rate limiting
+      const rateLimitResult = await applyRateLimit(request, 'api')
+      if (!rateLimitResult.success && rateLimitResult.error) {
+        throw rateLimitResult.error
+      }
+
+      const context = await requireTenant()
+
+      if (!body) {
+        throw appErrors.INVALID_INPUT
+      }
+
+      const { name, email, phone, company, address } = body
+
+      // Verificar se já existe cliente com mesmo email na agência
+      if (email) {
+        const existingClient = await db.client.findFirst({
+          where: {
+            agencyId: context.agencyId,
+            email,
+          },
+        })
+
+        if (existingClient) {
+          throw appErrors.EMAIL_ALREADY_EXISTS
+        }
+      }
+
+      // Criar cliente
+      const client = await db.client.create({
+        data: {
+          name,
+          email,
+          phone,
+          company,
+          address: address ? JSON.stringify(address) : undefined,
+          agencyId: context.agencyId,
+        },
         include: {
           projects: {
             select: {
@@ -58,109 +142,15 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
-        skip: offset,
-        take: limit,
-      }),
-      db.client.count({ where }),
-    ])
-
-    // Calcular metadados de paginação
-    const totalPages = Math.ceil(total / limit)
-    const hasNext = page < totalPages
-    const hasPrev = page > 1
-
-    return NextResponse.json({
-      clients,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNext,
-        hasPrev,
-      },
-    })
-  } catch (error) {
-    console.error('Erro ao buscar clientes:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erro interno do servidor' },
-      { status: error instanceof Error && error.message.includes('Acesso negado') ? 403 : 500 }
-    )
-  }
-}
-
-// POST /api/clients - Criar cliente
-export async function POST(request: NextRequest) {
-  try {
-    const context = await requireTenant()
-    const body = await request.json()
-
-    // Validar dados de entrada
-    const validationResult = createClientSchema.safeParse(body)
-    if (!validationResult.success) {
-      return NextResponse.json(
-        { 
-          error: 'Dados inválidos',
-          details: validationResult.error.errors.map(err => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 }
-      )
-    }
-
-    const { name, email, phone, company } = validationResult.data
-
-    // Verificar se já existe cliente com mesmo email na agência
-    if (email) {
-      const existingClient = await db.client.findFirst({
-        where: {
-          agencyId: context.agencyId,
-          email,
-        },
       })
 
-      if (existingClient) {
-        return NextResponse.json(
-          { error: 'Já existe um cliente com este email' },
-          { status: 409 }
-        )
-      }
+      return createSuccessResponse(client, 201, 'Cliente criado com sucesso')
+    } catch (error) {
+      console.error('Erro ao criar cliente:', error)
+      throw error
     }
-
-    // Criar cliente
-    const client = await db.client.create({
-      data: {
-        name,
-        email,
-        phone,
-        company,
-        agencyId: context.agencyId,
-      },
-      include: {
-        projects: {
-          select: {
-            id: true,
-            name: true,
-            status: true,
-          },
-        },
-        _count: {
-          select: {
-            projects: true,
-          },
-        },
-      },
-    })
-
-    return NextResponse.json(client, { status: 201 })
-  } catch (error) {
-    console.error('Erro ao criar cliente:', error)
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erro interno do servidor' },
-      { status: 500 }
-    )
+  },
+  {
+    bodySchema: createClientSchema
   }
-} 
+)

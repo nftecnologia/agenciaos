@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
-import { Role } from "@/generated/prisma"
+import { Role } from "@prisma/client"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -100,4 +100,4 @@ declare module "@auth/core/jwt" {
     role: Role
     agencyId: string | null
   }
-} 
+}

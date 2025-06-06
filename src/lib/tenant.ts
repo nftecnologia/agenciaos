@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { Role } from "@/generated/prisma"
+import { Role } from "@prisma/client"
+import { appErrors } from "@/lib/errors"
 
 export interface TenantContext {
   agencyId: string
@@ -99,17 +100,17 @@ export async function requireTenant(): Promise<TenantContext> {
   const session = await auth()
   
   if (!session?.user?.id) {
-    throw new Error('Acesso negado: usuário não autenticado')
+    throw appErrors.UNAUTHENTICATED
   }
 
   if (!session.user.agencyId) {
-    throw new Error('Acesso negado: usuário sem agência associada')
+    throw appErrors.TENANT_NOT_FOUND
   }
 
   const context = await getTenantContext()
   
   if (!context) {
-    throw new Error('Acesso negado: erro ao obter contexto da agência')
+    throw appErrors.TENANT_ACCESS_DENIED
   }
 
   return context
@@ -122,7 +123,7 @@ export async function requirePermission(requiredRole: Role): Promise<TenantConte
   const context = await requireTenant()
   
   if (!hasPermission(context.role, requiredRole)) {
-    throw new Error(`Acesso negado: permissão ${requiredRole} necessária`)
+    throw appErrors.UNAUTHORIZED
   }
 
   return context
@@ -139,4 +140,4 @@ export async function getTenantDb() {
     db,
     context,
   }
-} 
+}
