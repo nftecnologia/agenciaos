@@ -1,82 +1,65 @@
-'use client'
+"use client"
 
-import { useState, useEffect } from 'react'
+import { useQuery } from "@tanstack/react-query"
 
 export interface DashboardStats {
+  period: string
   clients: {
     total: number
-    growth: number
+    new: number
+    change: number
   }
   projects: {
     total: number
     active: number
-    growth: number
+    completed: number
+    new: number
+    change: number
   }
   revenue: {
     total: number
-    monthly: number
-    growth: number
+    current: number
+    count: number
+    change: number
   }
-  ai: {
-    used: number
-    limit: number
-    percentage: number
+  expenses: {
+    total: number
+    current: number
+    count: number
+    change: number
   }
-  recentProjects: Array<{
-    id: string
-    name: string
-    client: string
-    status: string
-    updatedAt: string
-  }>
-  pendingTasks: Array<{
-    id: string
-    title: string
-    project: string
-    assignee: string
-    dueDate: string | null
-    priority: string
-  }>
+  profit: {
+    current: number
+    change: number
+  }
+  tasks: {
+    total: number
+    completed: number
+    inProgress: number
+    completionRate: number
+  }
+  summary: {
+    totalClients: number
+    activeProjects: number
+    monthlyRevenue: number
+    monthlyProfit: number
+  }
 }
 
-export function useDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchStats = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      const response = await fetch('/api/dashboard/stats')
+export function useDashboard(period: string = '30d') {
+  return useQuery({
+    queryKey: ['dashboard-stats', period],
+    queryFn: async (): Promise<DashboardStats> => {
+      const response = await fetch(`/api/dashboard/stats?period=${period}`)
       
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Erro ao carregar estatísticas')
+        throw new Error('Falha ao carregar estatísticas do dashboard')
       }
-
+      
       const data = await response.json()
-      setStats(data)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchStats()
-  }, [])
-
-  const refresh = () => {
-    fetchStats()
-  }
-
-  return {
-    stats,
-    loading,
-    error,
-    refresh,
-  }
-} 
+      return data.data
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    refetchInterval: 10 * 60 * 1000, // Atualizar a cada 10 minutos
+  })
+}
