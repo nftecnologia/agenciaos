@@ -2,9 +2,19 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import {
   LayoutDashboard,
   Users,
@@ -14,7 +24,9 @@ import {
   Brain,
   Settings,
   Menu,
-  X
+  X,
+  LogOut,
+  User
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -60,7 +72,12 @@ const navigation = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  async function handleSignOut() {
+    await signOut({ callbackUrl: '/auth/signin' })
+  }
 
   return (
     <>
@@ -127,7 +144,7 @@ export function Sidebar() {
           </nav>
 
           {/* Footer */}
-          <div className="px-4 py-4 border-t border-gray-200">
+          <div className="px-4 py-4 border-t border-gray-200 space-y-2">
             <Link
               href="/configuracoes"
               className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
@@ -136,6 +153,51 @@ export function Sidebar() {
               <Settings className="w-5 h-5" />
               <span className="font-medium">Configurações</span>
             </Link>
+
+            {/* User Menu */}
+            {session?.user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 px-3 py-2 h-auto"
+                  >
+                    <Avatar className="w-6 h-6">
+                      <AvatarImage src={session.user.image || ''} />
+                      <AvatarFallback className="text-xs">
+                        {session.user.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-medium text-gray-900">
+                        {session.user.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/perfil" className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Perfil
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 text-red-600"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </aside>
