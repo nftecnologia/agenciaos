@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Board, Task, Priority } from '@/generated/prisma'
+import { Board, Task, Priority } from '@prisma/client'
 
 interface TaskWithAssignee extends Task {
   assignee?: {
@@ -272,4 +272,4 @@ export function useKanban(projectId: string | null) {
     moveTask,
     deleteTask,
   }
-} 
+}
