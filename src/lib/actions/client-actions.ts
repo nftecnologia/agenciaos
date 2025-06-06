@@ -19,7 +19,7 @@ export const createClientAction = authenticatedAction
           email,
           phone,
           company,
-          address: address || null,
+          address: address || undefined,
         },
       })
 
