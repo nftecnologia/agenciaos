@@ -103,9 +103,9 @@ export default function DebugPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <div><strong>Agency ID:</strong> {tenant.agencyId || 'N/A'}</div>
-              <div><strong>User ID:</strong> {tenant.userId || 'N/A'}</div>
-              <div><strong>Role:</strong> {tenant.role || 'N/A'}</div>
+              <div><strong>Agency ID:</strong> {tenant.tenant?.agencyId || 'N/A'}</div>
+              <div><strong>User ID:</strong> {tenant.tenant?.userId || 'N/A'}</div>
+              <div><strong>Role:</strong> {tenant.tenant?.role || 'N/A'}</div>
               <div><strong>Is Owner:</strong> {tenant.isOwner ? 'Sim' : 'Não'}</div>
               <div><strong>Is Admin:</strong> {tenant.isAdmin ? 'Sim' : 'Não'}</div>
               <div><strong>Is Member:</strong> {tenant.isMember ? 'Sim' : 'Não'}</div>
@@ -186,4 +186,4 @@ export default function DebugPage() {
       </div>
     </div>
   )
-} 
+}
