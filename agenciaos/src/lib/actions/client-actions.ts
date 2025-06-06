@@ -19,7 +19,7 @@ export const createClientAction = authenticatedAction
           email,
           phone,
           company,
-          address: address ? JSON.stringify(address) : null,
+          address: address ? JSON.stringify(address) : undefined,
         },
       })
 
