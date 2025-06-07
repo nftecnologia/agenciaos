@@ -24,6 +24,7 @@ import {
   Kanban,
   DollarSign,
   Brain,
+  Bot,
   Settings,
   Menu,
   X,
@@ -69,6 +70,13 @@ const navigation = [
     icon: Brain,
     current: false,
     badge: '31',
+  },
+  {
+    name: 'Automações',
+    href: '/automations',
+    icon: Bot,
+    current: false,
+    badge: 'NEW',
   },
 ]
 
