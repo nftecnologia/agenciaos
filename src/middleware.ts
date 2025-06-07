@@ -58,7 +58,8 @@ export default auth(async (req) => {
 
   // Rotas públicas que não precisam de autenticação
   const publicRoutes = ['/auth/signin', '/auth/signup', '/api/auth/register']
-  const isPublicRoute = publicRoutes.includes(pathname)
+  const isAuthRoute = pathname.startsWith('/api/auth/')
+  const isPublicRoute = publicRoutes.includes(pathname) || isAuthRoute
 
   // Se está em uma rota pública
   if (isPublicRoute) {
