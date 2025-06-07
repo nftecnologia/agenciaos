@@ -1,6 +1,6 @@
 'use client'
 
-import { useBrowserNotificationsSetup } from '@/hooks/use-browser-notifications'
+import { useBrowserNotificationsSetup } from '../../hooks/use-browser-notifications'
 
 interface BrowserNotificationsProviderProps {
   children: React.ReactNode
