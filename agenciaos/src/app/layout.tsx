@@ -5,6 +5,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { AuthProvider } from "@/components/providers/session-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "react-hot-toast";
+import { BrowserNotificationsProvider } from "@/components/providers/browser-notifications-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,7 +27,9 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <QueryProvider>
           <AuthProvider>
-            <MainLayout>{children}</MainLayout>
+            <BrowserNotificationsProvider>
+              <MainLayout>{children}</MainLayout>
+            </BrowserNotificationsProvider>
             <Toaster
               position="top-right"
               toastOptions={{
