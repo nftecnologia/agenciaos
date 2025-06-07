@@ -219,7 +219,7 @@ export function RevenuesList() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Nenhum cliente</SelectItem>
-                      {clients.map((client) => (
+                      {clients.filter(client => client.id && client.id.trim() !== '').map((client) => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.name} {client.company && `(${client.company})`}
                         </SelectItem>
@@ -238,7 +238,7 @@ export function RevenuesList() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">Nenhum projeto</SelectItem>
-                      {projects.map((project) => (
+                      {projects.filter(project => project.id && project.id.trim() !== '').map((project) => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
                         </SelectItem>
