@@ -98,7 +98,7 @@ export const aiContentGenerationTask = task({
       aiResult.agencyId = payload.agencyId;
       aiResult.processedAt = new Date().toISOString();
       aiResult.confidence = 0.95; // IA real tem alta confiança
-      aiResult.source = 'OpenAI GPT-4';
+      aiResult.source = 'OpenAI GPT-4o';
       
       console.log("✅ Conteúdo IA gerado com sucesso!");
       console.log("📊 Resultado:", JSON.stringify(aiResult, null, 2));
