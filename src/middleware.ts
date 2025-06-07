@@ -58,8 +58,12 @@ export default auth(async (req) => {
 
   // Rotas públicas que não precisam de autenticação
   const publicRoutes = ['/auth/signin', '/auth/signup', '/api/auth/register']
-  const isAuthRoute = pathname.startsWith('/api/auth/')
-  const isPublicRoute = publicRoutes.includes(pathname) || isAuthRoute
+  const isPublicRoute = publicRoutes.includes(pathname)
+  
+  // Permitir TODAS as rotas de autenticação do NextAuth
+  if (pathname.startsWith('/api/auth/')) {
+    return NextResponse.next()
+  }
 
   // Se está em uma rota pública
   if (isPublicRoute) {
