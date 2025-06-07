@@ -4,9 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { 
-  Lightbulb, 
-  Clock, 
-  DollarSign, 
   Users, 
   Target,
   Zap,

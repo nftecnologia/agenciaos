@@ -9,11 +9,8 @@ import {
   Brain, 
   Clock, 
   Target,
-  Users,
-  MessageSquare,
   Zap,
   CheckCircle,
-  AlertCircle,
   Calendar,
   Activity
 } from 'lucide-react'

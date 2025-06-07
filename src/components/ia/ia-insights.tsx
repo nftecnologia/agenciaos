@@ -5,11 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { 
   TrendingUp, 
-  TrendingDown, 
   AlertTriangle, 
   CheckCircle, 
-  Users, 
-  DollarSign, 
   Calendar,
   Target,
   Lightbulb,
@@ -113,18 +110,6 @@ export function IAInsights() {
     }
   }
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'positive':
-        return TrendingUp
-      case 'warning':
-        return AlertTriangle
-      case 'opportunity':
-        return Lightbulb
-      default:
-        return CheckCircle
-    }
-  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
