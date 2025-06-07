@@ -121,14 +121,14 @@ export function RevenuesList() {
             />
           </div>
           <Select
-            value={filters.category || ''}
-            onValueChange={(value) => updateFilters({ category: value || undefined, page: 1 })}
+            value={filters.category || 'all'}
+            onValueChange={(value) => updateFilters({ category: value === 'all' ? undefined : value, page: 1 })}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Categoria" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas</SelectItem>
+              <SelectItem value="all">Todas</SelectItem>
               <SelectItem value="Serviços">Serviços</SelectItem>
               <SelectItem value="Produtos">Produtos</SelectItem>
               <SelectItem value="Consultoria">Consultoria</SelectItem>
@@ -211,14 +211,14 @@ export function RevenuesList() {
                 <div className="grid gap-2">
                   <Label htmlFor="client">Cliente (opcional)</Label>
                   <Select
-                    value={formData.clientId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, clientId: value }))}
+                    value={formData.clientId || 'none'}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, clientId: value === 'none' ? '' : value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um cliente" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum cliente</SelectItem>
+                      <SelectItem value="none">Nenhum cliente</SelectItem>
                       {clients.map((client) => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.name} {client.company && `(${client.company})`}
@@ -230,14 +230,14 @@ export function RevenuesList() {
                 <div className="grid gap-2">
                   <Label htmlFor="project">Projeto (opcional)</Label>
                   <Select
-                    value={formData.projectId}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, projectId: value }))}
+                    value={formData.projectId || 'none'}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, projectId: value === 'none' ? '' : value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione um projeto" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Nenhum projeto</SelectItem>
+                      <SelectItem value="none">Nenhum projeto</SelectItem>
                       {projects.map((project) => (
                         <SelectItem key={project.id} value={project.id}>
                           {project.name}
@@ -424,4 +424,4 @@ export function RevenuesList() {
       </Dialog>
     </div>
   )
-} 
+}
