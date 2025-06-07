@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { useTenant } from '@/hooks/use-tenant'
-import { AdminOnly } from '@/components/auth/permission-guard'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useTenant } from '../../hooks/use-tenant'
+import { AdminOnly } from '../auth/permission-guard'
+import { cn } from '../../lib/utils'
+import { Button } from '../ui/button'
+import { Badge } from '../ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '../ui/dropdown-menu'
 import {
   LayoutDashboard,
   Users,
@@ -32,7 +32,7 @@ import {
   User
 } from 'lucide-react'
 import { useState } from 'react'
-import { useNotifications } from '@/hooks/use-notifications'
+import { useNotifications } from '../../hooks/use-notifications'
 
 const navigation = [
   {
