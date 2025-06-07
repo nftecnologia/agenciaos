@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { simpleAIJob, simpleWebhookJob, simpleReportJob } from "@/trigger";
-import type { SimpleAIPayload, SimpleWebhookPayload } from "@/trigger";
+import { simpleAIJob, simpleWebhookJob, simpleReportJob } from "../../../trigger";
+import type { SimpleAIPayload, SimpleWebhookPayload } from "../../../trigger";
 
 export async function POST(request: NextRequest) {
   try {
