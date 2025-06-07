@@ -255,9 +255,9 @@ Precisa de alguma projeção específica ou análise de viabilidade?`
                 key={message.id}
                 className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                {message.type === 'assistant' && (
+                {message.type === 'assistant' && currentAssistant && (
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className={currentAssistant?.color}>
+                    <AvatarFallback className={currentAssistant.color}>
                       <currentAssistant.icon className="h-4 w-4 text-white" />
                     </AvatarFallback>
                   </Avatar>
@@ -291,10 +291,10 @@ Precisa de alguma projeção específica ou análise de viabilidade?`
               </div>
             ))}
 
-            {isLoading && (
+            {isLoading && currentAssistant && (
               <div className="flex gap-3 justify-start">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className={currentAssistant?.color}>
+                  <AvatarFallback className={currentAssistant.color}>
                     <currentAssistant.icon className="h-4 w-4 text-white" />
                   </AvatarFallback>
                 </Avatar>
