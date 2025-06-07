@@ -66,7 +66,30 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
         ...(formData.endDate && { endDate: formData.endDate }),
       }
 
-      await createProject(projectData)
+      const newProject = await createProject(projectData)
+      
+      // Disparar job de IA automaticamente em background (invisível para o usuário)
+      if (newProject && formData.description?.trim()) {
+        try {
+          fetch('/api/trigger', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'ai-content',
+              payload: {
+                agencyId: newProject.id,
+                content: `Gerar sugestões e estratégias para o projeto "${formData.name}": ${formData.description}`
+              }
+            })
+          }).catch(err => {
+            // Log error silently - não mostrar para o usuário
+            console.log('Job de IA executado em background:', err)
+          })
+        } catch (error) {
+          // Job falhou, mas não impacta o usuário
+          console.log('Erro no job de IA (background):', error)
+        }
+      }
       
       // Resetar formulário
       setFormData({
@@ -220,4 +243,4 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
       </DialogContent>
     </Dialog>
   )
-} 
+}
