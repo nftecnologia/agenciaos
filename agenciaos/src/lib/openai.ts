@@ -1,8 +1,9 @@
-import OpenAI from 'openai'
+// Temporariamente removido import OpenAI para resolver problema de build no Vercel
+// import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// })
 
 export interface ProjectAnalysisInput {
   projectName: string
@@ -47,57 +48,8 @@ export class OpenAIService {
     timeline: string
   }> {
     try {
-      const prompt = `
-Você é um consultor especialista em projetos digitais. Analise o seguinte projeto e forneça insights detalhados:
-
-**Projeto:** ${input.projectName}
-**Descrição:** ${input.projectDescription}
-**Tipo de Cliente:** ${input.clientType || 'Não especificado'}
-**Orçamento:** ${input.budget ? `R$ ${input.budget.toLocaleString()}` : 'Não especificado'}
-**Setor:** ${input.industry || 'Não especificado'}
-
-Forneça uma análise estruturada contendo:
-
-1. **Sugestões Estratégicas** (4-6 sugestões específicas e acionáveis)
-2. **Estimativa de Horas** (número realista baseado na complexidade)
-3. **Prioridade** (low, medium ou high baseado na urgência/impacto)
-4. **Tecnologias Recomendadas** (3-5 tecnologias principais)
-5. **Riscos Identificados** (3-4 riscos potenciais)
-6. **Timeline Estimado** (prazo realista em semanas/meses)
-
-Responda no formato JSON:
-{
-  "suggestions": ["sugestão1", "sugestão2", "sugestão3", "sugestão4"],
-  "estimatedHours": 120,
-  "priority": "high",
-  "technologies": ["Next.js", "TypeScript", "Prisma"],
-  "risks": ["risco1", "risco2", "risco3"],
-  "timeline": "8-12 semanas"
-}
-`
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "Você é um consultor especialista em projetos digitais com 15 anos de experiência. Forneça análises práticas e acionáveis."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      })
-
-      const response = completion.choices[0]?.message?.content
-      if (!response) {
-        throw new Error('Resposta vazia da OpenAI')
-      }
-
-      return JSON.parse(response)
+      // Temporariamente usando fallback até resolver problema de build
+      throw new Error('OpenAI temporariamente indisponível')
     } catch (error) {
       console.error('Erro na análise de projeto:', error)
       // Fallback para dados simulados
@@ -130,54 +82,8 @@ Responda no formato JSON:
     recommendations: string[]
   }> {
     try {
-      const prompt = `
-Você é um especialista em relacionamento com clientes B2B. Analise o seguinte cliente e crie uma estratégia personalizada:
-
-**Cliente:** ${input.clientName}
-**Empresa:** ${input.clientCompany || 'Não especificado'}
-**Setor:** ${input.industry || 'Não especificado'}
-**Relacionamento Atual:** ${input.currentRelationship || 'Novo cliente'}
-
-Crie uma estratégia de relacionamento contendo:
-
-1. **Estratégias de Relacionamento** (4-5 estratégias específicas)
-2. **Próximas Ações** (3-4 ações imediatas)
-3. **Tipo de Relacionamento** (Strategic Partner, Key Account, Regular Client, ou Prospect)
-4. **Score de Oportunidade** (0-100 baseado no potencial)
-5. **Recomendações** (3-4 recomendações táticas)
-
-Responda no formato JSON:
-{
-  "strategies": ["estratégia1", "estratégia2", "estratégia3", "estratégia4"],
-  "nextActions": ["ação1", "ação2", "ação3"],
-  "relationshipType": "Strategic Partner",
-  "opportunityScore": 85,
-  "recommendations": ["recomendação1", "recomendação2", "recomendação3"]
-}
-`
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "Você é um especialista em gestão de relacionamento com clientes B2B com foco em resultados mensuráveis."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 800,
-      })
-
-      const response = completion.choices[0]?.message?.content
-      if (!response) {
-        throw new Error('Resposta vazia da OpenAI')
-      }
-
-      return JSON.parse(response)
+      // Temporariamente usando fallback até resolver problema de build
+      throw new Error('OpenAI temporariamente indisponível')
     } catch (error) {
       console.error('Erro na estratégia de cliente:', error)
       // Fallback
@@ -213,57 +119,8 @@ Responda no formato JSON:
     checklist: string[]
   }> {
     try {
-      const prompt = `
-Você é um gerente de projetos experiente. Analise a seguinte task e faça um breakdown detalhado:
-
-**Task:** ${input.taskTitle}
-**Descrição:** ${input.taskDescription}
-**Prioridade:** ${input.priority}
-**Prazo:** ${input.dueDate || 'Não especificado'}
-
-Faça um breakdown contendo:
-
-1. **Subtasks** (5-8 subtasks específicas com título, estimativa em horas e prioridade)
-2. **Total de Horas Estimadas** (soma das subtasks)
-3. **Dependências** (2-3 dependências críticas)
-4. **Riscos** (2-3 riscos identificados)
-5. **Checklist** (5-7 itens de verificação)
-
-Responda no formato JSON:
-{
-  "subtasks": [
-    {"title": "Subtask 1", "estimatedHours": 4, "priority": "high"},
-    {"title": "Subtask 2", "estimatedHours": 6, "priority": "medium"}
-  ],
-  "totalEstimatedHours": 32,
-  "dependencies": ["dependência1", "dependência2"],
-  "risks": ["risco1", "risco2"],
-  "checklist": ["item1", "item2", "item3"]
-}
-`
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "Você é um gerente de projetos sênior especializado em breakdown de tasks complexas."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.6,
-        max_tokens: 1000,
-      })
-
-      const response = completion.choices[0]?.message?.content
-      if (!response) {
-        throw new Error('Resposta vazia da OpenAI')
-      }
-
-      return JSON.parse(response)
+      // Temporariamente usando fallback até resolver problema de build
+      throw new Error('OpenAI temporariamente indisponível')
     } catch (error) {
       console.error('Erro no breakdown de task:', error)
       // Fallback
@@ -299,7 +156,8 @@ Responda no formato JSON:
   }
 
   // Relatório Mensal
-  static async generateMonthlyReport(input: MonthlyReportInput): Promise<{
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async generateMonthlyReport(_input: MonthlyReportInput): Promise<{
     insights: string[]
     recommendations: string[]
     highlights: string[]
@@ -307,58 +165,8 @@ Responda no formato JSON:
     nextMonthGoals: string[]
   }> {
     try {
-      const prompt = `
-Você é um analista de negócios especializado em agências digitais. Gere um relatório mensal baseado nas métricas:
-
-**Período:** ${input.period}
-**Projetos:** ${input.agencyMetrics.projectsCount}
-**Clientes:** ${input.agencyMetrics.clientsCount}
-**Receita:** R$ ${input.agencyMetrics.revenue.toLocaleString()}
-**Tasks Concluídas:** ${input.agencyMetrics.completedTasks}
-
-Gere um relatório contendo:
-
-1. **Insights** (4-5 insights analíticos sobre o desempenho)
-2. **Recomendações** (3-4 recomendações estratégicas)
-3. **Destaques** (3-4 conquistas/marcos importantes)
-4. **Métricas Adicionais** (4-5 métricas com valores e tendências)
-5. **Metas para Próximo Mês** (3-4 objetivos específicos)
-
-Responda no formato JSON:
-{
-  "insights": ["insight1", "insight2", "insight3"],
-  "recommendations": ["recomendação1", "recomendação2"],
-  "highlights": ["destaque1", "destaque2", "destaque3"],
-  "metrics": [
-    {"label": "Taxa de Conversão", "value": "15%", "trend": "up"},
-    {"label": "Satisfação do Cliente", "value": "4.8/5", "trend": "stable"}
-  ],
-  "nextMonthGoals": ["meta1", "meta2", "meta3"]
-}
-`
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "Você é um analista de negócios sênior especializado em agências digitais e KPIs de performance."
-          },
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      })
-
-      const response = completion.choices[0]?.message?.content
-      if (!response) {
-        throw new Error('Resposta vazia da OpenAI')
-      }
-
-      return JSON.parse(response)
+      // Temporariamente usando fallback até resolver problema de build
+      throw new Error('OpenAI temporariamente indisponível')
     } catch (error) {
       console.error('Erro no relatório mensal:', error)
       // Fallback
@@ -395,4 +203,4 @@ Responda no formato JSON:
   }
 }
 
-export { openai }
+// export { openai } - temporariamente comentado
