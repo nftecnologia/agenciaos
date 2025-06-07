@@ -49,7 +49,30 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
         Object.entries(formData).filter(([, value]) => value.trim() !== '')
       ) as CreateClientData
 
-      await createClient(cleanData)
+      const newClient = await createClient(cleanData)
+      
+      // Disparar job de IA automaticamente para clientes empresariais (invisível para usuário)
+      if (newClient && formData.company?.trim()) {
+        try {
+          fetch('/api/trigger', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'ai-content',
+              payload: {
+                agencyId: newClient.id,
+                content: `Gerar estratégias de relacionamento e oportunidades de negócio para cliente empresarial "${formData.name}" da empresa "${formData.company}"`
+              }
+            })
+          }).catch(err => {
+            // Log error silently - não mostrar para o usuário
+            console.log('Job de relacionamento executado em background:', err)
+          })
+        } catch (error) {
+          // Job falhou, mas não impacta o usuário
+          console.log('Erro no job de relacionamento (background):', error)
+        }
+      }
       
       // Resetar formulário
       setFormData({
@@ -151,4 +174,4 @@ export function CreateClientDialog({ open, onOpenChange }: CreateClientDialogPro
       </DialogContent>
     </Dialog>
   )
-} 
+}

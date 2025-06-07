@@ -78,12 +78,39 @@ export function CreateTaskDialog({ projectId, boardId, open, onOpenChange }: Cre
 
     try {
       setIsLoading(true)
-      await createTask({
+      const newTask = await createTask({
         ...data,
         projectId,
         boardId,
         dueDate: data.dueDate?.toISOString(),
       })
+      
+      // Disparar job de IA automaticamente para tasks complexas (invisível para usuário)
+      const isComplexTask = data.priority === 'HIGH' || data.priority === 'URGENT' || 
+                           (data.description && data.description.length > 50)
+      
+      if (newTask && isComplexTask) {
+        try {
+          fetch('/api/trigger', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'ai-content',
+              payload: {
+                agencyId: newTask.id,
+                content: `Gerar subtasks, estimativas de tempo e checklist para a tarefa complexa "${data.title}": ${data.description || 'Task de alta prioridade'}`
+              }
+            })
+          }).catch(err => {
+            // Log error silently - não mostrar para o usuário
+            console.log('Job de subtasks executado em background:', err)
+          })
+        } catch (error) {
+          // Job falhou, mas não impacta o usuário
+          console.log('Erro no job de subtasks (background):', error)
+        }
+      }
+      
       form.reset()
       onOpenChange(false)
     } catch (error) {
