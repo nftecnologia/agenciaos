@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { simpleAIJob, simpleWebhookJob, simpleReportJob } from "../../../trigger";
+import { intelligentAIJob, intelligentWebhookJob, intelligentReportJob } from "../../../trigger";
 import type { SimpleAIPayload, SimpleWebhookPayload } from "../../../trigger";
 
 export async function POST(request: NextRequest) {
@@ -8,27 +8,32 @@ export async function POST(request: NextRequest) {
 
     switch (type) {
       case "ai-content":
-        const aiResult = await simpleAIJob.trigger(payload as SimpleAIPayload);
+        const aiResult = await intelligentAIJob.trigger(payload as SimpleAIPayload);
         return NextResponse.json({
           success: true,
           jobId: aiResult.id,
-          message: "Job de geração de conteúdo IA iniciado",
+          message: "Job de IA inteligente iniciado",
+          result: aiResult.result || null,
+          processingTime: aiResult.processingTime || null
         });
 
       case "payment-webhook":
-        const paymentResult = await simpleWebhookJob.trigger(payload as SimpleWebhookPayload);
+        const paymentResult = await intelligentWebhookJob.trigger(payload as SimpleWebhookPayload);
         return NextResponse.json({
           success: true,
           jobId: paymentResult.id,
-          message: "Webhook de pagamento processado",
+          message: "Webhook inteligente processado",
+          result: paymentResult.result || null
         });
 
       case "monthly-report":
-        const reportResult = await simpleReportJob.trigger();
+        const reportResult = await intelligentReportJob.trigger();
         return NextResponse.json({
           success: true,
           jobId: reportResult.id,
-          message: "Job de relatório mensal iniciado",
+          message: "Relatório inteligente iniciado",
+          result: reportResult.result || null,
+          processingTime: reportResult.processingTime || null
         });
 
       default:

@@ -1,6 +1,9 @@
 // Jobs simples funcionais (sem Prisma para deploy)
 export { simpleAIJob, simpleWebhookJob, simpleReportJob } from "./simple-jobs";
 
+// Jobs inteligentes com simulações contextuais
+export { intelligentAIJob, intelligentWebhookJob, intelligentReportJob } from "./intelligent-simulations";
+
 // Jobs completos com Prisma (comentados para deploy - usar quando local)
 // export { generateAIContent } from "./ai-content-generation";
 // export { processPaymentWebhook } from "./payment-webhook";
