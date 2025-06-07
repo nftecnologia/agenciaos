@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../../../../../../../src/trigger/index.ts"],
   "sourcesContent": ["// Jobs simples funcionais (sem Prisma para deploy)\nexport { simpleAIJob, simpleWebhookJob, simpleReportJob } from \"./simple-jobs\";\n\n// Jobs completos com Prisma (comentados para deploy - usar quando local)\n// export { generateAIContent } from \"./ai-content-generation\";\n// export { processPaymentWebhook } from \"./payment-webhook\";\n// export { generateMonthlyReports } from \"./scheduled-reports\";\n\n// Tipos para os payloads\nexport type SimpleAIPayload = {\n  agencyId: string;\n  content: string;\n};\n\nexport type SimpleWebhookPayload = {\n  event: string;\n  customerId: string;\n};\n\nexport type AIContentPayload = {\n  agencyId: string;\n  agentType: string;\n  input: Record<string, unknown>;\n  userId: string;\n};\n\nexport type PaymentWebhookPayload = {\n  event: string;\n  customerId: string;\n  productId: string;\n  amount: number;\n  status: string;\n};\n"],
-  "mappings": ";;;;;;;;;;;AAAA;",
+  "mappings": ";;;;;;;;;;AAAA;",
   "names": []
 }
