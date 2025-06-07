@@ -1,0 +1,19 @@
+node_modules
+.git
+.gitignore
+README.md
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.next
+.vercel
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Manter arquivos do Prisma
+!node_modules/.prisma
+!node_modules/@prisma

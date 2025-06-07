@@ -1,0 +1,64 @@
+{
+  "contentHash": "3b49e2b21348795fc11e672885b8ff3d",
+  "runtime": "node",
+  "cliPackageVersion": "3.3.17",
+  "packageVersion": "3.3.17",
+  "environment": "dev",
+  "target": "dev",
+  "files": [
+    {
+      "entry": "src/trigger/index.ts",
+      "out": "/Users/oliveira/Desktop/NFTECH/agenciaos/agenciaos/.trigger/tmp/build-tGhxZT/Desktop/NFTECH/agenciaos/agenciaos/src/trigger/index.mjs"
+    },
+    {
+      "entry": "src/trigger/simple-jobs.ts",
+      "out": "/Users/oliveira/Desktop/NFTECH/agenciaos/agenciaos/.trigger/tmp/build-tGhxZT/Desktop/NFTECH/agenciaos/agenciaos/src/trigger/simple-jobs.mjs"
+    }
+  ],
+  "sources": {
+    "src/trigger/index.ts": {
+      "contents": "eJydUcFqAjEQve9XDJ4U3O5d24L0pFAQK/ScTUZN3c2kmaR2Ef+9xI12V0oLPSV5M2/mvZeigAWVDKxrWyHDJhipyQjNMGSsYek01wKscAIU2oqaUYaflpyHYyLN5gsqx+nxiuWOaN9BVhi7F1TCCTaOahjcFW0lf6OSB9MsK5IISRH2dL5dVg8l1Wi8UMRdGZBDYOHgPQijCCqSohrFSVd1WzTohMfZ/ImMR+M7AoTOZQvmqU2TGUx7fOtIIvNSNHF/MtaZYdtCfmgrN+zL9mcyflc1bQrczUDuUIUKVe7aWkpire3F6flsKhKKL6H7xiK8pNyXbREe4JgBiC0a2czVBNg7bbbTDCCZ/IZO0+yHUclcfx5+9JgAMrCnGl13xe28a9h/a4uYXzcWu6A2NvgJrFCSU/ctPoZg9oYO5jF2BP5dQf+//mEJ4s+rIP2N3JpCJJtQl+giwl74wD0lXywYJdQ=",
+      "contentHash": "211fdab36772445d4af3fa3a1588d0af"
+    },
+    "src/trigger/simple-jobs.ts": {
+      "contents": "eJy9VE1r20AQvftXDKIHCxx/kh7WpNQQKO6lJi706rU0VbfWasTsyI4x+jU9FHrtT/AfK1rJsUucmIaSiw7z+ea9pzU2JxbYgWi3ghK+MlkI3gubJEHuxrjuuXjVW4+CcauF9744oswJOGPzFCfTj7SEG9/e3rUATKwgqHNX2lx9p2XQaQFYfX9bsBZDmYK3/SrEKLxVUDX5/EQEbS5OwbBKl76myBRot80iaOd6m5KOFexAJ5hF22mswAmbLBlXmAQzOQSgDOHmXTO7wkspdlNK2osZU4TO6SwmmE4g16xBJ/tfWWQ0vNk1S7qHDeUiHPsh/tPrwdzYItX7n/sf1FDgwKGFGRtnta/SG20EMtzAjMkah21GR+kaK0gO5bOxSIUcoh0Y9Pv98HQPoxScNfABXBFVmBUIF9hpgoyuSEXBorqiOSrW/iB1ckhDTLk49Imx6ETbXHmIt1qwHXaFpvNPc89dO6xLy3GtQhmel/4LLr8RrZ7Rf1NXnDfB6IIJRpdMgOsTwccQFU7IIh9d8bQJGujAGOHSxHRKmB9b1sY4ofFh+qs44voFhtBRTWzQuAHj4JBqqPrrxEPulLfH1/5319xhFXrGNOwLzntmMLxgmsFZ0zxhg+ADsn8HGFMt+99sHgQMXkHj4cv++oodBcHdEXOCrGOCiGzVg85R8M+yQf2mGnQKrjvHk2N6pOofKA/4DA==",
+      "contentHash": "d2bcbe072a62ed98e3d543d88d4a1fb2"
+    },
+    "trigger.config.ts": {
+      "contents": "eJx9UU1LxEAMvfdXPHpSKE518TJeFPWwoDdvIjJ20hKdj25mpqzK/nfZuusHgpckvOS9PBL2Y5SMd1jqOdBlDD0P2KCX6FGfZ+FhIDmyNKlkX9S0qM+qitYzyVJvisu/qAfvFTBKfKYua9Tb6nEsr0ZCKsG/uHXvemNkVTcV4OJwQxM5jdrFYYa8WV8VMZlj0Fi0bQOlcArPoeSYKkAoC1PS2C4CKJgnR3YZrmjSyFKomfGdt/3YLHyRM/kxJ41Fs0c53LGnWPIy3CaN47Ztm2/Gn95XszddjqJxsgfEBBs9v9FPF5ttmoNSuE4jddxzZwQRRlaFpwhLoJDFWINROHQ8GlcBliVp3NdHKkmndm+oH3ZSF/+Tnwo7+3WhdSYJxm3Vzkfh5I3qHFPIn3KbptocnlUfCRiibw==",
+      "contentHash": "42318058a35c83cca0a64f7114c65fad"
+    },
+    "tsconfig.json": {
+      "contents": "eJxdUU1rwzAMvedXCB9Dl2y7DHoajB5WVgbbsYThxKL16i9spcso/e9DbsKaniy/9/R4kk4FgOi8DdpgfA+kvUtiCacCAECQjDsksQSx+ny8f3gSiwtudCuWsBXKW7EAfipNGGVrkP+YHA4kmlEtjfE/a7al2OMIpoMOb7p92WN3uGEo6o7mmPMrq28wTBuveoOvjjD6MCdtpjj5GGaGf2DypudhWdH2ThmMkyQyecR18m4zuVw56+SNJFQX7maq7zSwY4iYMB5xstSui2jRkTRzfTD9TueNbzMA4+YvQ0ubJ8j5R/ic32mzQdL+/1wA4rku82GqOsWuLkVTTE1nbuEgpleYNWx7h+5YqYoSn60s63JeDlxXLKzpN2CqJ0kOIHC4cvMKv+y4k6Y4F39c9qh2",
+      "contentHash": "0cf97a81150d3b8904f285780896980d"
+    },
+    "package.json": {
+      "contents": "eJyNVcFy2yAQvfsrGB1yKkiyqrjOKYd+h2cQrG1qDCqsFKeZ/HsHgYzi2jM9ebTvsfvYfaw/VoQUhp+heCEFP4ARiltffAvhEZxX1gSkYjWrYrR3auQY+OgGmEJeONWjL17Ix4oQQgoJYzhl4IJEwkgoxcF1tufiNCUhpOgGpWUg9U75MycHMOA4Anl6ItO5SEhsj9zhNWX8SpBWJiPTRwJk9zInvVNnweoHf1wwZEemSCZ4HKSyC0oKJEZvPSrjkWt9r9CKkM+pTRJ6MDK0GBa9euUDHst4iHLJewQX0uzWbMvqucarNJKeFJbCuuk6u2fW3IG9dcg7HSl1xao0tiVnQKUVRhHFrmFrtr5yjtae9tadSwfe6uCAidSyalEsii2FVhB7v3tm20Uhx6W60EGVDrhAykeOPN6pZjWrHxLFEcSps5dEbRa6bphScW0POeX3h0Rne2nfDD2DGVJba1a3j/iad6CvvM0jWm97O4L7DwEeNAhMGdfsYWGvLaZ0a9Y8YiHvfC6a24M8+E+cEu33AO49Da5dTgadOhzAMQlj6eUpGaBhdb7p0Hvk/lgG72p1VrP2aqH9ygGpZj1Nm+t0wr33+Gs2WJUHKTT3no7cKW4E0OB96xRGsRXbZJcJ7S95YNfXyBHo3syZn3NNPQglgU4NSNnausl42A8hXresyQ0O0UnF1eYV7QA5W//4QvF8D5QLTPtwt2HbnCS+h38fQtZSb5cvMVnTnh9i4RnS8A5TsXaTGciVflNG0jO4A1xHeMX/WDk/7Ja1zXL/jD/vryDwYXGW8ceJeHxhrlhQeF+GXSd8bH/2PL734MsvU1+z7+z5hmCsjHrX1Q2y7NQ9aNGsGY5ip+BNjApr9upA7098cZuvt8A3yo06B4PNWNhBGQ9ypn+66JWpsavP1V/N8vwy",
+      "contentHash": "bd9e73719052b80c32f0f1aac5fc68c9"
+    }
+  },
+  "externals": [
+    {
+      "name": "import-in-the-middle",
+      "version": "1.11.0"
+    }
+  ],
+  "config": {
+    "project": "proj_puyarnsunmklxflfaarq",
+    "dirs": [
+      "./src/trigger"
+    ]
+  },
+  "outputPath": "/Users/oliveira/Desktop/NFTECH/agenciaos/agenciaos/.trigger/tmp/build-tGhxZT",
+  "runWorkerEntryPoint": "/Users/oliveira/Desktop/NFTECH/agenciaos/agenciaos/.trigger/tmp/build-tGhxZT/.npm/_npx/f51a09bd0abf5f10/node_modules/trigger.dev/dist/esm/entryPoints/dev-run-worker.mjs",
+  "indexWorkerEntryPoint": "/Users/oliveira/Desktop/NFTECH/agenciaos/agenciaos/.trigger/tmp/build-tGhxZT/.npm/_npx/f51a09bd0abf5f10/node_modules/trigger.dev/dist/esm/entryPoints/dev-index-worker.mjs",
+  "configPath": "/Users/oliveira/Desktop/NFTECH/agenciaos/agenciaos/.trigger/tmp/build-tGhxZT/Desktop/NFTECH/agenciaos/agenciaos/trigger.config.mjs",
+  "customConditions": [],
+  "deploy": {
+    "env": {}
+  },
+  "build": {},
+  "otelImportHook": {
+    "include": []
+  }
+}
