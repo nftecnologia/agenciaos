@@ -32,6 +32,7 @@ import {
   User
 } from 'lucide-react'
 import { useState } from 'react'
+import { useNotifications } from '@/hooks/use-notifications'
 
 const navigation = [
   {
@@ -85,6 +86,7 @@ export function Sidebar() {
   const { data: session } = useSession()
   const { tenant } = useTenant()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { unreadCount } = useNotifications()
 
   async function handleSignOut() {
     await signOut({ callbackUrl: '/auth/signin' })
@@ -144,9 +146,9 @@ export function Sidebar() {
                 >
                   <item.icon className="w-5 h-5" />
                   <span className="font-medium">{item.name}</span>
-                  {item.badge && (
+                  {(item.badge || (item.name === 'Automações' && unreadCount > 0)) && (
                     <Badge variant="secondary" className="ml-auto text-xs">
-                      {item.badge}
+                      {item.name === 'Automações' && unreadCount > 0 ? unreadCount : item.badge}
                     </Badge>
                   )}
                 </Link>
