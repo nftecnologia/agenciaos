@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# trigger.dev backup files
+trigger-backup/
+.trigger/
