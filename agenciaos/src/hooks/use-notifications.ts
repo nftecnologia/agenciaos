@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import toast from 'react-hot-toast'
 
 export interface Notification {
   id: string
@@ -92,11 +91,8 @@ export function useNotifications() {
     const updatedJobs = [...activeJobs, newJob]
     saveActiveJobs(updatedJobs)
     
-    // Mostrar toast de início
-    toast.loading(`🔄 Analisando ${title}...`, {
-      id: `start-${jobId}`,
-      duration: 2000
-    })
+    // Log de início (sem toast para evitar dependência)
+    console.log(`🔄 Analisando ${title}...`)
     
     // Programar conclusão do job
     setTimeout(() => {
@@ -132,11 +128,8 @@ export function useNotifications() {
       return updatedNotifications
     })
     
-    // Mostrar toast de conclusão
-    toast.success(notification.title, {
-      id: `complete-${jobId}`,
-      duration: 4000
-    })
+    // Log de conclusão (sem toast para evitar dependência)
+    console.log(`✅ ${notification.title}`)
   }, [])
 
   // Marcar notificação como lida
