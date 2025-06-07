@@ -1,18 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { useNotifications, type Notification } from '@/hooks/use-notifications'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useNotifications, type Notification } from '../../hooks/use-notifications'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
+import { Badge } from '../ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { 
   Select, 
   SelectContent, 
   SelectItem, 
   SelectTrigger, 
   SelectValue 
-} from '@/components/ui/select'
+} from '../ui/select'
 import { 
   Search, 
   Filter, 
