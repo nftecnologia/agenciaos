@@ -23,7 +23,6 @@ const mockUsers = [
 ]
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  // Remover PrismaAdapter temporariamente para desenvolvimento
   session: {
     strategy: "jwt",
   },
@@ -39,61 +38,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log("❌ Credenciais vazias")
           return null
         }
 
-        try {
-          // Tentar usar banco de dados primeiro
-          const { db } = await import("@/lib/db")
-          
-          const user = await db.user.findUnique({
-            where: {
-              email: credentials.email as string,
-            },
-          })
+        // Usar sistema mock para desenvolvimento
+        console.log("🔄 Usando autenticação mock para desenvolvimento")
+        console.log("📧 Tentando login:", credentials.email)
+        
+        const mockUser = mockUsers.find(
+          u => u.email === credentials.email && u.password === credentials.password
+        )
 
-          if (!user || !user.password) {
-            return null
-          }
+        if (!mockUser) {
+          console.log("❌ Usuário mock não encontrado:", credentials.email)
+          console.log("✅ Usuários disponíveis:", mockUsers.map(u => u.email))
+          return null
+        }
 
-          const bcrypt = await import("bcryptjs")
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          )
-
-          if (!isPasswordValid) {
-            return null
-          }
-
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            image: user.image,
-            role: user.role,
-            agencyId: user.agencyId,
-          }
-        } catch (error) {
-          // Se falhar (banco indisponível), usar sistema mock
-          console.log("🔄 Banco indisponível, usando autenticação mock para desenvolvimento")
-          
-          const mockUser = mockUsers.find(
-            u => u.email === credentials.email && u.password === credentials.password
-          )
-
-          if (!mockUser) {
-            return null
-          }
-
-          return {
-            id: mockUser.id,
-            email: mockUser.email,
-            name: mockUser.name,
-            image: null,
-            role: mockUser.role,
-            agencyId: mockUser.agencyId,
-          }
+        console.log("✅ Login mock bem-sucedido:", mockUser.email)
+        return {
+          id: mockUser.id,
+          email: mockUser.email,
+          name: mockUser.name,
+          image: null,
+          role: mockUser.role,
+          agencyId: mockUser.agencyId,
         }
       },
     }),
