@@ -392,4 +392,153 @@ export class OpenAIService {
   }
 }
 
-// export { openai } - temporariamente comentado
+// Geração de Imagens com DALL-E
+export interface ImageGenerationInput {
+  prompt: string
+  style?: 'vivid' | 'natural'
+  size?: '1024x1024' | '1792x1024' | '1024x1792'
+  quality?: 'standard' | 'hd'
+}
+
+export class RunwareService {
+  static async generateCarouselBackground(input: {
+    topic: string
+    slideNumber: number
+    slideTitle: string
+    style?: 'professional' | 'modern' | 'colorful' | 'minimalist'
+  }): Promise<string | null> {
+    try {
+      const { topic, slideNumber, slideTitle, style = 'professional' } = input
+
+      // Mapear estilos para prompts otimizados
+      const stylePrompts = {
+        professional: 'clean corporate design, soft blue and white tones, minimal professional aesthetic',
+        modern: 'modern geometric shapes, soft gradients, contemporary design, pastel colors',
+        colorful: 'soft pastel colors, gentle gradients, warm and inviting, light tones',
+        minimalist: 'very light background, almost white, subtle textures, clean minimal design'
+      }
+
+      const styleContext = stylePrompts[style]
+
+      // Criar prompt contextual otimizado - SEM TEXTO
+      const positivePrompt = `
+        Subtle background image for ${slideTitle} about ${topic}.
+        ${styleContext}.
+        Very light, almost transparent background design.
+        Soft, minimal, abstract representation of the concept.
+        Perfect for text overlay with high readability.
+        Ultra subtle background that supports text prominence.
+      `.trim()
+
+      const negativePrompt = 'text, words, letters, writing, typography, font, captions, titles, labels, signs, symbols, numbers, characters, script, handwriting, readable text, any text content, watermarks, people, faces'
+
+      console.log('🎨 Gerando background Runware:', positivePrompt)
+
+      // Gerar UUID único para a task
+      const taskUUID = crypto.randomUUID()
+
+      // Preparar payload para Runware API
+      const payload = [
+        {
+          taskType: "imageInference",
+          taskUUID: taskUUID,
+          outputType: "base64Data",
+          outputFormat: "WEBP",
+          positivePrompt: positivePrompt,
+          negativePrompt: negativePrompt,
+          height: 512,
+          width: 512,
+          model: "runware:101@1", // FLUX.1 Schnell
+          steps: 4, // Mais rápido
+          CFGScale: 1.0, // Menor controle para mais naturalidade
+          numberResults: 1
+        }
+      ]
+
+      const response = await fetch('https://api.runware.ai/v1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.RUNWARE_API_KEY}`
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('❌ Erro na API Runware:', response.status, errorText)
+        return null
+      }
+
+      const result = await response.json()
+      
+      if (result.error) {
+        console.error('❌ Erro Runware:', result.error)
+        return null
+      }
+
+      if (result.data && result.data.length > 0) {
+        const imageData = result.data[0]
+        
+        if (imageData.imageBase64Data) {
+          const dataUrl = `data:image/webp;base64,${imageData.imageBase64Data}`
+          
+          console.log(`📏 Tamanho da imagem: ${Math.round(imageData.imageBase64Data.length / 1024)}KB`)
+          console.log('✅ Background Runware gerado com sucesso')
+          
+          return dataUrl
+        }
+      }
+
+      console.error('❌ Resposta inválida da Runware:', result)
+      return null
+
+    } catch (error) {
+      console.error('❌ Erro ao gerar background Runware:', error)
+      return null
+    }
+  }
+
+  // Gerar múltiplos backgrounds para um carrossel inteiro
+  static async generateCarouselBackgrounds(input: {
+    topic: string
+    slides: Array<{ title: string }>
+    style?: 'professional' | 'modern' | 'colorful' | 'minimalist'
+  }): Promise<Array<string | null>> {
+    const { topic, slides, style = 'professional' } = input
+    const backgrounds: Array<string | null> = []
+
+    console.log(`🎨 Gerando ${slides.length} backgrounds Runware para: "${topic}"`)
+
+    // Gerar backgrounds em paralelo (mas com limite)
+    const promises = slides.map((slide, index) =>
+      this.generateCarouselBackground({
+        topic,
+        slideNumber: index + 1,
+        slideTitle: slide.title,
+        style
+      })
+    )
+
+    try {
+      // Executar em paralelo com Promise.all
+      const results = await Promise.all(promises)
+      backgrounds.push(...results)
+
+      const successCount = results.filter((url: string | null) => url !== null).length
+      console.log(`✅ Runware concluído: ${successCount}/${slides.length} backgrounds gerados`)
+
+      return backgrounds
+    } catch (error) {
+      console.error('❌ Erro ao gerar backgrounds em lote:', error)
+      
+      // Fallback: retornar array com nulls
+      return slides.map(() => null)
+    }
+  }
+}
+
+// Manter DALLEService como alias para compatibilidade
+export const DALLEService = RunwareService
+
+export { openai }
