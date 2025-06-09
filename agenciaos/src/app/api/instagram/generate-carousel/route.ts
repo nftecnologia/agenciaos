@@ -27,7 +27,7 @@ const generateCarouselSchema = z.object({
     useAIBackgrounds: z.boolean().optional(),
     backgroundStyle: z.enum(['professional', 'modern', 'colorful', 'minimalist']).optional(),
   }).optional(),
-  topic: z.string().optional() // Necessário para o DALL-E gerar imagens contextuais
+  topic: z.string().optional()
 })
 
 export async function POST(request: NextRequest) {
@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { templateType, slides, brandConfig, topic } = generateCarouselSchema.parse(body)
 
-    // Usar configuração padrão se não fornecida
     const finalBrandConfig: BrandConfig = {
       ...defaultBrandConfig,
       ...brandConfig
@@ -46,7 +45,6 @@ export async function POST(request: NextRequest) {
     console.log('🎭 Estilo:', finalBrandConfig.backgroundStyle)
     console.log('📋 Tópico:', topic)
 
-    // Gerar imagens de background com Runware AI se solicitado
     let backgroundImages: (string | null)[] = []
     
     if (finalBrandConfig.useAIBackgrounds && topic) {
@@ -57,7 +55,7 @@ export async function POST(request: NextRequest) {
           topic,
           slides: slides.map(slide => ({ 
             title: slide.title || '', 
-            content: slide.content // ✅ Passando conteúdo para contextualização
+            content: slide.content
           })),
           style: finalBrandConfig.backgroundStyle || 'professional'
         })
@@ -67,15 +65,12 @@ export async function POST(request: NextRequest) {
         
       } catch (error) {
         console.error('❌ Erro ao gerar backgrounds Runware AI:', error)
-        // Continuar sem backgrounds em caso de erro
         backgroundImages = slides.map(() => null)
       }
     } else {
-      // Sem backgrounds AI
       backgroundImages = slides.map(() => null)
     }
 
-    // Combinar slides com backgrounds gerados
     const slidesWithBackgrounds = slides.map((slide, index) => ({
       ...slide,
       backgroundUrl: backgroundImages[index] || undefined
@@ -83,7 +78,6 @@ export async function POST(request: NextRequest) {
 
     console.log('📄 Gerando templates HTML...')
 
-    // Gerar HTML para cada slide baseado no template
     let htmlSlides: string[] = []
     
     switch (templateType) {
@@ -102,7 +96,6 @@ export async function POST(request: NextRequest) {
 
     console.log('🖼️ Enviando para MarkupGo...')
 
-    // Gerar imagens via MarkupGo
     const results = await markupgoClient.generateCarousel(htmlSlides)
 
     console.log(`✅ MarkupGo: ${results.length} imagens geradas`)
@@ -151,7 +144,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Rota para obter templates disponíveis
 export async function GET() {
   return NextResponse.json({
     templates: [
