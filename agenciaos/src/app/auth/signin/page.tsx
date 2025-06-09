@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -23,20 +24,23 @@ export default function SignInPage() {
     setError('')
 
     try {
-      // TODO: Reintegrar loginAction quando o build estiver funcionando
-      if (!email || !password) {
-        setError('Email e senha são obrigatórios')
-        return
-      }
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
 
-      // Simulação temporária de login
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Por enquanto, sempre redireciona (login temporariamente desabilitado)
-      router.push('/dashboard')
-      router.refresh()
-    } catch (error) {
-      console.error('Erro no login:', error)
+      if (result?.error) {
+        setError('Email ou senha incorretos')
+      } else {
+        // Verificar se o login foi bem-sucedido
+        const session = await getSession()
+        if (session) {
+          router.push('/')
+          router.refresh()
+        }
+      }
+    } catch {
       setError('Erro interno do servidor')
     } finally {
       setIsLoading(false)
@@ -136,4 +140,4 @@ export default function SignInPage() {
       </div>
     </div>
   )
-}
+} 

@@ -105,14 +105,14 @@ export function ExpensesList() {
             />
           </div>
           <Select
-            value={filters.category || ''}
-            onValueChange={(value) => updateFilters({ category: value || undefined, page: 1 })}
+            value={filters.category || 'all'}
+            onValueChange={(value) => updateFilters({ category: value === 'all' ? undefined : value, page: 1 })}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Categoria" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas</SelectItem>
+              <SelectItem value="all">Todas</SelectItem>
               <SelectItem value="Marketing">Marketing</SelectItem>
               <SelectItem value="Tecnologia">Tecnologia</SelectItem>
               <SelectItem value="Escritório">Escritório</SelectItem>
@@ -346,4 +346,4 @@ export function ExpensesList() {
       </Dialog>
     </div>
   )
-} 
+}

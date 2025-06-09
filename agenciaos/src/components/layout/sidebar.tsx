@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { useTenant } from '../../hooks/use-tenant'
-import { AdminOnly } from '../auth/permission-guard'
-import { cn } from '../../lib/utils'
-import { Button } from '../ui/button'
-import { Badge } from '../ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { useTenant } from '@/hooks/use-tenant'
+import { AdminOnly } from '@/components/auth/permission-guard'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu'
 import {
   LayoutDashboard,
   Users,
@@ -24,7 +24,6 @@ import {
   Kanban,
   DollarSign,
   Brain,
-  Bot,
   Settings,
   Menu,
   X,
@@ -32,7 +31,6 @@ import {
   User
 } from 'lucide-react'
 import { useState } from 'react'
-import { useNotifications } from '../../hooks/use-notifications'
 
 const navigation = [
   {
@@ -72,13 +70,6 @@ const navigation = [
     current: false,
     badge: '31',
   },
-  {
-    name: 'Automações',
-    href: '/automations',
-    icon: Bot,
-    current: false,
-    badge: 'NEW',
-  },
 ]
 
 export function Sidebar() {
@@ -86,7 +77,6 @@ export function Sidebar() {
   const { data: session } = useSession()
   const { tenant } = useTenant()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { unreadCount } = useNotifications()
 
   async function handleSignOut() {
     await signOut({ callbackUrl: '/auth/signin' })
@@ -146,9 +136,9 @@ export function Sidebar() {
                 >
                   <item.icon className="w-5 h-5" />
                   <span className="font-medium">{item.name}</span>
-                  {(item.badge || (item.name === 'Automações' && unreadCount > 0)) && (
+                  {item.badge && (
                     <Badge variant="secondary" className="ml-auto text-xs">
-                      {item.name === 'Automações' && unreadCount > 0 ? unreadCount : item.badge}
+                      {item.badge}
                     </Badge>
                   )}
                 </Link>

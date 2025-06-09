@@ -88,7 +88,7 @@ export function useRevenues(initialFilters: RevenueFilters = {}) {
     try {
       const searchParams = new URLSearchParams()
       
-      Object.entries({ ...filters, ...currentFilters }).forEach(([key, value]) => {
+      Object.entries(currentFilters).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
           searchParams.append(key, String(value))
         }
@@ -110,7 +110,7 @@ export function useRevenues(initialFilters: RevenueFilters = {}) {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [])
 
   // Função para criar receita
   const createRevenue = useCallback(async (data: CreateRevenueData): Promise<Revenue> => {
@@ -206,8 +206,39 @@ export function useRevenues(initialFilters: RevenueFilters = {}) {
 
   // Buscar receitas quando filtros mudarem
   useEffect(() => {
-    fetchRevenues()
-  }, [fetchRevenues])
+    const loadRevenues = async () => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const searchParams = new URLSearchParams()
+        
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            searchParams.append(key, String(value))
+          }
+        })
+
+        const response = await fetch(`/api/revenues?${searchParams}`)
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Erro ao buscar receitas')
+        }
+
+        const data: RevenuesResponse = await response.json()
+        setRevenues(data.revenues)
+        setPagination(data.pagination)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro desconhecido')
+        setRevenues([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadRevenues()
+  }, [filters])
 
   return {
     revenues,
@@ -224,4 +255,4 @@ export function useRevenues(initialFilters: RevenueFilters = {}) {
     goToPage,
     resetFilters,
   }
-} 
+}

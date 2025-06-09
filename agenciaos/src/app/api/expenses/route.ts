@@ -23,11 +23,11 @@ export async function GET(request: NextRequest) {
     // Extrair parâmetros de query
     const { searchParams } = new URL(request.url)
     const queryData = {
-      category: searchParams.get('category') || '',
-      startDate: searchParams.get('startDate') || '',
-      endDate: searchParams.get('endDate') || '',
-      page: parseInt(searchParams.get('page') || '1'),
-      limit: parseInt(searchParams.get('limit') || '10'),
+      category: searchParams.get('category') || undefined,
+      startDate: searchParams.get('startDate') || undefined,
+      endDate: searchParams.get('endDate') || undefined,
+      page: searchParams.get('page') || '1',
+      limit: searchParams.get('limit') || '10',
     }
 
     // Validar query parameters

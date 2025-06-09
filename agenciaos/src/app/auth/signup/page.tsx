@@ -38,27 +38,38 @@ export default function SignUpPage() {
     setError('')
     setSuccess('')
 
+    // Validações
+    if (formData.password !== formData.confirmPassword) {
+      setError('As senhas não coincidem')
+      setIsLoading(false)
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres')
+      setIsLoading(false)
+      return
+    }
+
     try {
-      // TODO: Reintegrar registerAction quando o build estiver funcionando
-      
-      // Validações básicas
-      if (!formData.name || !formData.email || !formData.password || !formData.agencyName) {
-        setError('Todos os campos são obrigatórios')
-        return
-      }
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          agencyName: formData.agencyName,
+        }),
+      })
 
-      if (formData.password !== formData.confirmPassword) {
-        setError('As senhas não coincidem')
-        return
-      }
+      const data = await response.json()
 
-      if (formData.password.length < 6) {
-        setError('A senha deve ter pelo menos 6 caracteres')
-        return
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao criar conta')
       }
-
-      // Simulação temporária de registro
-      await new Promise(resolve => setTimeout(resolve, 1500))
 
       setSuccess('Conta criada com sucesso! Redirecionando...')
       
@@ -68,8 +79,7 @@ export default function SignUpPage() {
       }, 2000)
 
     } catch (error: unknown) {
-      console.error('Erro no registro:', error)
-      setError('Erro interno do servidor. Tente novamente.')
+      setError(error instanceof Error ? error.message : 'Erro desconhecido')
     } finally {
       setIsLoading(false)
     }
@@ -235,4 +245,4 @@ export default function SignUpPage() {
       </div>
     </div>
   )
-}
+} 
