@@ -1,28 +1,12 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { PrismaAdapter } from "@auth/prisma-adapter"
 import { Role } from "@prisma/client"
-
-// Usuários mock para desenvolvimento (quando não há banco)
-const mockUsers = [
-  {
-    id: "1",
-    email: "admin@agenciaos.com",
-    password: "123456", // Em produção seria hash
-    name: "Admin AgênciaOS",
-    role: "ADMIN" as Role,
-    agencyId: "agency-1"
-  },
-  {
-    id: "2", 
-    email: "user@agenciaos.com",
-    password: "123456",
-    name: "Usuário Teste",
-    role: "USER" as Role,
-    agencyId: "agency-1"
-  }
-]
+import bcrypt from "bcryptjs"
+import { db } from "@/lib/db"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(db),
   session: {
     strategy: "jwt",
   },
@@ -42,28 +26,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null
         }
 
-        // Usar sistema mock para desenvolvimento
-        console.log("🔄 Usando autenticação mock para desenvolvimento")
-        console.log("📧 Tentando login:", credentials.email)
-        
-        const mockUser = mockUsers.find(
-          u => u.email === credentials.email && u.password === credentials.password
-        )
+        try {
+          console.log("🔍 Buscando usuário no banco Neon:", credentials.email)
+          
+          const user = await db.user.findUnique({
+            where: {
+              email: credentials.email as string,
+            },
+          })
 
-        if (!mockUser) {
-          console.log("❌ Usuário mock não encontrado:", credentials.email)
-          console.log("✅ Usuários disponíveis:", mockUsers.map(u => u.email))
+          if (!user || !user.password) {
+            console.log("❌ Usuário não encontrado ou sem senha")
+            return null
+          }
+
+          console.log("🔑 Verificando senha...")
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password as string,
+            user.password
+          )
+
+          if (!isPasswordValid) {
+            console.log("❌ Senha inválida")
+            return null
+          }
+
+          console.log("✅ Login bem-sucedido:", user.email)
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: user.role,
+            agencyId: user.agencyId,
+          }
+        } catch (error) {
+          console.error("❌ Erro na autenticação:", error)
           return null
-        }
-
-        console.log("✅ Login mock bem-sucedido:", mockUser.email)
-        return {
-          id: mockUser.id,
-          email: mockUser.email,
-          name: mockUser.name,
-          image: null,
-          role: mockUser.role,
-          agencyId: mockUser.agencyId,
         }
       },
     }),
