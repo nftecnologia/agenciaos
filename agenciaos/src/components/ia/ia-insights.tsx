@@ -4,10 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { 
   TrendingUp, 
-  TrendingDown, 
-  Users, 
-  DollarSign, 
-  Clock, 
   Target,
   AlertTriangle,
   CheckCircle,

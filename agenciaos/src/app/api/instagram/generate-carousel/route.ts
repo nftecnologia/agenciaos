@@ -6,7 +6,6 @@ import {
   generateBusinessTipsTemplate, 
   generateClientResultsTemplate,
   defaultBrandConfig,
-  type SlideContent,
   type BrandConfig 
 } from '@/lib/instagram-templates'
 
@@ -56,7 +55,10 @@ export async function POST(request: NextRequest) {
       try {
         backgroundImages = await DALLEService.generateCarouselBackgrounds({
           topic,
-          slides: slides.map(slide => ({ title: slide.title || '' })),
+          slides: slides.map(slide => ({ 
+            title: slide.title || '', 
+            content: slide.content // ✅ Passando conteúdo para contextualização
+          })),
           style: finalBrandConfig.backgroundStyle || 'professional'
         })
         

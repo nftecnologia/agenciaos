@@ -400,101 +400,497 @@ export interface ImageGenerationInput {
   quality?: 'standard' | 'hd'
 }
 
-export class RunwareService {
+export class FreepikService {
   static async generateCarouselBackground(input: {
     topic: string
     slideNumber: number
     slideTitle: string
+    slideContent?: string
     style?: 'professional' | 'modern' | 'colorful' | 'minimalist'
   }): Promise<string | null> {
     try {
-      const { topic, slideNumber, slideTitle, style = 'professional' } = input
+      const { slideNumber, slideTitle, slideContent, style = 'professional' } = input
 
-      // Mapear estilos para prompts otimizados
+      // Sistema de Análise Dinâmica de Conteúdo
+      const analisarContextoCompleto = (title: string, content?: string): string => {
+        const textoCompleto = `${title} ${content || ''}`.trim()
+        
+        console.log(`🔍 Analisando conteúdo completo: "${textoCompleto}"`)
+        
+        // Análise em camadas
+        const analise = {
+          contexto: extrairContextoGeral(textoCompleto),
+          acao: extrairAcaoPrincipal(textoCompleto),
+          objeto: extrairObjetoFoco(textoCompleto),
+          ambiente: extrairAmbienteSugerido(textoCompleto),
+          emocao: extrairTomEmocional(textoCompleto),
+          especificidades: extrairDetalhesEspecificos(textoCompleto)
+        }
+        
+        return construirPromptDinamico(analise, textoCompleto)
+      }
+
+      // Extração de Contexto Geral
+      const extrairContextoGeral = (texto: string) => {
+        const textoLower = texto.toLowerCase()
+        
+        const dominios = [
+          {
+            nome: 'social_media_marketing',
+            indicadores: ['instagram', 'social', 'rede', 'post', 'publicação', 'engajamento', 'alcance', 'hashtag', 'stories', 'reels', 'feed'],
+            elementos: ['smartphone interface', 'social media dashboard', 'Instagram app', 'mobile device']
+          },
+          {
+            nome: 'content_creation',
+            indicadores: ['criar', 'produzir', 'desenvolver', 'design', 'editar', 'filmar', 'fotografar', 'gravar', 'conteúdo', 'qualidade'],
+            elementos: ['creative workspace', 'production equipment', 'editing setup', 'studio environment']
+          },
+          {
+            nome: 'business_strategy',
+            indicadores: ['estratégia', 'plano', 'negócio', 'empresa', 'mercado', 'competição', 'análise'],
+            elementos: ['business meeting', 'strategy board', 'corporate office', 'planning session']
+          },
+          {
+            nome: 'sales_marketing',
+            indicadores: ['venda', 'vender', 'cliente', 'conversão', 'lead', 'funil', 'CRM', 'prospect'],
+            elementos: ['sales presentation', 'client meeting', 'conversion charts', 'sales dashboard']
+          },
+          {
+            nome: 'analytics_data',
+            indicadores: ['dados', 'análise', 'métricas', 'relatório', 'dashboard', 'insights', 'performance'],
+            elementos: ['analytics screen', 'data visualization', 'charts and graphs', 'metrics dashboard']
+          },
+          {
+            nome: 'audience_research',
+            indicadores: ['público', 'audiência', 'persona', 'target', 'segmentação', 'demografia', 'conhece'],
+            elementos: ['audience analysis', 'demographic charts', 'user research', 'customer profiles']
+          },
+          {
+            nome: 'education_learning',
+            indicadores: ['aprender', 'ensinar', 'curso', 'tutorial', 'dica', 'técnica', 'método'],
+            elementos: ['educational environment', 'learning materials', 'instruction setup', 'knowledge sharing']
+          }
+        ]
+        
+        for (const dominio of dominios) {
+          const matches = dominio.indicadores.filter(indicador => textoLower.includes(indicador))
+          if (matches.length > 0) {
+            return {
+              dominio: dominio.nome,
+              elementos: dominio.elementos,
+              confianca: matches.length / dominio.indicadores.length,
+              matches
+            }
+          }
+        }
+        
+        return {
+          dominio: 'general_business',
+          elementos: ['professional workspace', 'modern office'],
+          confianca: 0.5,
+          matches: []
+        }
+      }
+
+      // Extração de Ação Principal
+      const extrairAcaoPrincipal = (texto: string) => {
+        const textoLower = texto.toLowerCase()
+        
+        const acoes = [
+          {
+            acao: 'creating_content',
+            verbos: ['criar', 'produzir', 'desenvolver', 'gerar', 'fazer', 'construir'],
+            elementos: ['creation process', 'hands working', 'active production', 'making content']
+          },
+          {
+            acao: 'analyzing_data',
+            verbos: ['analisar', 'examinar', 'estudar', 'investigar', 'pesquisar', 'avaliar'],
+            elementos: ['person analyzing', 'data review', 'examination process', 'research activity']
+          },
+          {
+            acao: 'presenting_teaching',
+            verbos: ['apresentar', 'ensinar', 'mostrar', 'explicar', 'demonstrar', 'orientar'],
+            elementos: ['presentation setup', 'teaching environment', 'explanation scene', 'demonstration']
+          },
+          {
+            acao: 'planning_strategizing',
+            verbos: ['planejar', 'estrategizar', 'organizar', 'estruturar', 'preparar'],
+            elementos: ['planning session', 'strategy meeting', 'organization process', 'preparation work']
+          },
+          {
+            acao: 'connecting_engaging',
+            verbos: ['conectar', 'engajar', 'interagir', 'comunicar', 'relacionar'],
+            elementos: ['interaction scene', 'communication setup', 'engagement activity', 'connection visual']
+          },
+          {
+            acao: 'growing_scaling',
+            verbos: ['crescer', 'expandir', 'aumentar', 'escalar', 'desenvolver', 'evoluir'],
+            elementos: ['growth visualization', 'expansion imagery', 'scaling process', 'development scene']
+          }
+        ]
+        
+        for (const acaoObj of acoes) {
+          const verbosEncontrados = acaoObj.verbos.filter(verbo => textoLower.includes(verbo))
+          if (verbosEncontrados.length > 0) {
+            return {
+              acao: acaoObj.acao,
+              elementos: acaoObj.elementos,
+              verbos: verbosEncontrados,
+              intensidade: verbosEncontrados.length
+            }
+          }
+        }
+        
+        return {
+          acao: 'general_business_activity',
+          elementos: ['professional activity', 'business scene'],
+          verbos: [],
+          intensidade: 0
+        }
+      }
+
+      // Extração de Objeto/Foco
+      const extrairObjetoFoco = (texto: string) => {
+        const textoLower = texto.toLowerCase()
+        const objetos = []
+        
+        // Tecnologia e ferramentas
+        const tecnologia = [
+          { palavra: 'câmera', elementos: ['professional camera', 'DSLR equipment', 'photography gear'] },
+          { palavra: 'computador', elementos: ['laptop computer', 'desktop setup', 'computer workstation'] },
+          { palavra: 'smartphone', elementos: ['mobile phone', 'iPhone', 'mobile device'] },
+          { palavra: 'microfone', elementos: ['professional microphone', 'audio equipment', 'recording gear'] },
+          { palavra: 'iluminação', elementos: ['studio lighting', 'professional lights', 'ring light'] },
+          { palavra: 'software', elementos: ['computer screen with software', 'digital tools', 'app interface'] }
+        ]
+        
+        // Espaços e ambientes
+        const ambientes = [
+          { palavra: 'escritório', elementos: ['modern office', 'corporate workspace', 'business environment'] },
+          { palavra: 'casa', elementos: ['home office', 'residential workspace', 'home studio'] },
+          { palavra: 'estúdio', elementos: ['professional studio', 'production studio', 'creative space'] },
+          { palavra: 'sala', elementos: ['meeting room', 'conference space', 'presentation room'] },
+          { palavra: 'loja', elementos: ['retail space', 'store environment', 'commercial setting'] }
+        ]
+        
+        // Documentos e materiais
+        const materiais = [
+          { palavra: 'relatório', elementos: ['business report', 'document analysis', 'data presentation'] },
+          { palavra: 'gráfico', elementos: ['charts and graphs', 'data visualization', 'analytics display'] },
+          { palavra: 'planilha', elementos: ['spreadsheet view', 'data table', 'Excel interface'] },
+          { palavra: 'apresentação', elementos: ['presentation slides', 'PowerPoint display', 'slide deck'] }
+        ]
+        
+        const todosObjetos = [...tecnologia, ...ambientes, ...materiais]
+        
+        for (const obj of todosObjetos) {
+          if (textoLower.includes(obj.palavra)) {
+            objetos.push({
+              tipo: obj.palavra,
+              elementos: obj.elementos,
+              relevancia: textoLower.split(obj.palavra).length - 1
+            })
+          }
+        }
+        
+        return objetos.sort((a, b) => b.relevancia - a.relevancia)
+      }
+
+      // Extração de Ambiente Sugerido
+      const extrairAmbienteSugerido = (texto: string) => {
+        const textoLower = texto.toLowerCase()
+        
+        if (textoLower.includes('casa') || textoLower.includes('caseiro')) {
+          return ['home environment', 'residential setting', 'cozy atmosphere']
+        }
+        if (textoLower.includes('escritório') || textoLower.includes('corporativo')) {
+          return ['corporate office', 'business environment', 'professional setting']
+        }
+        if (textoLower.includes('estúdio') || textoLower.includes('produção')) {
+          return ['studio setting', 'production environment', 'creative space']
+        }
+        if (textoLower.includes('café') || textoLower.includes('restaurante')) {
+          return ['cafe environment', 'casual setting', 'social space']
+        }
+        
+        return ['modern workspace', 'professional environment']
+      }
+
+      // Extração de Tom Emocional
+      const extrairTomEmocional = (texto: string) => {
+        const textoLower = texto.toLowerCase()
+        
+        const tons = [
+          {
+            tom: 'urgente_acao',
+            indicadores: ['agora', 'hoje', 'imediatamente', 'rápido', 'urgente', 'não perca'],
+            elementos: ['urgent atmosphere', 'call to action energy', 'immediate response', 'time-sensitive']
+          },
+          {
+            tom: 'profissional_serio',
+            indicadores: ['estratégia', 'profissional', 'corporativo', 'negócio', 'empresa'],
+            elementos: ['serious business tone', 'professional atmosphere', 'corporate setting', 'formal environment']
+          },
+          {
+            tom: 'inspirador_motivacional',
+            indicadores: ['transformar', 'sucesso', 'conquista', 'alcançar', 'realizar', 'sonho'],
+            elementos: ['inspirational scene', 'motivational atmosphere', 'success visualization', 'achievement mood']
+          },
+          {
+            tom: 'educativo_didatico',
+            indicadores: ['aprender', 'ensinar', 'dica', 'tutorial', 'como', 'passo a passo'],
+            elementos: ['educational setting', 'learning atmosphere', 'instructional environment', 'teaching mood']
+          },
+          {
+            tom: 'criativo_artistico',
+            indicadores: ['criar', 'design', 'arte', 'criativo', 'inovador', 'original'],
+            elementos: ['creative atmosphere', 'artistic environment', 'innovative setting', 'design workspace']
+          }
+        ]
+        
+        for (const tonObj of tons) {
+          const matches = tonObj.indicadores.filter(ind => textoLower.includes(ind))
+          if (matches.length > 0) {
+            return {
+              tom: tonObj.tom,
+              elementos: tonObj.elementos,
+              intensidade: matches.length,
+              matches
+            }
+          }
+        }
+        
+        return {
+          tom: 'neutro_equilibrado',
+          elementos: ['balanced atmosphere', 'neutral setting'],
+          intensidade: 0,
+          matches: []
+        }
+      }
+
+      // Extração de Detalhes Específicos
+      const extrairDetalhesEspecificos = (texto: string) => {
+        const elementos = []
+        const textoLower = texto.toLowerCase()
+        
+        // Extrair números, percentuais, métricas específicas
+        const numeros = texto.match(/\d+%?/g)
+        if (numeros && numeros.length > 0) {
+          elementos.push('data visualization with numbers')
+        }
+        
+        // Extrair menções a plataformas específicas
+        const plataformas = ['instagram', 'facebook', 'youtube', 'linkedin', 'twitter', 'tiktok']
+        const plataformasEncontradas = plataformas.filter(p => textoLower.includes(p))
+        if (plataformasEncontradas.length > 0) {
+          elementos.push(`${plataformasEncontradas[0]} interface visible`)
+        }
+        
+        // Extrair menções a cores específicas
+        const cores = {
+          'azul': 'blue color scheme',
+          'vermelho': 'red accents',
+          'verde': 'green elements',
+          'amarelo': 'yellow highlights',
+          'roxo': 'purple aesthetic',
+          'rosa': 'pink elements',
+          'laranja': 'orange details'
+        }
+        
+        for (const [cor, elemento] of Object.entries(cores)) {
+          if (textoLower.includes(cor)) {
+            elementos.push(elemento)
+            break
+          }
+        }
+        
+        return elementos
+      }
+
+      // Construção do Prompt Dinâmico
+      const construirPromptDinamico = (analise: {
+        contexto: { dominio: string; elementos: string[]; confianca: number; matches: string[] };
+        acao: { acao: string; elementos: string[]; verbos: string[]; intensidade: number };
+        objeto: Array<{ tipo: string; elementos: string[]; relevancia: number }>;
+        ambiente: string[];
+        emocao: { tom: string; elementos: string[]; intensidade: number; matches: string[] };
+        especificidades: string[];
+      }, textoOriginal: string): string => {
+        console.log(`🎨 Construindo prompt dinâmico para: "${textoOriginal.substring(0, 50)}..."`)
+        
+        const elementosVisuais = []
+        
+        // Elementos do contexto (peso alto)
+        if (analise.contexto.confianca > 0.3) {
+          elementosVisuais.push(...analise.contexto.elementos.slice(0, 2))
+        }
+        
+        // Elementos da ação principal
+        if (analise.acao.intensidade > 0) {
+          elementosVisuais.push(...analise.acao.elementos.slice(0, 2))
+        }
+        
+        // Elementos dos objetos específicos (peso muito alto)
+        for (const obj of analise.objeto.slice(0, 2)) {
+          elementosVisuais.push(...obj.elementos.slice(0, 1))
+        }
+        
+        // Elementos do ambiente
+        if (analise.ambiente && analise.ambiente.length > 0) {
+          elementosVisuais.push(...analise.ambiente.slice(0, 1))
+        }
+        
+        // Elementos do tom emocional
+        if (analise.emocao.intensidade > 0) {
+          elementosVisuais.push(...analise.emocao.elementos.slice(0, 1))
+        }
+        
+        // Elementos específicos extraídos do texto
+        elementosVisuais.push(...analise.especificidades)
+        
+        // Remover duplicatas e selecionar os melhores
+        const elementosUnicos = [...new Set(elementosVisuais)]
+          .filter(elemento => elemento && elemento.length > 3)
+          .slice(0, 8)
+        
+        // Elementos base sempre presentes
+        const elementosBase = [
+          'professional photography',
+          'high quality image',
+          'modern aesthetic',
+          'Instagram template background',
+          'clean composition',
+          'professional lighting',
+          'space for text overlay'
+        ]
+        
+        // Construir prompt final
+        const promptCompleto = [
+          ...elementosUnicos,
+          'professional setup',
+          ...elementosBase
+        ].join(', ')
+        
+        // Log detalhado
+        console.log(`📊 Análise detalhada:`)
+        console.log(`   🎯 Domínio: ${analise.contexto.dominio} (${(analise.contexto.confianca * 100).toFixed(1)}%)`)
+        console.log(`   🎬 Ação: ${analise.acao.acao} (intensidade: ${analise.acao.intensidade})`)
+        console.log(`   📦 Objetos: ${analise.objeto.map((o) => o.tipo).join(', ')}`)
+        console.log(`   🎭 Tom: ${analise.emocao.tom} (intensidade: ${analise.emocao.intensidade})`)
+        console.log(`   🎨 Elementos selecionados: ${elementosUnicos.join(' | ')}`)
+        
+        return promptCompleto
+      }
+
+      const contextualPrompt = analisarContextoCompleto(slideTitle, slideContent)
+
+      // Mapear estilos para prompts visuais
       const stylePrompts = {
-        professional: 'clean corporate design, soft blue and white tones, minimal professional aesthetic',
-        modern: 'modern geometric shapes, soft gradients, contemporary design, pastel colors',
-        colorful: 'soft pastel colors, gentle gradients, warm and inviting, light tones',
-        minimalist: 'very light background, almost white, subtle textures, clean minimal design'
+        professional: 'clean minimalist design, soft gradients, corporate aesthetic, subtle shadows',
+        modern: 'geometric shapes, vibrant colors, contemporary design, dynamic elements',
+        colorful: 'bright gradients, energetic colors, creative design, inspiring layout',
+        minimalist: 'ultra clean design, white space, subtle elements, elegant simplicity'
       }
 
       const styleContext = stylePrompts[style]
 
-      // Criar prompt contextual otimizado - SEM TEXTO
+      // Prompt otimizado e ultra-específico para backgrounds Instagram
       const positivePrompt = `
-        Subtle background image for ${slideTitle} about ${topic}.
-        ${styleContext}.
-        Very light, almost transparent background design.
-        Soft, minimal, abstract representation of the concept.
-        Perfect for text overlay with high readability.
-        Ultra subtle background that supports text prominence.
+        Instagram carousel background, ${styleContext},
+        ${contextualPrompt}, abstract visual elements,
+        soft focus background, clean composition perfect for text overlay,
+        high quality professional render, modern Instagram aesthetic,
+        social media template design, premium Instagram post background,
+        professional gradient overlay, clean layout space for typography
       `.trim()
 
-      const negativePrompt = 'text, words, letters, writing, typography, font, captions, titles, labels, signs, symbols, numbers, characters, script, handwriting, readable text, any text content, watermarks, people, faces'
 
-      console.log('🎨 Gerando background Runware:', positivePrompt)
+      console.log(`🎨 Slide ${slideNumber}: "${slideTitle}"`)
+      console.log(`🎯 Prompt contextual: ${contextualPrompt.substring(0, 100)}...`)
 
-      // Gerar UUID único para a task
-      const taskUUID = crypto.randomUUID()
+      // Payload para Freepik Mystic API
+      const payload = {
+        prompt: positivePrompt,
+        aspect_ratio: "square_1_1",
+        resolution: "2k",
+        model: "realism", // realism para backgrounds profissionais
+        creative_detailing: 33,
+        engine: "automatic",
+        fixed_generation: false,
+        filter_nsfw: true
+      }
 
-      // Preparar payload para Runware API
-      const payload = [
-        {
-          taskType: "imageInference",
-          taskUUID: taskUUID,
-          outputType: "base64Data",
-          outputFormat: "WEBP",
-          positivePrompt: positivePrompt,
-          negativePrompt: negativePrompt,
-          height: 512,
-          width: 512,
-          model: "runware:101@1", // FLUX.1 Schnell
-          steps: 4, // Mais rápido
-          CFGScale: 1.0, // Menor controle para mais naturalidade
-          numberResults: 1
-        }
-      ]
+      console.log(`🚀 Iniciando geração Freepik para slide ${slideNumber}`)
 
-      const response = await fetch('https://api.runware.ai/v1', {
+      // Criar task na API Freepik
+      const response = await fetch('https://api.freepik.com/v1/ai/mystic', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.RUNWARE_API_KEY}`
+          'x-freepik-api-key': process.env.FREEPIK_API_KEY || 'FPSX031530fc6c3b48359f4a92010361b356'
         },
         body: JSON.stringify(payload)
       })
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error('❌ Erro na API Runware:', response.status, errorText)
+        console.error('❌ Erro na API Freepik:', response.status, errorText)
         return null
       }
 
-      const result = await response.json()
+      const taskResult = await response.json()
+      console.log(`📋 Task criada na Freepik para slide ${slideNumber}, ID: ${taskResult.task_id}`)
       
-      if (result.error) {
-        console.error('❌ Erro Runware:', result.error)
+      if (!taskResult.task_id) {
+        console.error('❌ Task ID não retornado pela Freepik')
         return null
       }
 
-      if (result.data && result.data.length > 0) {
-        const imageData = result.data[0]
+      // Polling para verificar status da task
+      const maxAttempts = 30 // 30 tentativas = ~5 minutos
+      let attempts = 0
+      
+      while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 10000)) // Aguardar 10 segundos
+        attempts++
         
-        if (imageData.imageBase64Data) {
-          const dataUrl = `data:image/webp;base64,${imageData.imageBase64Data}`
-          
-          console.log(`📏 Tamanho da imagem: ${Math.round(imageData.imageBase64Data.length / 1024)}KB`)
-          console.log('✅ Background Runware gerado com sucesso')
-          
-          return dataUrl
-        }
-      }
+        console.log(`⏳ Verificando status da task ${taskResult.task_id} (tentativa ${attempts}/${maxAttempts})`)
+        
+        const statusResponse = await fetch(`https://api.freepik.com/v1/ai/mystic/${taskResult.task_id}`, {
+          headers: {
+            'x-freepik-api-key': process.env.FREEPIK_API_KEY || 'FPSX031530fc6c3b48359f4a92010361b356'
+          }
+        })
 
-      console.error('❌ Resposta inválida da Runware:', result)
+        if (!statusResponse.ok) {
+          console.error(`❌ Erro ao verificar status da task: ${statusResponse.status}`)
+          continue
+        }
+
+        const statusData = await statusResponse.json()
+        console.log(`📊 Status da task ${taskResult.task_id}: ${statusData.data?.status}`)
+        
+        if (statusData.data?.status === 'COMPLETED') {
+          console.log(`✅ Slide ${slideNumber} gerado com sucesso!`)
+          
+          if (statusData.data.generated && statusData.data.generated.length > 0) {
+            const imageUrl = statusData.data.generated[0]
+            console.log(`🖼️ URL da imagem: ${imageUrl}`)
+            return imageUrl
+          }
+        } else if (statusData.data?.status === 'FAILED') {
+          console.error(`❌ Slide ${slideNumber}: Geração falhou`)
+          return null
+        }
+        
+        // Status ainda em progresso, continuar polling
+      }
+      
+      console.error(`❌ Slide ${slideNumber}: Timeout na geração (${maxAttempts} tentativas)`)
       return null
 
     } catch (error) {
-      console.error('❌ Erro ao gerar background Runware:', error)
+      console.error(`❌ Erro no slide ${input.slideNumber}:`, error)
       return null
     }
   }
@@ -502,43 +898,71 @@ export class RunwareService {
   // Gerar múltiplos backgrounds para um carrossel inteiro
   static async generateCarouselBackgrounds(input: {
     topic: string
-    slides: Array<{ title: string }>
+    slides: Array<{ title: string; content?: string }>
     style?: 'professional' | 'modern' | 'colorful' | 'minimalist'
   }): Promise<Array<string | null>> {
     const { topic, slides, style = 'professional' } = input
-    const backgrounds: Array<string | null> = []
 
-    console.log(`🎨 Gerando ${slides.length} backgrounds Runware para: "${topic}"`)
+    console.log(`🎨 Gerando ${slides.length} backgrounds ultra-específicos para: "${topic}"`)
 
-    // Gerar backgrounds em paralelo (mas com limite)
-    const promises = slides.map((slide, index) =>
-      this.generateCarouselBackground({
-        topic,
-        slideNumber: index + 1,
-        slideTitle: slide.title,
-        style
-      })
-    )
+    // Gerar backgrounds em paralelo com retry automático
+    const promises = slides.map(async (slide, index) => {
+      const maxRetries = 3
+      
+      for (let tentativa = 1; tentativa <= maxRetries; tentativa++) {
+        try {
+          console.log(`🔄 Slide ${index + 1} - Tentativa ${tentativa}/${maxRetries}`)
+          
+          const result = await this.generateCarouselBackground({
+            topic,
+            slideNumber: index + 1,
+            slideTitle: slide.title,
+            slideContent: slide.content,
+            style
+          })
+          
+          if (result) {
+            console.log(`✅ Slide ${index + 1} concluído com sucesso`)
+            return result
+          }
+          
+        } catch (error) {
+          console.log(`❌ Slide ${index + 1} - Tentativa ${tentativa} falhou:`, error)
+          
+          if (tentativa < maxRetries) {
+            // Aguardar antes da próxima tentativa com backoff exponencial
+            const delay = Math.pow(2, tentativa) * 1000
+            await new Promise(resolve => setTimeout(resolve, delay))
+          }
+        }
+      }
+      
+      console.error(`❌ Slide ${index + 1} falhou após ${maxRetries} tentativas`)
+      return null
+    })
 
     try {
-      // Executar em paralelo com Promise.all
       const results = await Promise.all(promises)
-      backgrounds.push(...results)
-
       const successCount = results.filter((url: string | null) => url !== null).length
-      console.log(`✅ Runware concluído: ${successCount}/${slides.length} backgrounds gerados`)
+      
+      console.log(`🎉 Geração concluída: ${successCount}/${slides.length} slides com sucesso`)
+      
+      // Log detalhado dos resultados
+      results.forEach((result, index) => {
+        const status = result ? '✅ Sucesso' : '❌ Falhou'
+        console.log(`📊 Slide ${index + 1}: ${status}`)
+      })
 
-      return backgrounds
+      return results
     } catch (error) {
       console.error('❌ Erro ao gerar backgrounds em lote:', error)
-      
-      // Fallback: retornar array com nulls
       return slides.map(() => null)
     }
   }
 }
 
 // Manter DALLEService como alias para compatibilidade
-export const DALLEService = RunwareService
+export const DALLEService = FreepikService
+export const RunwareService = FreepikService // Manter compatibilidade
 
 export { openai }

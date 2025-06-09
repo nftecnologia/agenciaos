@@ -104,7 +104,7 @@ Responda APENAS com o JSON válido, sem texto adicional.
       }
 
       // Validar e limpar os slides
-      const validatedSlides = parsedContent.slides.map((slide: any, index: number) => ({
+      const validatedSlides = parsedContent.slides.map((slide: { title?: string; subtitle?: string; content?: string; ctaText?: string }, index: number) => ({
         title: slide.title || `Slide ${index + 1}`,
         subtitle: index === 0 ? slide.subtitle : undefined,
         content: slide.content || '',

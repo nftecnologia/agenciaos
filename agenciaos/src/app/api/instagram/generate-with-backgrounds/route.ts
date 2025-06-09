@@ -24,12 +24,12 @@ export async function POST(request: NextRequest) {
     // Gerar backgrounds contextuais para cada slide
     const backgroundUrls = await DALLEService.generateCarouselBackgrounds({
       topic,
-      slides: slides.map((slide: any) => ({ title: slide.title })),
+      slides: slides.map((slide: { title: string }) => ({ title: slide.title })),
       style: backgroundStyle
     })
 
     // Combinar slides com backgrounds gerados
-    const slidesWithBackgrounds = slides.map((slide: any, index: number) => ({
+    const slidesWithBackgrounds = slides.map((slide: { title: string; content?: string; subtitle?: string; ctaText?: string }, index: number) => ({
       ...slide,
       backgroundUrl: backgroundUrls[index] || null
     }))

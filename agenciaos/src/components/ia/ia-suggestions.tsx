@@ -11,7 +11,6 @@ import {
   Target,
   Zap,
   TrendingUp,
-  CheckCircle,
   ArrowRight
 } from 'lucide-react'
 

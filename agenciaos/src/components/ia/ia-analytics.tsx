@@ -7,8 +7,6 @@ import {
   TrendingUp, 
   TrendingDown, 
   Activity, 
-  Users, 
-  DollarSign, 
   Clock, 
   Target,
   Brain,
