@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle, Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { registerAction } from '@/lib/actions/auth-actions'
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -38,37 +39,12 @@ export default function SignUpPage() {
     setError('')
     setSuccess('')
 
-    // Validações
-    if (formData.password !== formData.confirmPassword) {
-      setError('As senhas não coincidem')
-      setIsLoading(false)
-      return
-    }
-
-    if (formData.password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres')
-      setIsLoading(false)
-      return
-    }
-
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          agencyName: formData.agencyName,
-        }),
-      })
+      const result = await registerAction(formData)
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao criar conta')
+      if (!result?.data?.success) {
+        setError(result?.data?.error || 'Erro ao criar conta')
+        return
       }
 
       setSuccess('Conta criada com sucesso! Redirecionando...')
@@ -79,7 +55,8 @@ export default function SignUpPage() {
       }, 2000)
 
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'Erro desconhecido')
+      console.error('Erro no registro:', error)
+      setError('Erro interno do servidor. Tente novamente.')
     } finally {
       setIsLoading(false)
     }
@@ -245,4 +222,4 @@ export default function SignUpPage() {
       </div>
     </div>
   )
-} 
+}

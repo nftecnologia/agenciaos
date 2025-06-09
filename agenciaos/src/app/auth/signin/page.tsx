@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -9,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { loginAction } from '@/lib/actions/auth-actions'
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -24,23 +24,18 @@ export default function SignInPage() {
     setError('')
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
+      const result = await loginAction({ email, password })
 
-      if (result?.error) {
-        setError('Email ou senha incorretos')
-      } else {
-        // Verificar se o login foi bem-sucedido
-        const session = await getSession()
-        if (session) {
-          router.push('/')
-          router.refresh()
-        }
+      if (!result?.data?.success) {
+        setError(result?.data?.error || 'Email ou senha incorretos')
+        return
       }
-    } catch {
+
+      // Login bem-sucedido, será redirecionado automaticamente
+      router.push('/dashboard')
+      router.refresh()
+    } catch (error) {
+      console.error('Erro no login:', error)
       setError('Erro interno do servidor')
     } finally {
       setIsLoading(false)
@@ -140,4 +135,4 @@ export default function SignInPage() {
       </div>
     </div>
   )
-} 
+}
