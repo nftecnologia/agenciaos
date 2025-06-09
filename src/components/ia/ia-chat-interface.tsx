@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react'
+import { InstagramCarouselGenerator } from './instagram-carousel-generator'
 
 interface Message {
   id: string
@@ -188,6 +189,11 @@ Precisa de alguma projeção específica ou análise de viabilidade?`
         </CardContent>
       </Card>
     )
+  }
+
+  // Se o assistente for "content", mostrar o Instagram Carousel Generator
+  if (activeAssistant === 'content') {
+    return <InstagramCarouselGenerator />
   }
 
   return (

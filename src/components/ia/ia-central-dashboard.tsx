@@ -58,7 +58,7 @@ export function IACentralDashboard() {
       description: 'Geração de copy, posts e material criativo',
       icon: Sparkles,
       color: 'bg-purple-500',
-      available: false,
+      available: true,
     },
   ]
 
