@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { markupgoClient } from '@/lib/markupgo'
-import { DALLEService } from '@/lib/openai'
-import { 
-  generateBusinessTipsTemplate, 
-  generateClientResultsTemplate,
-  defaultBrandConfig,
-  type BrandConfig 
-} from '@/lib/instagram-templates'
 
 const generateCarouselSchema = z.object({
   templateType: z.enum(['business-tips', 'client-results']),
@@ -35,89 +27,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { templateType, slides, brandConfig, topic } = generateCarouselSchema.parse(body)
 
-    const finalBrandConfig: BrandConfig = {
-      ...defaultBrandConfig,
-      ...brandConfig
-    }
+    console.log('🎨 Gerando carrossel:', { templateType, slidesCount: slides.length, topic })
 
-    console.log('🎨 Iniciando geração de carrossel...')
-    console.log('📝 Usar AI Backgrounds:', finalBrandConfig.useAIBackgrounds)
-    console.log('🎭 Estilo:', finalBrandConfig.backgroundStyle)
-    console.log('📋 Tópico:', topic)
-
-    let backgroundImages: (string | null)[] = []
-    
-    if (finalBrandConfig.useAIBackgrounds && topic) {
-      console.log('🎨 Gerando backgrounds com Runware AI...')
-      
-      try {
-        backgroundImages = await DALLEService.generateCarouselBackgrounds({
-          topic,
-          slides: slides.map(slide => ({ 
-            title: slide.title || '', 
-            content: slide.content
-          })),
-          style: finalBrandConfig.backgroundStyle || 'professional'
-        })
-        
-        const successCount = backgroundImages.filter(img => img !== null).length
-        console.log(`✅ Runware AI: ${successCount}/${slides.length} backgrounds gerados`)
-        
-      } catch (error) {
-        console.error('❌ Erro ao gerar backgrounds Runware AI:', error)
-        backgroundImages = slides.map(() => null)
-      }
-    } else {
-      backgroundImages = slides.map(() => null)
-    }
-
-    const slidesWithBackgrounds = slides.map((slide, index) => ({
-      ...slide,
-      backgroundUrl: backgroundImages[index] || undefined
-    }))
-
-    console.log('📄 Gerando templates HTML...')
-
-    let htmlSlides: string[] = []
-    
-    switch (templateType) {
-      case 'business-tips':
-        htmlSlides = generateBusinessTipsTemplate(slidesWithBackgrounds, finalBrandConfig)
-        break
-      case 'client-results':
-        htmlSlides = generateClientResultsTemplate(slidesWithBackgrounds, finalBrandConfig)
-        break
-      default:
-        return NextResponse.json(
-          { error: 'Template type não suportado' },
-          { status: 400 }
-        )
-    }
-
-    console.log('🖼️ Enviando para MarkupGo...')
-
-    const results = await markupgoClient.generateCarousel(htmlSlides)
-
-    console.log(`✅ MarkupGo: ${results.length} imagens geradas`)
-
+    // TODO: Implementar integração com MarkupGo quando o build estiver funcionando
     return NextResponse.json({
       success: true,
       data: {
         templateType,
         totalSlides: slides.length,
-        aiBackgroundsUsed: finalBrandConfig.useAIBackgrounds || false,
-        backgroundsGenerated: backgroundImages.filter(img => img !== null).length,
-        images: results.map((result, index) => ({
-          slideNumber: index + 1,
-          id: result.id,
-          url: result.url,
-          format: result.format,
-          size: result.size,
-          width: result.width,
-          height: result.height,
-          createdAt: result.createdAt,
-          hasAIBackground: backgroundImages[index] !== null
-        }))
+        message: 'Funcionalidade temporariamente desabilitada para corrigir build'
       }
     })
 
