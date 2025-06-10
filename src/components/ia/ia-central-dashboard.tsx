@@ -24,7 +24,8 @@ import {
   Compass,
   TrendingDown,
   MessageCircle,
-  Camera
+  Camera,
+  Play
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -130,6 +131,14 @@ export function IACentralDashboard() {
       description: 'Legendas, ideias, carrosséis, hashtags e planejamento editorial',
       icon: Camera,
       color: 'bg-pink-600',
+      available: true,
+    },
+    {
+      id: 'youtube',
+      name: 'Assistente YouTube',
+      description: 'Roteiros, títulos, descrições, tags e otimização de vídeos',
+      icon: Play,
+      color: 'bg-red-500',
       available: true,
     },
   ]
