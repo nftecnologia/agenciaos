@@ -25,7 +25,8 @@ import {
   TrendingDown,
   MessageCircle,
   Camera,
-  Play
+  Play,
+  Megaphone
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -139,6 +140,14 @@ export function IACentralDashboard() {
       description: 'Roteiros, títulos, descrições, tags e otimização de vídeos',
       icon: Play,
       color: 'bg-red-500',
+      available: true,
+    },
+    {
+      id: 'meta-ads',
+      name: 'Assistente Meta Ads',
+      description: 'Personas, segmentações, copies e testes A/B para Facebook/Instagram',
+      icon: Megaphone,
+      color: 'bg-blue-600',
       available: true,
     },
   ]

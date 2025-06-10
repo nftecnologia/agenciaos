@@ -189,6 +189,14 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           '📅 3. Planejamento de Conteúdo',
           '🔄 4. Otimização de Vídeos Antigos'
         ]
+      case 'meta-ads':
+        return [
+          '👤 1. Gerador de Persona',
+          '🎯 2. Segmentação de Público',
+          '✍️ 3. Gerador de Copies',
+          '🔎 4. Segmentação Inteligente',
+          '🧪 5. Testes A/B Automatizados'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -240,7 +248,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         'sales-funnel': '/api/ia/sales-funnel-assistant',
         whatsapp: '/api/ia/whatsapp-assistant',
         instagram: '/api/ia/instagram-assistant',
-        youtube: '/api/ia/youtube-assistant'
+        youtube: '/api/ia/youtube-assistant',
+        'meta-ads': '/api/ia/meta-ads-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
