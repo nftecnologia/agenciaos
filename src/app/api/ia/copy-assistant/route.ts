@@ -3,6 +3,51 @@ import { auth } from '@/lib/auth'
 import { openai } from '@/lib/openai'
 import { db } from '@/lib/db'
 
+// Função para detectar se a solicitação é genérica e precisa de qualificação
+function isGenericCopyRequest(message: string): boolean {
+  const genericKeywords = [
+    'crie uma headline',
+    'faça um copy',
+    'escreva um texto',
+    'preciso de uma copy',
+    'crie um anúncio',
+    'faça um post',
+    'escreva um email',
+    'crie um cta',
+    'headline magnética',
+    'copy persuasivo',
+    'texto para',
+    'anúncio para'
+  ]
+  
+  const specificKeywords = [
+    'produto:',
+    'serviço:',
+    'público:',
+    'cliente:',
+    'idade:',
+    'problema:',
+    'benefício:',
+    'preço:',
+    'vende',
+    'para pessoas que',
+    'meu cliente',
+    'nosso produto',
+    'oferecemos'
+  ]
+  
+  const messageLower = message.toLowerCase()
+  
+  // Se tem palavras genéricas mas não tem específicas, precisa qualificação
+  const hasGeneric = genericKeywords.some(keyword => messageLower.includes(keyword))
+  const hasSpecific = specificKeywords.some(keyword => messageLower.includes(keyword))
+  
+  // Também verifica se a mensagem é muito curta (menos de 50 caracteres)
+  const isTooShort = message.length < 50
+  
+  return (hasGeneric && !hasSpecific) || isTooShort
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth()
@@ -87,7 +132,10 @@ ${projects.map(project =>
 - Benefícios vs. características
 `
 
-    console.log('✍️ Assistente de Copy: Criando texto persuasivo...')
+    console.log('✍️ Assistente de Copy: Analisando solicitação...')
+
+    // Detectar se é uma solicitação genérica que precisa de qualificação
+    const needsQualification = isGenericCopyRequest(message)
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -96,40 +144,46 @@ ${projects.map(project =>
           role: "system",
           content: `Você é um Assistente de Copy especializado em copywriting e textos persuasivos para marketing digital.
 
-Sua função é:
-- Criar headlines magnéticas e irresistíveis
-- Desenvolver copies para anúncios (Facebook, Instagram, Google Ads)
-- Escrever textos persuasivos para landing pages
-- Criar CTAs (calls to action) que convertem
-- Desenvolver emails de marketing eficazes
-- Criar copy para posts de redes sociais
-- Aplicar gatilhos mentais e técnicas de persuasão
-- Adaptar tom de voz para diferentes públicos
-- Usar storytelling para envolver a audiência
-- Otimizar textos para conversão
+COMPORTAMENTO INTELIGENTE:
+- Se a solicitação for genérica (sem detalhes sobre produto, público, objetivo), faça perguntas de qualificação ANTES de criar a copy
+- Se já tiver informações suficientes, crie a copy diretamente
+- Sempre personalize baseado nas respostas do cliente
 
-TÉCNICAS ESSENCIAIS:
+PERGUNTAS DE QUALIFICAÇÃO (faça 3-5 mais relevantes):
+1. **Produto/Serviço**: O que exatamente você está vendendo/promovendo?
+2. **Público-alvo**: Quem é seu cliente ideal? (idade, gênero, interesses, problemas)
+3. **Objetivo**: Qual ação você quer que as pessoas façam? (comprar, se inscrever, baixar, agendar)
+4. **Plataforma**: Onde será usado? (Facebook Ads, Instagram, Google Ads, email, site)
+5. **Dores/Desejos**: Que problema seu produto resolve? Que desejo realiza?
+6. **Diferenciais**: O que torna seu produto único da concorrência?
+7. **Tom de voz**: Como quer falar com seu público? (formal, casual, divertido, autoritário)
+8. **Orçamento/Prazo**: Há urgência ou escassez real para mencionar?
+
+TÉCNICAS DE COPY:
 - AIDA (Atenção, Interesse, Desejo, Ação)
 - Gatilhos: escassez, urgência, autoridade, prova social
 - Benefícios em vez de características
 - Headlines curiosas que geram cliques
 - CTAs específicos e persuasivos
 - Copy emocional que conecta com dores e desejos
-- Uso de números e dados quando relevante
-- Linguagem do público-alvo
+- Storytelling quando apropriado
+- Números e dados para credibilidade
 
-IMPORTANTE: Sempre adapte o tom de voz ao cliente e público-alvo específico. Use linguagem persuasiva mas autêntica. Foque na conversão e resultados.`
+IMPORTANTE: Uma copy eficaz começa com perguntas certas. Quanto mais você souber sobre produto, público e objetivo, melhor será o resultado.`
         },
         {
           role: "user",
           content: `${copyContext}
 
-SOLICITAÇÃO DO COPYWRITER: ${message}
+SOLICITAÇÃO: ${message}
 
-Por favor, crie um copy persuasivo e eficaz baseado na solicitação, usando as melhores práticas de copywriting.`
+${needsQualification ? 
+  'Esta solicitação parece genérica. Faça as perguntas de qualificação mais importantes para criar uma copy eficaz.' : 
+  'Crie uma copy persuasiva baseada nas informações fornecidas.'
+}`
         }
       ],
-      temperature: 0.7, // Temperatura média para criatividade equilibrada
+      temperature: 0.7,
       max_tokens: 2000
     })
 
