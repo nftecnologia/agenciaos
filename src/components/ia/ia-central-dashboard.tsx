@@ -23,6 +23,7 @@ import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
 import { IASuggestions } from './ia-suggestions'
 import { IAAnalytics } from './ia-analytics'
+import { InstagramCarouselGenerator } from './instagram-carousel-generator'
 
 export function IACentralDashboard() {
   const [activeAssistant, setActiveAssistant] = useState<string | null>(null)
@@ -149,11 +150,12 @@ export function IACentralDashboard() {
 
       {/* Main Content */}
       <Tabs defaultValue="chat" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="chat">Chat IA</TabsTrigger>
+          <TabsTrigger value="carousel">Instagram</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
           <TabsTrigger value="suggestions">Sugestões</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics IA</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="chat" className="space-y-4">
@@ -255,6 +257,10 @@ export function IACentralDashboard() {
               />
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="carousel">
+          <InstagramCarouselGenerator />
         </TabsContent>
 
         <TabsContent value="insights">
