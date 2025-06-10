@@ -18,7 +18,8 @@ import {
   Target,
   Clock,
   DollarSign,
-  Scale
+  Scale,
+  PenTool
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -68,6 +69,14 @@ export function IACentralDashboard() {
       description: 'Contratos e documentos legais para agências',
       icon: Scale,
       color: 'bg-gray-700',
+      available: true,
+    },
+    {
+      id: 'copy',
+      name: 'Assistente de Copy',
+      description: 'Headlines, CTAs e textos persuasivos',
+      icon: PenTool,
+      color: 'bg-orange-500',
       available: true,
     },
   ]

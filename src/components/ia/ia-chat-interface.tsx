@@ -133,6 +133,12 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           'Quais cláusulas incluir em um contrato de desenvolvimento web?',
           'Crie um contrato para gestão de redes sociais'
         ]
+      case 'copy':
+        return [
+          'Crie uma headline magnética para anúncio do Facebook',
+          'Desenvolva um CTA persuasivo para landing page',
+          'Escreva um copy para email de marketing'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -176,7 +182,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         business: '/api/ia/business-assistant',
         projects: '/api/ia/projects-assistant', 
         financial: '/api/ia/financial-assistant',
-        legal: '/api/ia/legal-assistant'
+        legal: '/api/ia/legal-assistant',
+        copy: '/api/ia/copy-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
