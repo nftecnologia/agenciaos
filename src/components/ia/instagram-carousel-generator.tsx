@@ -107,12 +107,13 @@ export function InstagramCarouselGenerator() {
 
       const result = await response.json()
 
-      if (result.success) {
+      if (result.success && result.data && result.data.images) {
         const imageUrls = result.data.images.map((img: any) => img.url)
         setGeneratedCarousel(prev => prev ? { ...prev, images: imageUrls } : null)
       } else {
-        console.error('Erro ao gerar imagens:', result.error)
-        alert('Erro ao gerar imagens. Tente novamente.')
+        console.error('Erro ao gerar imagens:', result.error || 'Resposta inválida da API')
+        console.log('Resposta completa da API:', result)
+        alert('Erro ao gerar imagens. Verifique o console para mais detalhes.')
       }
     } catch (error) {
       console.error('Erro na requisição:', error)
