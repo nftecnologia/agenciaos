@@ -1,5 +1,6 @@
 interface RunwareImageRequest {
   taskType: 'imageInference'
+  taskUUID: string
   textPrompt: string
   modelId?: string
   numberResults?: number
@@ -29,6 +30,14 @@ export class RunwareClient {
     }
   }
 
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0
+      const v = c == 'x' ? r : (r & 0x3 | 0x8)
+      return v.toString(16)
+    })
+  }
+
   async generateImage(prompt: string, options?: {
     modelId?: string
     width?: number
@@ -37,6 +46,7 @@ export class RunwareClient {
   }): Promise<string> {
     const request: RunwareImageRequest = {
       taskType: 'imageInference',
+      taskUUID: this.generateUUID(),
       textPrompt: prompt,
       modelId: options?.modelId || 'civitai:4384@130072', // Realistic Vision model
       numberResults: 1,
