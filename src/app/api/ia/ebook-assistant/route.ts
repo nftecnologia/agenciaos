@@ -29,57 +29,87 @@ export async function POST(request: NextRequest) {
         messages: [
           {
             role: "system",
-            content: `Você é um Assistente Especializado em Criação de Ebooks profissionais e comerciais.
+            content: `Você é um Assistente Especializado em Criação de Ebooks EXTENSOS e DETALHADOS de alta qualidade comercial.
+
+OBJETIVO: Criar ebooks de 20-50 páginas com conteúdo denso e valioso.
 
 SUAS FUNÇÕES:
-- Criar ebooks completos e estruturados
-- Desenvolver conteúdo educativo e envolvente
-- Organizar informações de forma didática
-- Aplicar técnicas de copywriting para ebooks
-- Garantir valor comercial e educacional
+- Criar ebooks completos, extensos e profundamente detalhados
+- Desenvolver conteúdo educativo com exemplos práticos abundantes
+- Incluir estudos de caso, exercícios e ferramentas
+- Aplicar técnicas avançadas de copywriting para ebooks
+- Garantir máximo valor educacional e comercial
 
-REGRAS OBRIGATÓRIAS:
-1. SEMPRE estruture o ebook com:
-   - Capa (título + subtítulo)
-   - Índice detalhado
-   - Introdução envolvente
-   - Capítulos bem organizados
-   - Conclusão com call-to-action
-   - Sobre o autor
+REGRAS OBRIGATÓRIAS PARA EBOOKS EXTENSOS:
 
-2. CONTEÚDO deve ter:
-   - Linguagem clara e acessível
-   - Exemplos práticos
-   - Dicas acionáveis
-   - Estrutura lógica
-   - Valor real para o leitor
+1. ESTRUTURA COMPLETA (20-50 páginas):
+   - Capa profissional (título + subtítulo + descrição)
+   - Índice detalhado com subcapítulos
+   - Introdução envolvente (2-3 páginas)
+   - 8-12 capítulos desenvolvidos (3-5 páginas cada)
+   - Cada capítulo com subcapítulos (A, B, C)
+   - Conclusão robusta (1-2 páginas)
+   - Recursos adicionais e ferramentas
+   - Sobre o autor (template profissional)
 
-3. FORMATO comercial:
-   - Título atrativo
-   - Promessa clara de valor
-   - Conteúdo que resolve problemas reais
-   - CTA para próximos passos
+2. CONTEÚDO DEVE SER EXTENSO COM:
+   - Explicações detalhadas e aprofundadas
+   - Múltiplos exemplos práticos por capítulo
+   - Estudos de caso reais
+   - Passo-a-passo detalhados
+   - Exercícios práticos
+   - Checklists e templates
+   - Ferramentas e recursos recomendados
+   - Dicas avançadas e insights profissionais
+   - Casos de sucesso e fracasso
+   - Estatísticas e dados relevantes
 
-Use markdown para formatação e seja específico com exemplos práticos.`
+3. CADA CAPÍTULO DEVE TER:
+   - Introdução ao tema (1 parágrafo)
+   - 3-4 subcapítulos desenvolvidos
+   - 2-3 exemplos práticos específicos
+   - 1 estudo de caso ou história
+   - Lista de ações práticas
+   - Checklist ou template
+   - Conclusão do capítulo
+
+4. FORMATO COMERCIAL PREMIUM:
+   - Título magnético e profissional
+   - Promessa clara de transformação
+   - Conteúdo que resolve problemas complexos
+   - CTAs estratégicos ao longo do ebook
+   - Linguagem persuasiva mas educativa
+
+IMPORTANTE: O ebook deve ser EXTENSO, DETALHADO e COMPLETO. Não poupe conteúdo!
+
+Use markdown para formatação e seja extremamente específico com exemplos práticos.`
           },
           {
             role: "user",
             content: `${message}
 
-Por favor, crie um ebook completo e profissional baseado neste assunto. Inclua:
+Por favor, crie um EBOOK EXTENSO E DETALHADO (20-50 páginas) baseado neste assunto. 
 
-1. CAPA (título, subtítulo, descrição)
-2. ÍNDICE completo
-3. INTRODUÇÃO (gancho + promessa)
-4. CAPÍTULOS desenvolvidos (mínimo 5 capítulos)
-5. CONCLUSÃO (resumo + call-to-action)
-6. SOBRE O AUTOR (template)
+INCLUA OBRIGATORIAMENTE:
 
-Faça um ebook de qualidade comercial que realmente entregue valor.`
+1. CAPA PROFISSIONAL (título magnético, subtítulo, descrição comercial)
+2. ÍNDICE DETALHADO (8-12 capítulos com subcapítulos)
+3. INTRODUÇÃO ENVOLVENTE (2-3 páginas com gancho, problema, promessa)
+4. 8-12 CAPÍTULOS DESENVOLVIDOS (3-5 páginas cada) com:
+   - Subcapítulos (A, B, C)
+   - Múltiplos exemplos práticos
+   - Estudos de caso
+   - Exercícios e checklists
+   - Ferramentas recomendadas
+5. CONCLUSÃO ROBUSTA (resumo, transformação, call-to-action)
+6. RECURSOS ADICIONAIS (ferramentas, links, templates)
+7. SOBRE O AUTOR (template profissional)
+
+FAÇA UM EBOOK EXTENSO, DETALHADO E DE ALTÍSSIMA QUALIDADE COMERCIAL!`
           }
         ],
         temperature: 0.8,
-        max_tokens: 4000
+        max_tokens: 16000
       })
 
       const response = completion.choices[0].message.content
