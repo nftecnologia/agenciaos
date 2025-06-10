@@ -26,6 +26,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
           console.log("🔍 Buscando usuário no banco Neon:", credentials.email)
+          console.log("🔧 DATABASE_URL sendo usada:", process.env.DATABASE_URL?.substring(0, 30) + '...')
+          
+          // Force reconnect to avoid cached connections
+          await db.$connect()
           
           const user = await db.user.findUnique({
             where: {
