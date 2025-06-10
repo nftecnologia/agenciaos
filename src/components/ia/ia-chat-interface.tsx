@@ -354,6 +354,114 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
     }
   }
 
+  // Função para fazer download do ebook em PDF
+  const downloadEbookAsPDF = async (content: string, assistantType: string) => {
+    try {
+      // Extrair título do ebook do conteúdo
+      const titleMatch = content.match(/#{1,2}\s*(.+)/);
+      const title = titleMatch ? titleMatch[1].trim() : 'Ebook Gerado';
+      
+      // Criar elemento temporário para o conteúdo
+      const element = document.createElement('div');
+      element.innerHTML = `
+        <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+          <style>
+            h1 { font-size: 24px; margin: 30px 0 20px 0; color: #2563eb; }
+            h2 { font-size: 20px; margin: 25px 0 15px 0; color: #1e40af; }
+            h3 { font-size: 18px; margin: 20px 0 10px 0; color: #1e3a8a; }
+            p { margin: 10px 0; text-align: justify; }
+            strong { font-weight: bold; color: #1f2937; }
+            ul, ol { margin: 10px 0; padding-left: 30px; }
+            li { margin: 5px 0; }
+            .chapter { page-break-before: auto; margin-top: 30px; }
+            .title-page { text-align: center; margin-bottom: 50px; }
+          </style>
+          ${content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                   .replace(/### (.*)/g, '<h3>$1</h3>')
+                   .replace(/## (.*)/g, '<h2>$1</h2>')
+                   .replace(/# (.*)/g, '<h1>$1</h1>')
+                   .replace(/- (.*)/g, '<li>$1</li>')
+                   .replace(/\n\n/g, '</p><p>')
+                   .replace(/\n/g, '<br>')}
+        </div>
+      `;
+
+      // Usar html2pdf.js se disponível, senão fallback para window.print
+      if (typeof window !== 'undefined') {
+        // Método 1: Tentar usar html2pdf se disponível
+        if ((window as any).html2pdf) {
+          const opt = {
+            margin: 1,
+            filename: `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+          };
+          
+          (window as any).html2pdf().set(opt).from(element).save();
+        } else {
+          // Método 2: Fallback - Abrir em nova janela para impressão
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(`
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  <title>${title}</title>
+                  <style>
+                    body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 20px; }
+                    h1 { font-size: 24px; margin: 30px 0 20px 0; color: #2563eb; page-break-before: auto; }
+                    h2 { font-size: 20px; margin: 25px 0 15px 0; color: #1e40af; }
+                    h3 { font-size: 18px; margin: 20px 0 10px 0; color: #1e3a8a; }
+                    p { margin: 10px 0; text-align: justify; }
+                    strong { font-weight: bold; color: #1f2937; }
+                    ul, ol { margin: 10px 0; padding-left: 30px; }
+                    li { margin: 5px 0; }
+                    @media print {
+                      body { margin: 0.5in; }
+                      h1 { page-break-before: auto; }
+                    }
+                  </style>
+                </head>
+                <body>
+                  ${element.innerHTML}
+                </body>
+              </html>
+            `);
+            printWindow.document.close();
+            
+            // Aguardar carregamento e imprimir
+            setTimeout(() => {
+              printWindow.print();
+            }, 500);
+          }
+        }
+      }
+      
+      // Método 3: Download como arquivo de texto formatado
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+    } catch (error) {
+      console.error('Erro ao fazer download do ebook:', error);
+      alert('Erro ao gerar download. O ebook foi copiado para sua área de transferência.');
+      
+      // Fallback: copiar para clipboard
+      try {
+        await navigator.clipboard.writeText(content);
+      } catch (clipboardError) {
+        console.error('Erro ao copiar para clipboard:', clipboardError);
+      }
+    }
+  }
+
   if (!activeAssistant) {
     return (
       <Card className="h-[600px]">
@@ -463,6 +571,23 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
                     <div className="leading-relaxed">
                       {message.type === 'assistant' ? processMarkdown(message.content) : message.content}
                     </div>
+                    
+                    {/* Botão de Download PDF para Ebooks */}
+                    {message.type === 'assistant' && activeAssistant === 'ebook' && message.content.length > 2000 && (
+                      <div className="mt-4 pt-3 border-t border-border">
+                        <Button
+                          onClick={() => downloadEbookAsPDF(message.content, activeAssistant)}
+                          variant="outline"
+                          size="sm"
+                          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700"
+                        >
+                          📚 Baixar Ebook em PDF
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-1 text-center">
+                          Ebook pronto para download em formato PDF profissional
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
                     {message.timestamp.toLocaleTimeString([], { 
