@@ -108,16 +108,16 @@ ESTRATÉGIAS DOS 5 ORDER BUMPS (OBRIGATÓRIO):
 - **Order Bump 4 - Bonus Premium:** (20-30% do produto principal) - Material exclusivo ou bônus valioso
 - **Order Bump 5 - Ferramenta/Template:** (10-25% do produto principal) - Ferramenta prática ou templates
 
-FORMATO PARA CADA PRODUTO:
-🎯 **[TIPO DO PRODUTO]**
-- **Nome:** [Nome atrativo e específico]
-- **Descrição:** [Explicação clara do que é o produto]
-- **Oferta:** [Proposta de valor única - o que o cliente recebe]
-- **Dores que Resolve:** [3-5 problemas específicos que soluciona]
-- **Público-alvo:** [Avatar específico dentro do nicho]
-- **Valor Sugerido:** R$ [preço] ([justificativa do preço])
-- **Conversão Esperada:** [% estimada de conversão]
-- **Estratégia:** [Qual das 5 estratégias de Order Bump - apenas para Order Bumps]
+FORMATO PARA CADA PRODUTO (LAYOUT LIMPO):
+**[NOME DO PRODUTO]** - R$ [PREÇO]
+[Descrição em 1-2 linhas do que é o produto]
+
+Oferta: [O que o cliente recebe exatamente]
+Dores: [3 principais problemas que resolve]
+Avatar: [Perfil específico do cliente]
+Conversão: [%] | Estratégia: [Tipo - apenas para Order Bumps]
+
+---
 
 CRITÉRIOS DE QUALIDADE:
 - Produtos complementares (não concorrentes entre si)
