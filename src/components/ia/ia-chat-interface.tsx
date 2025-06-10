@@ -9,6 +9,64 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Send, Bot, User, Loader2, Sparkles } from 'lucide-react'
 import { InstagramCarouselGenerator } from './instagram-carousel-generator'
 
+// Função para processar texto markdown simples
+const processMarkdown = (text: string): React.ReactNode => {
+  // Dividir o texto em linhas para melhor processamento
+  const lines = text.split('\n')
+  
+  return lines.map((line, lineIndex) => {
+    // Processar negritos **texto**
+    const parts = line.split(/(\*\*[^*]+\*\*)/)
+    
+    const processedLine = parts.map((part, partIndex) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        // Remover os asteriscos e aplicar negrito
+        const boldText = part.slice(2, -2)
+        return <strong key={`${lineIndex}-${partIndex}`} className="font-semibold">{boldText}</strong>
+      }
+      
+      // Processar títulos ### 
+      if (part.startsWith('### ')) {
+        return <h3 key={`${lineIndex}-${partIndex}`} className="font-bold text-lg mt-4 mb-2">{part.slice(4)}</h3>
+      }
+      
+      // Processar subtítulos ##
+      if (part.startsWith('## ')) {
+        return <h2 key={`${lineIndex}-${partIndex}`} className="font-bold text-xl mt-6 mb-3">{part.slice(3)}</h2>
+      }
+      
+      // Processar títulos #
+      if (part.startsWith('# ')) {
+        return <h1 key={`${lineIndex}-${partIndex}`} className="font-bold text-2xl mt-8 mb-4">{part.slice(2)}</h1>
+      }
+      
+      return part
+    })
+    
+    // Se a linha está vazia, adicionar um espaço
+    if (line.trim() === '') {
+      return <br key={lineIndex} />
+    }
+    
+    // Se a linha começa com -, criar uma lista
+    if (line.trim().startsWith('- ')) {
+      return (
+        <div key={lineIndex} className="flex items-start gap-2 my-1">
+          <span className="text-primary mt-1">•</span>
+          <span>{processedLine}</span>
+        </div>
+      )
+    }
+    
+    // Retornar linha normal
+    return (
+      <div key={lineIndex} className="mb-1">
+        {processedLine}
+      </div>
+    )
+  })
+}
+
 interface Message {
   id: string
   content: string
@@ -66,6 +124,12 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           'Gere conteúdo para redes sociais da minha empresa',
           'Preciso de posts criativos para engajamento'
         ]
+      case 'legal':
+        return [
+          'Gere um contrato de prestação de serviços de marketing',
+          'Quais cláusulas incluir em um contrato de desenvolvimento web?',
+          'Crie um contrato para gestão de redes sociais'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -74,11 +138,31 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
     }
   }
 
+  // Auto-scroll para o final do chat sempre que há novas mensagens
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
+    const scrollToBottom = () => {
+      if (scrollAreaRef.current) {
+        const scrollElement = scrollAreaRef.current
+        scrollElement.scrollTop = scrollElement.scrollHeight
+      }
     }
+    
+    // Scroll imediato
+    scrollToBottom()
+    
+    // Scroll com delay para garantir renderização
+    const timeoutId = setTimeout(scrollToBottom, 50)
+    
+    return () => clearTimeout(timeoutId)
   }, [messages])
+
+  // Scroll adicional quando está carregando (mensagem sendo gerada)
+  useEffect(() => {
+    if (isLoading && scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current
+      scrollElement.scrollTop = scrollElement.scrollHeight
+    }
+  }, [isLoading])
 
   // Conectar com APIs reais dos assistentes
   const connectToAIAssistant = async (userMessage: string, assistantType: string) => {
@@ -88,7 +172,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
       const apiEndpoints = {
         business: '/api/ia/business-assistant',
         projects: '/api/ia/projects-assistant', 
-        financial: '/api/ia/financial-assistant'
+        financial: '/api/ia/financial-assistant',
+        legal: '/api/ia/legal-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
@@ -272,7 +357,9 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
                         : 'bg-muted'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap">{message.content}</div>
+                    <div className="leading-relaxed">
+                      {message.type === 'assistant' ? processMarkdown(message.content) : message.content}
+                    </div>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
                     {message.timestamp.toLocaleTimeString([], { 

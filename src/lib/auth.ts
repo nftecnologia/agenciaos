@@ -1,8 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { Role } from "@prisma/client"
+import { Role, PrismaClient } from "@prisma/client"
 import bcrypt from "bcryptjs"
-import { db } from "@/lib/db"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
@@ -28,14 +27,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.log("🔍 Buscando usuário no banco Neon:", credentials.email)
           console.log("🔧 DATABASE_URL sendo usada:", process.env.DATABASE_URL?.substring(0, 30) + '...')
           
-          // Force reconnect to avoid cached connections
-          await db.$connect()
+          // Create fresh Prisma Client instance for auth
+          const authPrisma = new PrismaClient({
+            datasources: {
+              db: {
+                url: process.env.DATABASE_URL
+              }
+            }
+          })
           
-          const user = await db.user.findUnique({
+          await authPrisma.$connect()
+          
+          const user = await authPrisma.user.findUnique({
             where: {
               email: credentials.email as string,
             },
           })
+          
+          await authPrisma.$disconnect()
 
           if (!user || !user.password) {
             console.log("❌ Usuário não encontrado ou sem senha")

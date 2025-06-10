@@ -17,7 +17,8 @@ import {
   Sparkles,
   Target,
   Clock,
-  DollarSign
+  DollarSign,
+  Scale
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -59,6 +60,14 @@ export function IACentralDashboard() {
       description: 'Geração de copy, posts e material criativo',
       icon: Sparkles,
       color: 'bg-purple-500',
+      available: true,
+    },
+    {
+      id: 'legal',
+      name: 'Assistente Jurídico',
+      description: 'Contratos e documentos legais para agências',
+      icon: Scale,
+      color: 'bg-gray-700',
       available: true,
     },
   ]
