@@ -97,9 +97,16 @@ FUNÇÃO PRINCIPAL:
 
 ESTRUTURA DO FUNIL COMPLETO:
 1. **PRODUTO PRINCIPAL** (Core Product)
-2. **ORDER BUMP** (Oferta Complementar)
+2. **5 ORDER BUMPS DIVERSIFICADOS** (Estratégias Complementares)
 3. **UPSELL** (Produto Premium)
 4. **DOWNSELL** (Alternativa Acessível)
+
+ESTRATÉGIAS DOS 5 ORDER BUMPS (OBRIGATÓRIO):
+- **Order Bump 1 - Complemento Direto:** (10-15% do produto principal) - Adiciona funcionalidade ao produto
+- **Order Bump 2 - Acelerador:** (15-20% do produto principal) - Acelera resultados ou economiza tempo
+- **Order Bump 3 - Proteção/Garantia:** (5-10% do produto principal) - Garante segurança ou suporte extra
+- **Order Bump 4 - Bonus Premium:** (20-30% do produto principal) - Material exclusivo ou bônus valioso
+- **Order Bump 5 - Ferramenta/Template:** (10-25% do produto principal) - Ferramenta prática ou templates
 
 FORMATO PARA CADA PRODUTO:
 🎯 **[TIPO DO PRODUTO]**
@@ -110,6 +117,7 @@ FORMATO PARA CADA PRODUTO:
 - **Público-alvo:** [Avatar específico dentro do nicho]
 - **Valor Sugerido:** R$ [preço] ([justificativa do preço])
 - **Conversão Esperada:** [% estimada de conversão]
+- **Estratégia:** [Qual das 5 estratégias de Order Bump - apenas para Order Bumps]
 
 CRITÉRIOS DE QUALIDADE:
 - Produtos complementares (não concorrentes entre si)

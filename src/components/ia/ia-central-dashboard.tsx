@@ -109,7 +109,7 @@ export function IACentralDashboard() {
     {
       id: 'sales-funnel',
       name: 'Gerador de Funil de Vendas',
-      description: 'Funil completo: Produto Principal, Order Bumps, Upsell e Downsell',
+      description: 'Funil completo: Produto Principal, 5 Order Bumps, Upsell e Downsell',
       icon: TrendingDown,
       color: 'bg-red-600',
       available: true,
