@@ -312,14 +312,10 @@ export class FreepikService {
     return `https://via.placeholder.com/1080x1080/667eea/ffffff?text=Placeholder`
   }
 
-  static async generateCarouselBackgrounds(input: {
-    topic: string
-    slides: Array<{ title: string; content?: string }>
-    style?: 'professional' | 'modern' | 'colorful' | 'minimalist'
-  }): Promise<Array<string | null>> {
-    console.log(`🎨 Fallback: Gerando ${input.slides.length} placeholders`)
+  static async generateCarouselBackgrounds(slidesCount: number = 5): Promise<Array<string | null>> {
+    console.log(`🎨 Fallback: Gerando ${slidesCount} placeholders`)
     
-    return input.slides.map((_, index) => 
+    return Array.from({ length: slidesCount }, (_, index) => 
       `https://via.placeholder.com/1080x1080/667eea/ffffff?text=Slide+${index + 1}`
     )
   }
