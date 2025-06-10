@@ -93,7 +93,7 @@ export function InstagramCarouselGenerator() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          templateType: 'professional',
+          templateType: 'business-tips',
           slides,
           brandConfig: {
             primaryColor: '#667eea',
