@@ -165,9 +165,12 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         ]
       case 'whatsapp':
         return [
-          'Script de vendas para consultoria de marketing',
-          'Mensagens de broadcast para Black Friday',
-          'Templates de respostas rápidas para atendimento'
+          '📢 1. Mensagens de Lista/Broadcast',
+          '🎙️ 2. Scripts de Áudio/Vídeo',
+          '⚡ 3. Respostas Rápidas (Templates)',
+          '💰 4. Scripts de Vendas',
+          '🔄 5. Follow-up e Reengajamento',
+          '🛠️ 6. Atendimento e Suporte'
         ]
       default:
         return [
