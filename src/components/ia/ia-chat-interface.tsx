@@ -355,7 +355,7 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
   }
 
   // Função para fazer download do ebook em PDF formato A5 profissional
-  const downloadEbookAsPDF = async (content: string, assistantType: string) => {
+  const downloadEbookAsPDF = async (content: string) => {
     try {
       // Extrair título do ebook do conteúdo
       const titleMatch = content.match(/#{1,2}\s*(.+)/);
@@ -857,7 +857,7 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
                     {message.type === 'assistant' && activeAssistant === 'ebook' && message.content.length > 2000 && (
                       <div className="mt-4 pt-3 border-t border-border">
                         <Button
-                          onClick={() => downloadEbookAsPDF(message.content, activeAssistant)}
+                          onClick={() => downloadEbookAsPDF(message.content)}
                           variant="outline"
                           size="sm"
                           className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700"

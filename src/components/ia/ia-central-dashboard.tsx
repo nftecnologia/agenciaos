@@ -26,7 +26,6 @@ import {
   MessageCircle,
   Camera,
   Play,
-  Megaphone,
   BookOpen
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
