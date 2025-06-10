@@ -21,7 +21,8 @@ import {
   Scale,
   PenTool,
   FileText,
-  Compass
+  Compass,
+  TrendingDown
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -103,6 +104,14 @@ export function IACentralDashboard() {
       description: 'Ideias variadas de conteúdo para seu nicho',
       icon: Lightbulb,
       color: 'bg-emerald-500',
+      available: true,
+    },
+    {
+      id: 'sales-funnel',
+      name: 'Gerador de Funil de Vendas',
+      description: 'Funil completo: Produto Principal, Order Bumps, Upsell e Downsell',
+      icon: TrendingDown,
+      color: 'bg-red-600',
       available: true,
     },
   ]

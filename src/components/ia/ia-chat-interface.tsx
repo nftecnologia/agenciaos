@@ -157,6 +157,12 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           'Nutrição para diabéticos',
           'Inglês para executivos'
         ]
+      case 'sales-funnel':
+        return [
+          'Marketing Digital',
+          'Emagrecimento e Fitness',
+          'Educação Financeira'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -204,7 +210,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         copy: '/api/ia/copy-assistant',
         'blog-content': '/api/ia/blog-content-assistant',
         'niche-generator': '/api/ia/niche-generator-assistant',
-        'content-ideas': '/api/ia/content-ideas-assistant'
+        'content-ideas': '/api/ia/content-ideas-assistant',
+        'sales-funnel': '/api/ia/sales-funnel-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
