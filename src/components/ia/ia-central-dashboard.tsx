@@ -150,12 +150,11 @@ export function IACentralDashboard() {
 
       {/* Main Content */}
       <Tabs defaultValue="chat" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="chat">Chat IA</TabsTrigger>
-          <TabsTrigger value="carousel">Instagram</TabsTrigger>
           <TabsTrigger value="insights">Insights</TabsTrigger>
           <TabsTrigger value="suggestions">Sugestões</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics IA</TabsTrigger>
         </TabsList>
 
         <TabsContent value="chat" className="space-y-4">
@@ -257,10 +256,6 @@ export function IACentralDashboard() {
               />
             </div>
           </div>
-        </TabsContent>
-
-        <TabsContent value="carousel">
-          <InstagramCarouselGenerator />
         </TabsContent>
 
         <TabsContent value="insights">

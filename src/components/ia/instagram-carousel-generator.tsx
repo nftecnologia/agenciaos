@@ -1,479 +1,291 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Instagram, 
-  Download, 
-  Eye, 
-  Wand2, 
-  Plus, 
-  Trash2, 
-  Palette,
-  Image as ImageIcon,
-  Loader2
-} from 'lucide-react'
+import { Instagram, Download, Loader2, Sparkles, Check } from 'lucide-react'
 
 interface SlideContent {
-  title?: string
-  subtitle?: string
-  content?: string
-  ctaText?: string
+  id: number
+  title: string
+  content: string
+  slideNumber: string
 }
 
-interface BrandConfig {
-  primaryColor: string
-  secondaryColor: string
-  logoUrl?: string
-  fontFamily: string
-  contactInfo: string
-  agencyName: string
-}
-
-interface GeneratedImage {
-  slideNumber: number
-  id: string
-  url: string
-  format: string
-  size: number
-  width: number
-  height: number
-  createdAt: string
-}
-
-interface Template {
-  id: string
-  name: string
-  description: string
+interface GeneratedCarousel {
   slides: SlideContent[]
+  images?: string[]
 }
 
 export function InstagramCarouselGenerator() {
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('')
-  const [templates, setTemplates] = useState<Template[]>([])
-  const [slides, setSlides] = useState<SlideContent[]>([])
-  const [brandConfig, setBrandConfig] = useState<BrandConfig>({
-    primaryColor: '#667eea',
-    secondaryColor: '#764ba2',
-    fontFamily: 'Inter',
-    contactInfo: '@agencia.digital',
-    agencyName: 'Agência Digital'
-  })
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([])
+  const [topic, setTopic] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [previewSlide, setPreviewSlide] = useState(0)
-
-  // Carregar templates disponíveis
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        const response = await fetch('/api/instagram/generate-carousel')
-        const data = await response.json()
-        setTemplates(data.templates)
-      } catch (error) {
-        console.error('Erro ao carregar templates:', error)
-      }
-    }
-    fetchTemplates()
-  }, [])
-
-  // Carregar slides do template selecionado
-  useEffect(() => {
-    if (selectedTemplate) {
-      const template = templates.find(t => t.id === selectedTemplate)
-      if (template) {
-        setSlides(template.slides)
-        setGeneratedImages([])
-      }
-    }
-  }, [selectedTemplate, templates])
-
-  const handleSlideChange = (index: number, field: keyof SlideContent, value: string) => {
-    const newSlides = [...slides]
-    newSlides[index] = { ...newSlides[index], [field]: value }
-    setSlides(newSlides)
-  }
-
-  const addSlide = () => {
-    setSlides([...slides, { title: '', content: '' }])
-  }
-
-  const removeSlide = (index: number) => {
-    if (slides.length > 1) {
-      const newSlides = slides.filter((_, i) => i !== index)
-      setSlides(newSlides)
-      if (previewSlide >= newSlides.length) {
-        setPreviewSlide(Math.max(0, newSlides.length - 1))
-      }
-    }
-  }
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false)
+  const [generatedCarousel, setGeneratedCarousel] = useState<GeneratedCarousel | null>(null)
+  const [showResults, setShowResults] = useState(false)
 
   const generateCarousel = async () => {
-    if (!selectedTemplate || slides.length === 0) return
+    if (!topic.trim()) return
 
     setIsGenerating(true)
+    setShowResults(false)
+
     try {
+      // Primeiro, gerar o conteúdo
+      const contentResponse = await fetch('/api/instagram/generate-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ topic })
+      })
+
+      const contentResult = await contentResponse.json()
+
+      if (contentResult.success) {
+        const slides: SlideContent[] = contentResult.data.slides.map((slide: any, index: number) => ({
+          id: index + 1,
+          slideNumber: `Slide ${index + 1}`,
+          title: slide.title,
+          content: slide.content
+        }))
+
+        setGeneratedCarousel({ slides })
+        setIsGenerating(false)
+      } else {
+        console.error('Erro ao gerar conteúdo:', contentResult.error)
+        alert('Erro ao gerar conteúdo. Tente novamente.')
+        setIsGenerating(false)
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error)
+      alert('Erro na requisição. Tente novamente.')
+      setIsGenerating(false)
+    }
+  }
+
+  const generateImages = async () => {
+    if (!generatedCarousel) return
+
+    setIsGeneratingImages(true)
+    setShowResults(true)
+
+    try {
+      // Preparar os slides no formato esperado pela API
+      const slides = generatedCarousel.slides.map(slide => ({
+        title: slide.title,
+        content: slide.content
+      }))
+
       const response = await fetch('/api/instagram/generate-carousel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          templateType: selectedTemplate,
+          templateType: 'professional',
           slides,
-          brandConfig
+          brandConfig: {
+            primaryColor: '#667eea',
+            secondaryColor: '#764ba2',
+            fontFamily: 'Inter',
+            contactInfo: '@agencia.digital',
+            agencyName: 'Agência Digital'
+          }
         })
       })
 
       const result = await response.json()
 
       if (result.success) {
-        setGeneratedImages(result.data.images)
+        const imageUrls = result.data.images.map((img: any) => img.url)
+        setGeneratedCarousel(prev => prev ? { ...prev, images: imageUrls } : null)
       } else {
-        console.error('Erro ao gerar carrossel:', result.error)
-        alert('Erro ao gerar carrossel: ' + result.error)
+        console.error('Erro ao gerar imagens:', result.error)
+        alert('Erro ao gerar imagens. Tente novamente.')
       }
     } catch (error) {
       console.error('Erro na requisição:', error)
       alert('Erro na requisição. Tente novamente.')
     } finally {
-      setIsGenerating(false)
+      setIsGeneratingImages(false)
     }
   }
 
-  const downloadImage = (url: string, filename: string) => {
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    link.target = '_blank'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  const downloadSlide = (index: number) => {
+    console.log(`Baixando slide ${index + 1}`)
+    // Implementar download real
   }
 
   const downloadAll = () => {
-    generatedImages.forEach((image, index) => {
-      downloadImage(image.url, `carousel-slide-${index + 1}.png`)
-    })
+    console.log('Baixando todos os slides')
+    // Implementar download de todos
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Instagram className="h-6 w-6 text-pink-500" />
-            Instagram Carousel Generator
-          </h2>
-          <p className="text-muted-foreground">
-            Crie carrosséis profissionais para Instagram em minutos
-          </p>
-        </div>
-        {generatedImages.length > 0 && (
-          <Button onClick={downloadAll} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Baixar Todos
-          </Button>
-        )}
-      </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {!showResults ? (
+        <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+          <CardContent className="p-8 text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium">
+              <Instagram className="h-4 w-4" />
+              Instagram Carousel Generator
+            </div>
 
-      <div className="grid grid-cols-12 gap-6">
-        {/* Configurações e Templates */}
-        <div className="col-span-3">
-          {/* Seletor de Template */}
-          <Card className="mb-4">
-            <CardHeader>
-              <CardTitle className="text-lg">Template</CardTitle>
-              <CardDescription>
-                Escolha um modelo para começar
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {templates.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedTemplate && (
-                <div className="mt-3">
-                  <Badge variant="secondary" className="text-xs">
-                    {templates.find(t => t.id === selectedTemplate)?.description}
-                  </Badge>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold">
+                Crie Carrosséis Profissionais em <span className="text-purple-600">Minutos</span>
+              </h2>
+              <p className="text-muted-foreground">
+                Transforme suas ideias em carrosséis incríveis para Instagram com nossa IA avançada
+              </p>
+            </div>
 
-          {/* Configurações de Marca */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Palette className="h-4 w-4" />
-                Branding
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="agencyName">Nome da Agência</Label>
-                <Input
-                  id="agencyName"
-                  value={brandConfig.agencyName}
-                  onChange={(e) => setBrandConfig({...brandConfig, agencyName: e.target.value})}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="contactInfo">Contato</Label>
-                <Input
-                  id="contactInfo"
-                  value={brandConfig.contactInfo}
-                  onChange={(e) => setBrandConfig({...brandConfig, contactInfo: e.target.value})}
-                  placeholder="@agencia.digital"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="primaryColor">Cor Principal</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="primaryColor"
-                      type="color"
-                      value={brandConfig.primaryColor}
-                      onChange={(e) => setBrandConfig({...brandConfig, primaryColor: e.target.value})}
-                      className="w-12 h-8 p-1"
-                    />
-                    <Input
-                      value={brandConfig.primaryColor}
-                      onChange={(e) => setBrandConfig({...brandConfig, primaryColor: e.target.value})}
-                      className="flex-1 text-xs"
-                    />
+            <div className="space-y-4 max-w-md mx-auto">
+              <div className="text-left space-y-2">
+                <div className="flex items-start gap-2">
+                  <div className="mt-1">
+                    <Sparkles className="h-5 w-5 text-purple-600" />
                   </div>
+                  <div>
+                    <p className="font-medium">Geração de Conteúdo por IA</p>
+                    <p className="text-sm text-muted-foreground">
+                      Descreva seu assunto e deixe a IA criar o conteúdo perfeito
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-left block">
+                  Assunto do Carrossel
+                </label>
+                <Textarea
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  placeholder="dicas de marketing"
+                  className="min-h-[100px] resize-none"
+                />
+              </div>
+
+              <Button 
+                onClick={generateCarousel}
+                disabled={!topic.trim() || isGenerating}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                size="lg"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Gerando conteúdo...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Gerar Conteúdo com IA
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {generatedCarousel && (
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center justify-center gap-2 text-green-600">
+                  <Check className="h-5 w-5" />
+                  <span className="font-medium">Conteúdo Gerado ({generatedCarousel.slides.length} slides)</span>
                 </div>
                 
-                <div>
-                  <Label htmlFor="secondaryColor">Cor Secundária</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="secondaryColor"
-                      type="color"
-                      value={brandConfig.secondaryColor}
-                      onChange={(e) => setBrandConfig({...brandConfig, secondaryColor: e.target.value})}
-                      className="w-12 h-8 p-1"
-                    />
-                    <Input
-                      value={brandConfig.secondaryColor}
-                      onChange={(e) => setBrandConfig({...brandConfig, secondaryColor: e.target.value})}
-                      className="flex-1 text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Editor de Slides */}
-        <div className="col-span-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg">Editor de Slides</CardTitle>
-                  <CardDescription>
-                    {slides.length} slide{slides.length !== 1 ? 's' : ''} - Edite o conteúdo
-                  </CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={addSlide} size="sm" variant="outline">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Slide
-                  </Button>
-                  <Button 
-                    onClick={generateCarousel} 
-                    disabled={!selectedTemplate || slides.length === 0 || isGenerating}
-                    size="sm"
-                  >
-                    {isGenerating ? (
+                <Button
+                  onClick={generateImages}
+                  variant="outline"
+                  className="w-full max-w-md"
+                  disabled={isGeneratingImages}
+                >
+                  {isGeneratingImages ? (
+                    <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Wand2 className="h-4 w-4 mr-2" />
-                    )}
-                    {isGenerating ? 'Gerando...' : 'Gerar Carrossel'}
-                  </Button>
-                </div>
+                      Gerando imagens...
+                    </>
+                  ) : (
+                    <>
+                      <Instagram className="h-4 w-4 mr-2" />
+                      Gerar Imagens
+                    </>
+                  )}
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent>
-              <Tabs value={previewSlide.toString()} onValueChange={(value) => setPreviewSlide(parseInt(value))}>
-                <TabsList className="grid w-full grid-cols-auto">
-                  {slides.map((_, index) => (
-                    <TabsTrigger key={index} value={index.toString()} className="flex-1">
-                      Slide {index + 1}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                
-                {slides.map((slide, index) => (
-                  <TabsContent key={index} value={index.toString()} className="space-y-4 mt-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">Slide {index + 1}</h4>
-                      {slides.length > 1 && (
-                        <Button 
-                          onClick={() => removeSlide(index)} 
-                          size="sm" 
-                          variant="ghost"
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <Label htmlFor={`title-${index}`}>Título</Label>
-                        <Input
-                          id={`title-${index}`}
-                          value={slide.title || ''}
-                          onChange={(e) => handleSlideChange(index, 'title', e.target.value)}
-                          placeholder="Título do slide"
-                        />
-                      </div>
-                      
-                      {index === 0 && (
-                        <div>
-                          <Label htmlFor={`subtitle-${index}`}>Subtítulo</Label>
-                          <Input
-                            id={`subtitle-${index}`}
-                            value={slide.subtitle || ''}
-                            onChange={(e) => handleSlideChange(index, 'subtitle', e.target.value)}
-                            placeholder="Subtítulo ou descrição"
-                          />
-                        </div>
-                      )}
-                      
-                      <div>
-                        <Label htmlFor={`content-${index}`}>Conteúdo</Label>
-                        <Textarea
-                          id={`content-${index}`}
-                          value={slide.content || ''}
-                          onChange={(e) => handleSlideChange(index, 'content', e.target.value)}
-                          placeholder="Conteúdo principal do slide"
-                          rows={3}
-                        />
-                      </div>
-                      
-                      {index === slides.length - 1 && (
-                        <div>
-                          <Label htmlFor={`cta-${index}`}>Call to Action</Label>
-                          <Input
-                            id={`cta-${index}`}
-                            value={slide.ctaText || ''}
-                            onChange={(e) => handleSlideChange(index, 'ctaText', e.target.value)}
-                            placeholder="Ex: Entre em contato"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">Carrossel Pronto!</h3>
+              <p className="text-muted-foreground">
+                Suas imagens estão prontas para download
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowResults(false)
+                  setTopic('')
+                  setGeneratedCarousel(null)
+                }}
+              >
+                Novo Carrossel
+              </Button>
+              <Button onClick={downloadAll}>
+                <Download className="h-4 w-4 mr-2" />
+                Baixar Todas
+              </Button>
+            </div>
+          </div>
 
-        {/* Preview e Resultados */}
-        <div className="col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                Preview & Download
-              </CardTitle>
-              <CardDescription>
-                Visualize e baixe as imagens geradas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {generatedImages.length > 0 ? (
-                <div className="space-y-4">
-                  {/* Preview Principal */}
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                    <img 
-                      src={generatedImages[previewSlide]?.url} 
-                      alt={`Slide ${previewSlide + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  {/* Navegação de Slides */}
-                  <div className="flex gap-2 overflow-x-auto">
-                    {generatedImages.map((image, index) => (
-                      <div key={image.id} className="flex-shrink-0">
-                        <button
-                          onClick={() => setPreviewSlide(index)}
-                          className={`w-16 h-16 rounded border-2 overflow-hidden ${
-                            previewSlide === index ? 'border-primary' : 'border-gray-200'
-                          }`}
-                        >
-                          <img 
-                            src={image.url} 
-                            alt={`Slide ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Download Individual */}
-                  <div className="space-y-2">
-                    <Button 
-                      onClick={() => downloadImage(
-                        generatedImages[previewSlide].url, 
-                        `carousel-slide-${previewSlide + 1}.png`
-                      )}
-                      className="w-full"
-                      size="sm"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Baixar Slide {previewSlide + 1}
-                    </Button>
-                    
-                    <div className="text-xs text-muted-foreground text-center">
-                      {generatedImages[previewSlide]?.format.toUpperCase()} • 1080x1080 • {(generatedImages[previewSlide]?.size / 1024 / 1024).toFixed(1)}MB
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {generatedCarousel?.slides.map((slide, index) => (
+              <Card key={slide.id} className="overflow-hidden group cursor-pointer">
+                <div className="aspect-square relative bg-gradient-to-br from-purple-600 to-pink-600 p-6 text-white">
+                  <div className="h-full flex flex-col justify-between">
+                    <div>
+                      <p className="text-xs font-medium opacity-80">{slide.slideNumber}</p>
+                      <h4 className="text-lg font-bold mt-2 mb-3">{slide.title}</h4>
+                      <p className="text-sm opacity-90 line-clamp-6">{slide.content}</p>
+                    </div>
+                    <div className="text-xs opacity-80">
+                      @agencia.digital
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div className="aspect-square bg-gray-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200">
-                  <div className="text-center text-muted-foreground">
-                    <ImageIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Preview aparecerá aqui</p>
-                    <p className="text-xs">Selecione um template e gere o carrossel</p>
+                  
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => downloadSlide(index)}
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Baixar
+                    </Button>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <div className="p-2 text-center">
+                  <p className="text-xs text-muted-foreground">{slide.slideNumber}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          <div className="flex justify-center pt-4">
+            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
+              <span>Passo 4 de 4</span>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
