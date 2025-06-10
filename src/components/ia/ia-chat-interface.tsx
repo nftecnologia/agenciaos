@@ -354,50 +354,96 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
     }
   }
 
-  // Função para fazer download do ebook em PDF com formatação profissional
+  // Função para fazer download do ebook em PDF formato A5 profissional
   const downloadEbookAsPDF = async (content: string, assistantType: string) => {
     try {
       // Extrair título do ebook do conteúdo
       const titleMatch = content.match(/#{1,2}\s*(.+)/);
       const title = titleMatch ? titleMatch[1].trim() : 'Ebook Gerado';
       
-      // Processar o conteúdo markdown para HTML estruturado
-      const processContentToHTML = (text: string): string => {
-        // Primeiro, dividir o conteúdo em seções
-        let html = text;
+      // Processar o conteúdo markdown para estrutura de ebook
+      const processContentToEbook = (text: string): { cover: string, toc: string, chapters: string } => {
+        const lines = text.split('\n');
+        let chapters = '';
+        let toc = '';
+        let chapterCount = 0;
+        let currentChapter = '';
+        let inChapter = false;
         
-        // Processar títulos com classes específicas
-        html = html.replace(/# (.+)/g, '<h1 class="main-title">$1</h1>');
-        html = html.replace(/## (.+)/g, '<h2 class="chapter-title">$1</h2>');
-        html = html.replace(/### (.+)/g, '<h3 class="section-title">$1</h3>');
-        html = html.replace(/#### (.+)/g, '<h4 class="subsection-title">$1</h4>');
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          
+          // Detectar capítulos (## título)
+          if (line.startsWith('## ')) {
+            if (currentChapter) {
+              chapters += `<div class="chapter">\n${currentChapter}\n</div>\n`;
+            }
+            
+            chapterCount++;
+            const chapterTitle = line.replace('## ', '');
+            toc += `<div class="toc-entry"><span>Capítulo ${chapterCount}: ${chapterTitle}</span><span>${chapterCount + 2}</span></div>\n`;
+            
+            currentChapter = `<h1 class="chapter-title">Capítulo ${chapterCount}: ${chapterTitle}</h1>\n`;
+            inChapter = true;
+          }
+          // Detectar seções (### título)
+          else if (line.startsWith('### ')) {
+            const sectionTitle = line.replace('### ', '');
+            currentChapter += `<h2>${sectionTitle}</h2>\n`;
+          }
+          // Detectar subseções (#### título)
+          else if (line.startsWith('#### ')) {
+            const subsectionTitle = line.replace('#### ', '');
+            currentChapter += `<h3>${subsectionTitle}</h3>\n`;
+          }
+          // Processar listas
+          else if (line.startsWith('- ')) {
+            const listItem = line.replace('- ', '');
+            currentChapter += `<li>${listItem.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</li>\n`;
+          }
+          // Processar parágrafos
+          else if (line.length > 0 && !line.startsWith('#')) {
+            const isFirstParagraph = !currentChapter.includes('<p');
+            const paragraph = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            currentChapter += `<p${isFirstParagraph ? ' class="no-indent"' : ''}>${paragraph}</p>\n`;
+          }
+          // Linha vazia - adicionar espaço
+          else if (line.length === 0 && inChapter) {
+            currentChapter += '\n';
+          }
+        }
         
-        // Processar negritos
-        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Adicionar último capítulo
+        if (currentChapter) {
+          chapters += `<div class="chapter">\n${currentChapter}\n</div>\n`;
+        }
         
-        // Processar listas
-        html = html.replace(/^- (.+)$/gm, '<li class="list-item">$1</li>');
-        html = html.replace(/^(\d+)\. (.+)$/gm, '<li class="numbered-item">$2</li>');
+        // Processar listas (agrupar li's consecutivos)
+        chapters = chapters.replace(/(<li>.*?<\/li>\n)+/g, (match) => {
+          return `<ul>\n${match}</ul>\n`;
+        });
         
-        // Agrupar listas consecutivas
-        html = html.replace(/(<li class="list-item">.*?<\/li>)/g, '<ul class="bullet-list">$1</ul>');
-        html = html.replace(/(<li class="numbered-item">.*?<\/li>)/g, '<ol class="numbered-list">$1</ol>');
+        const cover = `
+          <div class="cover">
+            <h1>${title}</h1>
+            <div class="subtitle">Um guia completo e detalhado</div>
+            <div class="author">Gerado por IA</div>
+          </div>
+        `;
         
-        // Processar parágrafos
-        html = html.replace(/\n\n+/g, '</p><p class="paragraph">');
-        html = '<p class="paragraph">' + html + '</p>';
+        const tocHtml = `
+          <div class="toc">
+            <h2>Sumário</h2>
+            ${toc}
+          </div>
+        `;
         
-        // Limpar parágrafos vazios
-        html = html.replace(/<p class="paragraph"><\/p>/g, '');
-        html = html.replace(/<p class="paragraph">(<[^>]+>)/g, '$1');
-        html = html.replace(/(<\/[^>]+>)<\/p>/g, '$1');
-        
-        return html;
+        return { cover, toc: tocHtml, chapters };
       };
       
-      const processedContent = processContentToHTML(content);
+      const { cover, toc, chapters } = processContentToEbook(content);
       
-      // Criar documento HTML completo para PDF
+      // Criar documento HTML completo formato A5 para ebook
       const htmlContent = `
         <!DOCTYPE html>
         <html lang="pt-BR">
@@ -406,115 +452,40 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>${title}</title>
           <style>
+            /* Configurações específicas para PDF/Ebook */
             @page {
-              size: A4;
-              margin: 1in;
+              size: A5; /* Tamanho padrão para ebooks */
+              margin: 2cm 1.5cm;
               @bottom-center {
                 content: counter(page);
-                font-family: 'Times New Roman', serif;
-                font-size: 10px;
+                font-size: 10pt;
+              }
+              @top-center {
+                content: "${title}";
+                font-size: 10pt;
+                font-style: italic;
               }
             }
             
+            /* Primeira página sem cabeçalho/rodapé */
+            @page :first {
+              @top-center { content: ""; }
+              @bottom-center { content: ""; }
+            }
+            
+            /* Reset e configurações base */
             * {
+              margin: 0;
+              padding: 0;
               box-sizing: border-box;
             }
             
             body {
-              font-family: 'Times New Roman', serif;
-              line-height: 1.8;
-              color: #333;
-              font-size: 12px;
-              margin: 0;
-              padding: 0;
-              background: white;
-            }
-            
-            .ebook-container {
-              max-width: 100%;
-              margin: 0 auto;
-              padding: 0;
-            }
-            
-            /* Títulos */
-            .main-title {
-              font-size: 24px;
-              font-weight: bold;
-              color: #1a365d;
-              text-align: center;
-              margin: 40px 0 30px 0;
-              page-break-before: always;
-              page-break-after: avoid;
-              line-height: 1.3;
-            }
-            
-            .chapter-title {
-              font-size: 18px;
-              font-weight: bold;
-              color: #2563eb;
-              margin: 35px 0 20px 0;
-              page-break-before: always;
-              page-break-after: avoid;
-              border-bottom: 2px solid #2563eb;
-              padding-bottom: 10px;
-            }
-            
-            .section-title {
-              font-size: 16px;
-              font-weight: bold;
-              color: #1e40af;
-              margin: 25px 0 15px 0;
-              page-break-after: avoid;
-            }
-            
-            .subsection-title {
-              font-size: 14px;
-              font-weight: bold;
-              color: #1e3a8a;
-              margin: 20px 0 10px 0;
-              page-break-after: avoid;
-            }
-            
-            /* Parágrafos */
-            .paragraph {
-              margin: 0 0 15px 0;
-              text-align: justify;
-              text-indent: 1.5em;
-              line-height: 1.8;
-              font-size: 12px;
-              orphans: 3;
-              widows: 3;
-            }
-            
-            .paragraph:first-child {
-              text-indent: 0;
-            }
-            
-            /* Texto em destaque */
-            strong {
-              font-weight: bold;
-              color: #1f2937;
-            }
-            
-            /* Listas */
-            .bullet-list, .numbered-list {
-              margin: 15px 0;
-              padding-left: 0;
-              page-break-inside: avoid;
-            }
-            
-            .list-item, .numbered-item {
-              margin: 8px 0 8px 25px;
+              font-family: 'Georgia', 'Times New Roman', serif;
+              font-size: 12pt;
               line-height: 1.6;
-              list-style-position: outside;
-            }
-            
-            .bullet-list .list-item {
-              list-style-type: disc;
-            }
-            
-            .numbered-list .numbered-item {
-              list-style-type: decimal;
+              color: #333;
+              background: white;
             }
             
             /* Quebras de página */
@@ -522,53 +493,126 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
               page-break-before: always;
             }
             
-            /* Espaçamentos especiais */
-            .section-break {
-              margin: 30px 0;
-              border-top: 1px solid #e5e7eb;
-              padding-top: 20px;
+            .avoid-break {
+              page-break-inside: avoid;
             }
             
-            /* Capa */
-            .cover-page {
+            /* Tipografia para ebook */
+            h1 {
+              font-size: 18pt;
+              margin-bottom: 1.5em;
+              page-break-after: avoid;
               text-align: center;
-              padding: 100px 0;
+            }
+            
+            h2 {
+              font-size: 16pt;
+              margin: 2em 0 1em 0;
+              page-break-after: avoid;
+            }
+            
+            h3 {
+              font-size: 14pt;
+              margin: 1.5em 0 0.5em 0;
+              page-break-after: avoid;
+            }
+            
+            p {
+              margin-bottom: 1em;
+              text-align: justify;
+              text-indent: 1.5em;
+            }
+            
+            p.no-indent {
+              text-indent: 0;
+            }
+            
+            /* Capa do livro */
+            .cover {
+              text-align: center;
+              height: 100vh;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
               page-break-after: always;
             }
             
-            .cover-title {
-              font-size: 28px;
-              font-weight: bold;
-              color: #1a365d;
-              margin-bottom: 20px;
+            .cover h1 {
+              font-size: 24pt;
+              margin-bottom: 0.5em;
               line-height: 1.2;
             }
             
-            .cover-subtitle {
-              font-size: 18px;
-              color: #4a5568;
-              margin-bottom: 40px;
+            .cover .subtitle {
+              font-size: 16pt;
               font-style: italic;
+              margin-bottom: 2em;
+              color: #666;
             }
             
-            /* Índice */
-            .table-of-contents {
-              page-break-before: always;
+            .cover .author {
+              font-size: 14pt;
+              margin-top: 2em;
+              color: #888;
+            }
+            
+            /* Sumário */
+            .toc {
               page-break-after: always;
             }
             
-            .toc-title {
-              font-size: 20px;
-              font-weight: bold;
+            .toc h2 {
               text-align: center;
-              margin-bottom: 30px;
-              color: #1a365d;
+              margin-bottom: 2em;
+              font-size: 18pt;
             }
             
-            .toc-item {
-              margin: 8px 0;
+            .toc-entry {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 0.5em;
               border-bottom: 1px dotted #ccc;
-              padding-bottom: 5px;
+              padding-bottom: 0.3em;
+            }
+            
+            /* Capítulos */
+            .chapter {
+              page-break-before: always;
+            }
+            
+            .chapter-title {
+              font-size: 18pt;
+              text-align: center;
+              margin-bottom: 2em;
+              page-break-after: avoid;
+              color: #2563eb;
+              border-bottom: 2px solid #2563eb;
+              padding-bottom: 0.5em;
+            }
+            
+            /* Citações */
+            blockquote {
+              margin: 1.5em 2em;
+              padding: 1em;
+              border-left: 3px solid #ccc;
+              font-style: italic;
+              background: #f9f9f9;
+            }
+            
+            /* Listas */
+            ul, ol {
+              margin: 1em 0 1em 2em;
+            }
+            
+            li {
+              margin-bottom: 0.5em;
+            }
+            
+            /* Texto em destaque */
+            strong {
+              font-weight: bold;
+              color: #1f2937;
             }
             
             /* Impressão */
@@ -578,85 +622,108 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
                 print-color-adjust: exact;
               }
               
-              .main-title, .chapter-title {
-                page-break-after: avoid;
+              .controls {
+                display: none !important;
               }
-              
-              .paragraph {
-                orphans: 3;
-                widows: 3;
-              }
+            }
+            
+            /* Controles para gerar PDF */
+            .controls {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background: #007bff;
+              color: white;
+              padding: 15px;
+              border-radius: 8px;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+              z-index: 1000;
+              font-family: Arial, sans-serif;
+            }
+            
+            .controls h4 {
+              margin-bottom: 10px;
+              font-size: 14px;
+            }
+            
+            .controls button {
+              background: white;
+              color: #007bff;
+              border: none;
+              padding: 8px 16px;
+              border-radius: 5px;
+              cursor: pointer;
+              font-weight: bold;
+              margin: 3px 0;
+              display: block;
+              width: 100%;
+              font-size: 12px;
+            }
+            
+            .controls button:hover {
+              background: #f8f9fa;
+            }
+            
+            .controls small {
+              display: block;
+              margin-top: 10px;
+              font-size: 10px;
+              opacity: 0.8;
             }
           </style>
         </head>
         <body>
-          <div class="ebook-container">
-            ${processedContent}
+          <div class="controls">
+            <h4>📄 Gerar PDF</h4>
+            <button onclick="generatePDF()">📄 Baixar PDF</button>
+            <button onclick="printPage()">🖨️ Imprimir</button>
+            <small>Use Ctrl+P e selecione "Salvar como PDF" para melhor resultado</small>
           </div>
+
+          ${cover}
+          ${toc}
+          ${chapters}
+
+          <script>
+            function generatePDF() {
+              alert('Para gerar o PDF do ebook:\\n\\n1. Pressione Ctrl+P (ou Cmd+P no Mac)\\n2. Selecione "Salvar como PDF"\\n3. Escolha o local para salvar\\n4. Clique em "Salvar"\\n\\nO PDF será gerado no formato A5 ideal para ebooks!');
+              window.print();
+            }
+            
+            function printPage() {
+              window.print();
+            }
+            
+            // Atalho de teclado para gerar PDF
+            document.addEventListener('keydown', function(e) {
+              if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                generatePDF();
+              }
+            });
+          </script>
         </body>
         </html>
       `;
       
-      // Método 1: Tentar usar html2pdf se disponível
-      if (typeof window !== 'undefined' && (window as any).html2pdf) {
-        const opt = {
-          margin: [0.5, 0.5, 0.5, 0.5],
-          filename: `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
-          image: { type: 'jpeg', quality: 0.95 },
-          html2canvas: { 
-            scale: 2,
-            useCORS: true,
-            letterRendering: true,
-            allowTaint: false
-          },
-          jsPDF: { 
-            unit: 'in', 
-            format: 'a4', 
-            orientation: 'portrait',
-            putOnlyUsedFonts: true
-          },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
+      // Abrir em nova janela com controles para PDF
+      const pdfWindow = window.open('', '_blank', 'width=900,height=700');
+      if (pdfWindow) {
+        pdfWindow.document.write(htmlContent);
+        pdfWindow.document.close();
         
-        // Criar elemento temporário com HTML completo
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = htmlContent;
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '-9999px';
-        document.body.appendChild(tempDiv);
-        
-        try {
-          await (window as any).html2pdf().set(opt).from(tempDiv.firstElementChild).save();
-        } finally {
-          document.body.removeChild(tempDiv);
-        }
+        // Focar na nova janela
+        pdfWindow.focus();
         
         return;
       }
       
-      // Método 2: Fallback - Abrir em nova janela para impressão
-      const printWindow = window.open('', '_blank', 'width=800,height=600');
-      if (printWindow) {
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        
-        // Aguardar carregamento e imprimir
-        printWindow.onload = () => {
-          setTimeout(() => {
-            printWindow.print();
-          }, 1000);
-        };
-        
-        return;
-      }
-      
-      // Método 3: Download como arquivo HTML
+      // Fallback: Download como arquivo HTML
       const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`;
+      link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_ebook.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -668,10 +735,10 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
       // Fallback final: copiar para clipboard
       try {
         await navigator.clipboard.writeText(content);
-        alert('Erro ao gerar PDF. O conteúdo foi copiado para sua área de transferência. Cole em um editor de texto e salve como .txt para converter posteriormente.');
+        alert('Erro ao gerar ebook. O conteúdo foi copiado para sua área de transferência. Cole em um editor de texto para usar.');
       } catch (clipboardError) {
         console.error('Erro ao copiar para clipboard:', clipboardError);
-        alert('Erro ao gerar download. Tente novamente ou entre em contato com o suporte.');
+        alert('Erro ao gerar download. Tente novamente.');
       }
     }
   }
