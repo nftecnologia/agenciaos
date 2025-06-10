@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Instagram, Download, Loader2, Sparkles, Check } from 'lucide-react'
+import { Instagram, Download, Loader2, Sparkles, Check, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react'
 
 interface SlideContent {
   id: number
@@ -24,6 +24,15 @@ export function InstagramCarouselGenerator() {
   const [isGeneratingImages, setIsGeneratingImages] = useState(false)
   const [generatedCarousel, setGeneratedCarousel] = useState<GeneratedCarousel | null>(null)
   const [showResults, setShowResults] = useState(false)
+  const [expandedSlides, setExpandedSlides] = useState<number[]>([])
+
+  const toggleSlideExpansion = (slideId: number) => {
+    setExpandedSlides(prev => 
+      prev.includes(slideId) 
+        ? prev.filter(id => id !== slideId)
+        : [...prev, slideId]
+    )
+  }
 
   const generateCarousel = async () => {
     if (!topic.trim()) return
@@ -114,58 +123,68 @@ export function InstagramCarouselGenerator() {
   }
 
   const downloadSlide = (index: number) => {
-    console.log(`Baixando slide ${index + 1}`)
-    // Implementar download real
+    if (generatedCarousel?.images?.[index]) {
+      const link = document.createElement('a')
+      link.href = generatedCarousel.images[index]
+      link.download = `slide-${index + 1}.png`
+      link.target = '_blank'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }
 
   const downloadAll = () => {
-    console.log('Baixando todos os slides')
-    // Implementar download de todos
+    if (generatedCarousel?.images) {
+      generatedCarousel.images.forEach((_, index) => {
+        setTimeout(() => downloadSlide(index), index * 100)
+      })
+    }
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {!showResults ? (
-        <Card className="border-0 shadow-none bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
-          <CardContent className="p-8 text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium">
-              <Instagram className="h-4 w-4" />
-              Instagram Carousel Generator
+    <div className="max-w-3xl mx-auto space-y-6">
+      {!generatedCarousel ? (
+        <Card className="border-gray-200 shadow-sm">
+          <CardContent className="p-8 space-y-6">
+            <div className="text-center space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium">
+                <Instagram className="h-4 w-4" />
+                Instagram Carousel Generator
+              </div>
+
+              <div>
+                <h1 className="text-3xl font-bold">
+                  Crie Carrosséis Profissionais em <span className="text-purple-600">Minutos</span>
+                </h1>
+                <p className="text-gray-600 mt-2">
+                  Transforme suas ideias em carrosséis incríveis para Instagram com nossa IA avançada
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold">
-                Crie Carrosséis Profissionais em <span className="text-purple-600">Minutos</span>
-              </h2>
-              <p className="text-muted-foreground">
-                Transforme suas ideias em carrosséis incríveis para Instagram com nossa IA avançada
-              </p>
-            </div>
-
-            <div className="space-y-4 max-w-md mx-auto">
-              <div className="text-left space-y-2">
-                <div className="flex items-start gap-2">
-                  <div className="mt-1">
-                    <Sparkles className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Geração de Conteúdo por IA</p>
-                    <p className="text-sm text-muted-foreground">
-                      Descreva seu assunto e deixe a IA criar o conteúdo perfeito
-                    </p>
-                  </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-1">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium">Geração de Conteúdo por IA</p>
+                  <p className="text-sm text-gray-600">
+                    Descreva seu assunto e deixe a IA criar o conteúdo perfeito
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-medium text-left block">
+                <label className="text-sm font-medium text-gray-700 block text-left">
                   Assunto do Carrossel
                 </label>
                 <Textarea
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   placeholder="dicas de marketing"
-                  className="min-h-[100px] resize-none"
+                  className="min-h-[80px] resize-none border-gray-300 focus:border-purple-600 focus:ring-purple-600"
                 />
               </div>
 
@@ -188,34 +207,79 @@ export function InstagramCarouselGenerator() {
                 )}
               </Button>
             </div>
-
-            {generatedCarousel && (
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center justify-center gap-2 text-green-600">
-                  <Check className="h-5 w-5" />
-                  <span className="font-medium">Conteúdo Gerado ({generatedCarousel.slides.length} slides)</span>
-                </div>
-                
-                <Button
-                  onClick={generateImages}
-                  variant="outline"
-                  className="w-full max-w-md"
-                  disabled={isGeneratingImages}
-                >
-                  {isGeneratingImages ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Gerando imagens...
-                    </>
-                  ) : (
-                    <>
-                      <Instagram className="h-4 w-4 mr-2" />
-                      Gerar Imagens
-                    </>
-                  )}
-                </Button>
+          </CardContent>
+        </Card>
+      ) : !showResults ? (
+        <Card className="border-gray-200 shadow-sm">
+          <CardContent className="p-8 space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Check className="h-5 w-5 text-green-600" />
+                <span className="font-medium">Conteúdo Gerado ({generatedCarousel.slides.length} slides)</span>
               </div>
-            )}
+              <Button
+                onClick={generateImages}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={isGeneratingImages}
+              >
+                {isGeneratingImages ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Gerando imagens...
+                  </>
+                ) : (
+                  <>
+                    <Instagram className="h-4 w-4 mr-2" />
+                    Gerar Imagens
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className="text-sm text-gray-600 mb-4">
+              Revise o conteúdo e gere as imagens
+            </div>
+
+            <div className="space-y-3">
+              {generatedCarousel.slides.map((slide) => (
+                <div key={slide.id} className="border border-gray-200 rounded-lg">
+                  <button
+                    onClick={() => toggleSlideExpansion(slide.id)}
+                    className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-purple-600">{slide.slideNumber}</span>
+                      <h3 className="font-semibold text-left">{slide.title}</h3>
+                    </div>
+                    {expandedSlides.includes(slide.id) ? (
+                      <ChevronUp className="h-4 w-4 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    )}
+                  </button>
+                  
+                  {expandedSlides.includes(slide.id) && (
+                    <div className="px-4 pb-4">
+                      <p className="text-gray-600 whitespace-pre-wrap">{slide.content}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 flex justify-center">
+              <button
+                onClick={() => {
+                  setGeneratedCarousel(null)
+                  setTopic('')
+                  setExpandedSlides([])
+                }}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                <MessageSquare className="h-4 w-4 inline mr-1" />
+                Entre em contato conosco!
+              </button>
+            </div>
           </CardContent>
         </Card>
       ) : (
@@ -223,7 +287,7 @@ export function InstagramCarouselGenerator() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold">Carrossel Pronto!</h3>
-              <p className="text-muted-foreground">
+              <p className="text-gray-600">
                 Suas imagens estão prontas para download
               </p>
             </div>
@@ -234,11 +298,12 @@ export function InstagramCarouselGenerator() {
                   setShowResults(false)
                   setTopic('')
                   setGeneratedCarousel(null)
+                  setExpandedSlides([])
                 }}
               >
                 Novo Carrossel
               </Button>
-              <Button onClick={downloadAll}>
+              <Button onClick={downloadAll} className="bg-purple-600 hover:bg-purple-700">
                 <Download className="h-4 w-4 mr-2" />
                 Baixar Todas
               </Button>
@@ -246,19 +311,14 @@ export function InstagramCarouselGenerator() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {generatedCarousel?.slides.map((slide, index) => (
-              <Card key={slide.id} className="overflow-hidden group cursor-pointer">
-                <div className="aspect-square relative bg-gradient-to-br from-purple-600 to-pink-600 p-6 text-white">
-                  <div className="h-full flex flex-col justify-between">
-                    <div>
-                      <p className="text-xs font-medium opacity-80">{slide.slideNumber}</p>
-                      <h4 className="text-lg font-bold mt-2 mb-3">{slide.title}</h4>
-                      <p className="text-sm opacity-90 line-clamp-6">{slide.content}</p>
-                    </div>
-                    <div className="text-xs opacity-80">
-                      @agencia.digital
-                    </div>
-                  </div>
+            {generatedCarousel?.images?.map((imageUrl, index) => (
+              <Card key={index} className="overflow-hidden group cursor-pointer">
+                <div className="aspect-square relative">
+                  <img 
+                    src={imageUrl} 
+                    alt={`Slide ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
                   
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button
@@ -272,17 +332,10 @@ export function InstagramCarouselGenerator() {
                   </div>
                 </div>
                 <div className="p-2 text-center">
-                  <p className="text-xs text-muted-foreground">{slide.slideNumber}</p>
+                  <p className="text-xs text-gray-500">Slide {index + 1}</p>
                 </div>
               </Card>
             ))}
-          </div>
-
-          <div className="flex justify-center pt-4">
-            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
-              <span>Passo 4 de 4</span>
-            </div>
           </div>
         </div>
       )}
