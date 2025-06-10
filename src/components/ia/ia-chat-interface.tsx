@@ -90,12 +90,15 @@ interface IAChatInterfaceProps {
 }
 
 export function IAChatInterface({ activeAssistant, assistants }: IAChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([])
+  // Cada assistente tem seu próprio chat separado
+  const [assistantMessages, setAssistantMessages] = useState<Record<string, Message[]>>({})
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   const currentAssistant = assistants.find(a => a.id === activeAssistant)
+  // Mensagens do assistente ativo (ou array vazio se não houver)
+  const messages = activeAssistant ? (assistantMessages[activeAssistant] || []) : []
 
   // Função para retornar perguntas específicas de cada assistente
   const getAssistantQuestions = (assistantId: string | null): string[] => {
@@ -206,7 +209,11 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         assistantType
       }
 
-      setMessages(prev => [...prev, assistantMessage])
+      // Adicionar mensagem do assistente ao chat específico
+      setAssistantMessages(prev => ({
+        ...prev,
+        [assistantType]: [...(prev[assistantType] || []), assistantMessage]
+      }))
 
       // Log das métricas recebidas
       if (result.metrics) {
@@ -226,7 +233,11 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
         assistantType
       }
 
-      setMessages(prev => [...prev, errorMessage])
+      // Adicionar mensagem de erro ao chat específico
+      setAssistantMessages(prev => ({
+        ...prev,
+        [assistantType]: [...(prev[assistantType] || []), errorMessage]
+      }))
     } finally {
       setIsLoading(false)
     }
@@ -242,7 +253,12 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
       timestamp: new Date()
     }
 
-    setMessages(prev => [...prev, userMessage])
+    // Adicionar mensagem do usuário ao chat específico do assistente
+    setAssistantMessages(prev => ({
+      ...prev,
+      [activeAssistant]: [...(prev[activeAssistant] || []), userMessage]
+    }))
+    
     setInput('')
 
     await connectToAIAssistant(input, activeAssistant)
@@ -306,10 +322,14 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col p-0">
-        {/* Messages Area */}
-        <div className="flex-1 px-4 overflow-y-auto" ref={scrollAreaRef}>
-          <div className="space-y-4 pb-4">
+      <CardContent className="flex-1 flex flex-col p-0 min-h-0">
+        {/* Messages Area - Scroll interno no quadro branco */}
+        <div 
+          className="flex-1 overflow-y-auto px-4 py-2 min-h-0" 
+          ref={scrollAreaRef}
+          style={{ maxHeight: 'calc(600px - 120px - 80px)' }} // Altura total - header - input
+        >
+          <div className="space-y-4">
             {messages.length === 0 && (
               <div className="text-center py-8">
                 <div className="text-sm text-muted-foreground">
