@@ -22,6 +22,7 @@ export function InstagramCarouselGenerator() {
   const [topic, setTopic] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [isGeneratingImages, setIsGeneratingImages] = useState(false)
+  const [useAIBackgrounds, setUseAIBackgrounds] = useState(true)
   const [generatedCarousel, setGeneratedCarousel] = useState<GeneratedCarousel | null>(null)
   const [showResults, setShowResults] = useState(false)
   const [expandedSlides, setExpandedSlides] = useState<number[]>([])
@@ -87,22 +88,34 @@ export function InstagramCarouselGenerator() {
         content: slide.content
       }))
 
-      const response = await fetch('/api/instagram/generate-carousel', {
+      // Escolher API baseada na opção de backgrounds
+      const apiEndpoint = useAIBackgrounds 
+        ? '/api/instagram/generate-with-backgrounds'
+        : '/api/instagram/generate-carousel'
+
+      const requestBody = {
+        templateType: 'business-tips',
+        slides,
+        brandConfig: {
+          primaryColor: '#667eea',
+          secondaryColor: '#764ba2',
+          fontFamily: 'Inter',
+          contactInfo: '@agencia.digital',
+          agencyName: 'Agência Digital',
+          useAIBackgrounds,
+          backgroundStyle: 'professional'
+        },
+        ...(useAIBackgrounds && { topic }) // Adicionar tópico para backgrounds AI
+      }
+
+      console.log(`🎨 Usando ${useAIBackgrounds ? 'Runware + MarkupGo' : 'MarkupGo apenas'}`)
+
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          templateType: 'business-tips',
-          slides,
-          brandConfig: {
-            primaryColor: '#667eea',
-            secondaryColor: '#764ba2',
-            fontFamily: 'Inter',
-            contactInfo: '@agencia.digital',
-            agencyName: 'Agência Digital'
-          }
-        })
+        body: JSON.stringify(requestBody)
       })
 
       const result = await response.json()
@@ -110,10 +123,15 @@ export function InstagramCarouselGenerator() {
       if (result.success && result.data && result.data.images) {
         const imageUrls = result.data.images.map((img: any) => img.url)
         setGeneratedCarousel(prev => prev ? { ...prev, images: imageUrls } : null)
+        
+        // Mostrar informação sobre backgrounds gerados
+        if (useAIBackgrounds && result.data.backgroundsGenerated) {
+          console.log(`✅ ${result.data.backgroundsGenerated} backgrounds AI + ${result.data.imagesGenerated} imagens finais`)
+        }
       } else {
         console.error('Erro ao gerar imagens:', result.error || 'Resposta inválida da API')
         console.log('Resposta completa da API:', result)
-        alert('Erro ao gerar imagens. Verifique o console para mais detalhes.')
+        alert(`Erro ao gerar imagens${useAIBackgrounds ? ' com backgrounds AI' : ''}. Verifique o console para mais detalhes.`)
       }
     } catch (error) {
       console.error('Erro na requisição:', error)
@@ -187,6 +205,19 @@ export function InstagramCarouselGenerator() {
                   placeholder="dicas de marketing"
                   className="min-h-[80px] resize-none border-gray-300 focus:border-purple-600 focus:ring-purple-600"
                 />
+              </div>
+
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="ai-backgrounds"
+                  checked={useAIBackgrounds}
+                  onChange={(e) => setUseAIBackgrounds(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                />
+                <label htmlFor="ai-backgrounds" className="text-sm font-medium text-gray-700 cursor-pointer">
+                  🎨 Usar backgrounds gerados por IA (Runware.ai)
+                </label>
               </div>
 
               <Button 
