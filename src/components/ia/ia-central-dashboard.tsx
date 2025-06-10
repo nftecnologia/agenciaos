@@ -23,7 +23,8 @@ import {
   FileText,
   Compass,
   TrendingDown,
-  MessageCircle
+  MessageCircle,
+  Camera
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -121,6 +122,14 @@ export function IACentralDashboard() {
       description: 'Scripts, mensagens, áudios e templates para WhatsApp Business',
       icon: MessageCircle,
       color: 'bg-green-600',
+      available: true,
+    },
+    {
+      id: 'instagram',
+      name: 'Assistente Instagram',
+      description: 'Legendas, ideias, carrosséis, hashtags e planejamento editorial',
+      icon: Camera,
+      color: 'bg-pink-600',
       available: true,
     },
   ]

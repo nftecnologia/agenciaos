@@ -172,6 +172,16 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           '🔄 5. Follow-up e Reengajamento',
           '🛠️ 6. Atendimento e Suporte'
         ]
+      case 'instagram':
+        return [
+          '✍️ 1. Gerador de Legendas',
+          '🧠 2. Gerador de Ideias de Post',
+          '📚 3. Carrossel Textual',
+          '🎯 4. Planejamento Editorial',
+          '🏷️ 5. Gerador de Hashtags',
+          '🕵️ 6. Benchmarking de Conteúdo',
+          '📝 7. Respostas e Comentários'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -221,7 +231,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         'niche-generator': '/api/ia/niche-generator-assistant',
         'content-ideas': '/api/ia/content-ideas-assistant',
         'sales-funnel': '/api/ia/sales-funnel-assistant',
-        whatsapp: '/api/ia/whatsapp-assistant'
+        whatsapp: '/api/ia/whatsapp-assistant',
+        instagram: '/api/ia/instagram-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
