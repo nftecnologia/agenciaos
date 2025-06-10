@@ -45,107 +45,71 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
     }
   }, [messages])
 
-  // Simular resposta da IA
-  const simulateAIResponse = async (userMessage: string, assistantType: string) => {
+  // Conectar com APIs reais dos assistentes
+  const connectToAIAssistant = async (userMessage: string, assistantType: string) => {
     setIsLoading(true)
     
-    // Simular delay de resposta
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+      const apiEndpoints = {
+        business: '/api/ia/business-assistant',
+        projects: '/api/ia/projects-assistant', 
+        financial: '/api/ia/financial-assistant'
+      }
 
-    const responses = {
-      business: [
-        `Analisando sua pergunta sobre "${userMessage}", vejo algumas oportunidades de crescimento. Baseado nos dados da sua agência, sugiro focar em:
+      const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
+      
+      if (!endpoint) {
+        throw new Error('Assistente não encontrado')
+      }
 
-• Diversificação de serviços: Considere adicionar consultoria em marketing digital
-• Otimização de receita: Seus projetos de design têm 23% mais margem que desenvolvimento
-• Retenção de clientes: 3 clientes têm potencial para projetos recorrentes
+      console.log(`🤖 Conectando com ${assistantType} assistant...`)
 
-Posso detalhar qualquer uma dessas áreas. O que gostaria de explorar primeiro?`,
-        `Interessante questão sobre "${userMessage}". Vou analisar alguns KPIs importantes:
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessage })
+      })
 
-📊 **Performance Atual:**
-- Receita mensal: +15% vs mês anterior
-- Novos clientes: 4 este mês
-- Taxa de conclusão de projetos: 92%
+      const result = await response.json()
 
-🎯 **Oportunidades:**
-- Upsell para clientes existentes
-- Automação de processos repetitivos
-- Expansão para novos nichos de mercado
+      if (!result.success) {
+        throw new Error(result.error || 'Erro na resposta do assistente')
+      }
 
-Que tipo de análise específica seria mais útil para você agora?`
-      ],
-      projects: [
-        `Sobre "${userMessage}", vou ajudar você a otimizar seus projetos:
+      const assistantMessage: Message = {
+        id: Date.now().toString() + '_assistant',
+        content: result.response,
+        type: 'assistant',
+        timestamp: new Date(),
+        assistantType
+      }
 
-🎯 **Análise de Projetos Atuais:**
-- 5 projetos em andamento
-- 2 com prazo apertado (precisam atenção)
-- 1 projeto em risco de atraso
+      setMessages(prev => [...prev, assistantMessage])
 
-⚡ **Sugestões de Otimização:**
-- Implementar sprints de 1 semana
-- Automatizar relatórios de progresso
-- Redistribuir tarefas da equipe
+      // Log das métricas recebidas
+      if (result.metrics) {
+        console.log(`📊 Métricas do ${assistantType}:`, result.metrics)
+      }
 
-Quer que eu crie um plano de ação detalhado para algum projeto específico?`,
-        `Para "${userMessage}", identifiquei alguns pontos importantes:
+    } catch (error) {
+      console.error(`❌ Erro no assistente ${assistantType}:`, error)
+      
+      const errorMessage: Message = {
+        id: Date.now().toString() + '_assistant',
+        content: `Desculpe, estou tendo dificuldades técnicas no momento. Tente novamente em alguns instantes.
 
-📋 **Gestão de Tarefas:**
-- 23 tarefas pendentes total
-- 8 tarefas de alta prioridade
-- Tempo médio de conclusão: 3.2 dias
+${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
+        type: 'assistant',
+        timestamp: new Date(),
+        assistantType
+      }
 
-🔧 **Melhorias Sugeridas:**
-- Usar templates para tarefas recorrentes
-- Implementar sistema de priorização automática
-- Criar checkpoints semanais
-
-Posso ajudar você a configurar algum desses processos?`
-      ],
-      financial: [
-        `Analisando "${userMessage}" do ponto de vista financeiro:
-
-💰 **Situação Atual:**
-- Receita mensal: R$ 45.000
-- Despesas: R$ 28.000
-- Margem líquida: 37,8%
-
-📈 **Projeções:**
-- Tendência de crescimento: +12% nos próximos 3 meses
-- Melhor categoria: Consultoria (45% margem)
-- Área para melhoria: Reduzir custos operacionais
-
-Quer que eu elabore um plano financeiro detalhado ou analise alguma métrica específica?`,
-        `Sobre "${userMessage}", vou fazer uma análise financeira completa:
-
-💹 **Fluxo de Caixa:**
-- Entradas previstas: R$ 67.000 (próximos 30 dias)
-- Saídas programadas: R$ 31.000
-- Saldo projetado: R$ 36.000
-
-🎯 **Recomendações:**
-- Reserve 20% para impostos
-- Invista em marketing (ROI de 3:1)
-- Considere contratação (capacidade 85%)
-
-Precisa de alguma projeção específica ou análise de viabilidade?`
-      ]
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
     }
-
-    const assistantResponses = responses[assistantType as keyof typeof responses] || responses.business
-    const randomResponse = assistantResponses[Math.floor(Math.random() * assistantResponses.length)]
-
-    const assistantMessage: Message = {
-      id: Date.now().toString() + '_assistant',
-      content: randomResponse,
-      type: 'assistant',
-      timestamp: new Date(),
-      assistantType
-    }
-
-    setMessages(prev => [...prev, assistantMessage])
-    setIsLoading(false)
   }
 
   const handleSendMessage = async () => {
@@ -161,7 +125,7 @@ Precisa de alguma projeção específica ou análise de viabilidade?`
     setMessages(prev => [...prev, userMessage])
     setInput('')
 
-    await simulateAIResponse(input, activeAssistant)
+    await connectToAIAssistant(input, activeAssistant)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
