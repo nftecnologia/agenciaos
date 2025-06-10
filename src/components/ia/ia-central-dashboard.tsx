@@ -22,7 +22,8 @@ import {
   PenTool,
   FileText,
   Compass,
-  TrendingDown
+  TrendingDown,
+  MessageCircle
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -112,6 +113,14 @@ export function IACentralDashboard() {
       description: 'Funil completo: Produto Principal, 5 Order Bumps, Upsell e Downsell',
       icon: TrendingDown,
       color: 'bg-red-600',
+      available: true,
+    },
+    {
+      id: 'whatsapp',
+      name: 'Assistente WhatsApp',
+      description: 'Scripts, mensagens, áudios e templates para WhatsApp Business',
+      icon: MessageCircle,
+      color: 'bg-green-600',
       available: true,
     },
   ]

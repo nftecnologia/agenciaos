@@ -163,6 +163,12 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           'Emagrecimento e Fitness',
           'Educação Financeira'
         ]
+      case 'whatsapp':
+        return [
+          'Script de vendas para consultoria de marketing',
+          'Mensagens de broadcast para Black Friday',
+          'Templates de respostas rápidas para atendimento'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -211,7 +217,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         'blog-content': '/api/ia/blog-content-assistant',
         'niche-generator': '/api/ia/niche-generator-assistant',
         'content-ideas': '/api/ia/content-ideas-assistant',
-        'sales-funnel': '/api/ia/sales-funnel-assistant'
+        'sales-funnel': '/api/ia/sales-funnel-assistant',
+        whatsapp: '/api/ia/whatsapp-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
