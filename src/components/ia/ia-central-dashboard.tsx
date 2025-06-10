@@ -205,7 +205,7 @@ export function IACentralDashboard() {
           <div className="grid gap-6 lg:grid-cols-12">
             {/* Assistants Panel */}
             <div className="lg:col-span-4">
-              <Card>
+              <Card className="h-[600px] flex flex-col">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Bot className="h-5 w-5" />
@@ -215,46 +215,48 @@ export function IACentralDashboard() {
                     Escolha um assistente especializado
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {assistants.map((assistant) => {
-                    const Icon = assistant.icon
-                    return (
-                      <div
-                        key={assistant.id}
-                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                          activeAssistant === assistant.id
-                            ? 'border-primary bg-primary/5'
-                            : 'border-border hover:border-primary/50'
-                        } ${!assistant.available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        onClick={() => assistant.available && setActiveAssistant(assistant.id)}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2 rounded-md ${assistant.color}`}>
-                            <Icon className="h-4 w-4 text-white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-medium truncate">
-                                {assistant.name}
-                              </h4>
-                              {assistant.available ? (
-                                <Badge variant="secondary" className="text-xs">
-                                  Ativo
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-xs">
-                                  Em Breve
-                                </Badge>
-                              )}
+                <CardContent className="flex-1 p-0 min-h-0">
+                  <div className="h-full overflow-y-auto px-4 py-3 space-y-3">
+                    {assistants.map((assistant) => {
+                      const Icon = assistant.icon
+                      return (
+                        <div
+                          key={assistant.id}
+                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                            activeAssistant === assistant.id
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:border-primary/50'
+                          } ${!assistant.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={() => assistant.available && setActiveAssistant(assistant.id)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`p-2 rounded-md ${assistant.color}`}>
+                              <Icon className="h-4 w-4 text-white" />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {assistant.description}
-                            </p>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="text-sm font-medium truncate">
+                                  {assistant.name}
+                                </h4>
+                                {assistant.available ? (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Ativo
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="text-xs">
+                                    Em Breve
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {assistant.description}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
                 </CardContent>
               </Card>
 
