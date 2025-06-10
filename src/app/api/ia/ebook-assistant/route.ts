@@ -53,21 +53,24 @@ REGRAS ABSOLUTAS PARA EBOOKS EXTENSOS (30-50 PÁGINAS):
    - Sobre o autor profissional (1 página)
    - Anexos com templates e checklists (2-3 páginas)
 
-2. CADA CAPÍTULO DEVE SER EXTENSO COM:
-   - Introdução detalhada ao tema (1 parágrafo longo)
-   - 4-6 subcapítulos desenvolvidos (400-600 palavras cada)
-   - 3-5 exemplos práticos específicos e detalhados
-   - 2-3 estudos de caso completos com resultados
-   - Passo-a-passo muito detalhados (10-20 passos)
-   - Exercícios práticos com instruções completas
-   - Checklists detalhadas (10-15 itens)
-   - Templates prontos para usar
-   - Ferramentas e recursos específicos recomendados
-   - Dicas avançadas e insights profissionais únicos
-   - Casos de sucesso E fracasso com análises
-   - Estatísticas, dados e pesquisas relevantes
-   - Citações de especialistas e autoridades
-   - Conclusão do capítulo com resumo dos pontos-chave
+2. CADA CAPÍTULO DEVE SER EXTREMAMENTE EXTENSO COM:
+   - Introdução detalhada ao tema (2-3 parágrafos longos - 300 palavras)
+   - 6-8 subcapítulos desenvolvidos (600-1000 palavras cada)
+   - 5-8 exemplos práticos específicos e detalhados com contexto completo
+   - 3-5 estudos de caso completos com resultados, análises e lições aprendidas
+   - Passo-a-passo extremamente detalhados (15-30 passos com explicações)
+   - Exercícios práticos com instruções completas e exemplos de execução
+   - Checklists detalhadas (15-25 itens com explicações)
+   - Templates prontos para usar com instruções de preenchimento
+   - Ferramentas e recursos específicos recomendados com links e tutoriais
+   - Dicas avançadas e insights profissionais únicos com histórias pessoais
+   - Casos de sucesso E fracasso com análises profundas e aprendizados
+   - Estatísticas, dados e pesquisas relevantes com fontes e interpretações
+   - Citações de especialistas e autoridades com contexto e aplicação
+   - Perguntas reflexivas para o leitor aplicar o conhecimento
+   - Resumo executivo de cada subcapítulo
+   - Conclusão do capítulo com resumo dos pontos-chave e próximos passos
+   - Seção "Para Saber Mais" com recursos adicionais
 
 3. INTRODUÇÃO DEVE SER EXTENSA (3-4 páginas):
    - Gancho emocional forte (200 palavras)

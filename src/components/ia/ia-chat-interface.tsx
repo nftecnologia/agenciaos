@@ -354,96 +354,309 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
     }
   }
 
-  // Função para fazer download do ebook em PDF
+  // Função para fazer download do ebook em PDF com formatação profissional
   const downloadEbookAsPDF = async (content: string, assistantType: string) => {
     try {
       // Extrair título do ebook do conteúdo
       const titleMatch = content.match(/#{1,2}\s*(.+)/);
       const title = titleMatch ? titleMatch[1].trim() : 'Ebook Gerado';
       
-      // Criar elemento temporário para o conteúdo
-      const element = document.createElement('div');
-      element.innerHTML = `
-        <div style="font-family: 'Times New Roman', serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px;">
+      // Processar o conteúdo markdown para HTML estruturado
+      const processContentToHTML = (text: string): string => {
+        // Primeiro, dividir o conteúdo em seções
+        let html = text;
+        
+        // Processar títulos com classes específicas
+        html = html.replace(/# (.+)/g, '<h1 class="main-title">$1</h1>');
+        html = html.replace(/## (.+)/g, '<h2 class="chapter-title">$1</h2>');
+        html = html.replace(/### (.+)/g, '<h3 class="section-title">$1</h3>');
+        html = html.replace(/#### (.+)/g, '<h4 class="subsection-title">$1</h4>');
+        
+        // Processar negritos
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Processar listas
+        html = html.replace(/^- (.+)$/gm, '<li class="list-item">$1</li>');
+        html = html.replace(/^(\d+)\. (.+)$/gm, '<li class="numbered-item">$2</li>');
+        
+        // Agrupar listas consecutivas
+        html = html.replace(/(<li class="list-item">.*?<\/li>)/g, '<ul class="bullet-list">$1</ul>');
+        html = html.replace(/(<li class="numbered-item">.*?<\/li>)/g, '<ol class="numbered-list">$1</ol>');
+        
+        // Processar parágrafos
+        html = html.replace(/\n\n+/g, '</p><p class="paragraph">');
+        html = '<p class="paragraph">' + html + '</p>';
+        
+        // Limpar parágrafos vazios
+        html = html.replace(/<p class="paragraph"><\/p>/g, '');
+        html = html.replace(/<p class="paragraph">(<[^>]+>)/g, '$1');
+        html = html.replace(/(<\/[^>]+>)<\/p>/g, '$1');
+        
+        return html;
+      };
+      
+      const processedContent = processContentToHTML(content);
+      
+      // Criar documento HTML completo para PDF
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${title}</title>
           <style>
-            h1 { font-size: 24px; margin: 30px 0 20px 0; color: #2563eb; }
-            h2 { font-size: 20px; margin: 25px 0 15px 0; color: #1e40af; }
-            h3 { font-size: 18px; margin: 20px 0 10px 0; color: #1e3a8a; }
-            p { margin: 10px 0; text-align: justify; }
-            strong { font-weight: bold; color: #1f2937; }
-            ul, ol { margin: 10px 0; padding-left: 30px; }
-            li { margin: 5px 0; }
-            .chapter { page-break-before: auto; margin-top: 30px; }
-            .title-page { text-align: center; margin-bottom: 50px; }
-          </style>
-          ${content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                   .replace(/### (.*)/g, '<h3>$1</h3>')
-                   .replace(/## (.*)/g, '<h2>$1</h2>')
-                   .replace(/# (.*)/g, '<h1>$1</h1>')
-                   .replace(/- (.*)/g, '<li>$1</li>')
-                   .replace(/\n\n/g, '</p><p>')
-                   .replace(/\n/g, '<br>')}
-        </div>
-      `;
-
-      // Usar html2pdf.js se disponível, senão fallback para window.print
-      if (typeof window !== 'undefined') {
-        // Método 1: Tentar usar html2pdf se disponível
-        if ((window as any).html2pdf) {
-          const opt = {
-            margin: 1,
-            filename: `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-          };
-          
-          (window as any).html2pdf().set(opt).from(element).save();
-        } else {
-          // Método 2: Fallback - Abrir em nova janela para impressão
-          const printWindow = window.open('', '_blank');
-          if (printWindow) {
-            printWindow.document.write(`
-              <!DOCTYPE html>
-              <html>
-                <head>
-                  <title>${title}</title>
-                  <style>
-                    body { font-family: 'Times New Roman', serif; line-height: 1.6; margin: 20px; }
-                    h1 { font-size: 24px; margin: 30px 0 20px 0; color: #2563eb; page-break-before: auto; }
-                    h2 { font-size: 20px; margin: 25px 0 15px 0; color: #1e40af; }
-                    h3 { font-size: 18px; margin: 20px 0 10px 0; color: #1e3a8a; }
-                    p { margin: 10px 0; text-align: justify; }
-                    strong { font-weight: bold; color: #1f2937; }
-                    ul, ol { margin: 10px 0; padding-left: 30px; }
-                    li { margin: 5px 0; }
-                    @media print {
-                      body { margin: 0.5in; }
-                      h1 { page-break-before: auto; }
-                    }
-                  </style>
-                </head>
-                <body>
-                  ${element.innerHTML}
-                </body>
-              </html>
-            `);
-            printWindow.document.close();
+            @page {
+              size: A4;
+              margin: 1in;
+              @bottom-center {
+                content: counter(page);
+                font-family: 'Times New Roman', serif;
+                font-size: 10px;
+              }
+            }
             
-            // Aguardar carregamento e imprimir
-            setTimeout(() => {
-              printWindow.print();
-            }, 500);
-          }
+            * {
+              box-sizing: border-box;
+            }
+            
+            body {
+              font-family: 'Times New Roman', serif;
+              line-height: 1.8;
+              color: #333;
+              font-size: 12px;
+              margin: 0;
+              padding: 0;
+              background: white;
+            }
+            
+            .ebook-container {
+              max-width: 100%;
+              margin: 0 auto;
+              padding: 0;
+            }
+            
+            /* Títulos */
+            .main-title {
+              font-size: 24px;
+              font-weight: bold;
+              color: #1a365d;
+              text-align: center;
+              margin: 40px 0 30px 0;
+              page-break-before: always;
+              page-break-after: avoid;
+              line-height: 1.3;
+            }
+            
+            .chapter-title {
+              font-size: 18px;
+              font-weight: bold;
+              color: #2563eb;
+              margin: 35px 0 20px 0;
+              page-break-before: always;
+              page-break-after: avoid;
+              border-bottom: 2px solid #2563eb;
+              padding-bottom: 10px;
+            }
+            
+            .section-title {
+              font-size: 16px;
+              font-weight: bold;
+              color: #1e40af;
+              margin: 25px 0 15px 0;
+              page-break-after: avoid;
+            }
+            
+            .subsection-title {
+              font-size: 14px;
+              font-weight: bold;
+              color: #1e3a8a;
+              margin: 20px 0 10px 0;
+              page-break-after: avoid;
+            }
+            
+            /* Parágrafos */
+            .paragraph {
+              margin: 0 0 15px 0;
+              text-align: justify;
+              text-indent: 1.5em;
+              line-height: 1.8;
+              font-size: 12px;
+              orphans: 3;
+              widows: 3;
+            }
+            
+            .paragraph:first-child {
+              text-indent: 0;
+            }
+            
+            /* Texto em destaque */
+            strong {
+              font-weight: bold;
+              color: #1f2937;
+            }
+            
+            /* Listas */
+            .bullet-list, .numbered-list {
+              margin: 15px 0;
+              padding-left: 0;
+              page-break-inside: avoid;
+            }
+            
+            .list-item, .numbered-item {
+              margin: 8px 0 8px 25px;
+              line-height: 1.6;
+              list-style-position: outside;
+            }
+            
+            .bullet-list .list-item {
+              list-style-type: disc;
+            }
+            
+            .numbered-list .numbered-item {
+              list-style-type: decimal;
+            }
+            
+            /* Quebras de página */
+            .page-break {
+              page-break-before: always;
+            }
+            
+            /* Espaçamentos especiais */
+            .section-break {
+              margin: 30px 0;
+              border-top: 1px solid #e5e7eb;
+              padding-top: 20px;
+            }
+            
+            /* Capa */
+            .cover-page {
+              text-align: center;
+              padding: 100px 0;
+              page-break-after: always;
+            }
+            
+            .cover-title {
+              font-size: 28px;
+              font-weight: bold;
+              color: #1a365d;
+              margin-bottom: 20px;
+              line-height: 1.2;
+            }
+            
+            .cover-subtitle {
+              font-size: 18px;
+              color: #4a5568;
+              margin-bottom: 40px;
+              font-style: italic;
+            }
+            
+            /* Índice */
+            .table-of-contents {
+              page-break-before: always;
+              page-break-after: always;
+            }
+            
+            .toc-title {
+              font-size: 20px;
+              font-weight: bold;
+              text-align: center;
+              margin-bottom: 30px;
+              color: #1a365d;
+            }
+            
+            .toc-item {
+              margin: 8px 0;
+              border-bottom: 1px dotted #ccc;
+              padding-bottom: 5px;
+            }
+            
+            /* Impressão */
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              
+              .main-title, .chapter-title {
+                page-break-after: avoid;
+              }
+              
+              .paragraph {
+                orphans: 3;
+                widows: 3;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="ebook-container">
+            ${processedContent}
+          </div>
+        </body>
+        </html>
+      `;
+      
+      // Método 1: Tentar usar html2pdf se disponível
+      if (typeof window !== 'undefined' && (window as any).html2pdf) {
+        const opt = {
+          margin: [0.5, 0.5, 0.5, 0.5],
+          filename: `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            allowTaint: false
+          },
+          jsPDF: { 
+            unit: 'in', 
+            format: 'a4', 
+            orientation: 'portrait',
+            putOnlyUsedFonts: true
+          },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+        
+        // Criar elemento temporário com HTML completo
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlContent;
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '-9999px';
+        document.body.appendChild(tempDiv);
+        
+        try {
+          await (window as any).html2pdf().set(opt).from(tempDiv.firstElementChild).save();
+        } finally {
+          document.body.removeChild(tempDiv);
         }
+        
+        return;
       }
       
-      // Método 3: Download como arquivo de texto formatado
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      // Método 2: Fallback - Abrir em nova janela para impressão
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (printWindow) {
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        
+        // Aguardar carregamento e imprimir
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.print();
+          }, 1000);
+        };
+        
+        return;
+      }
+      
+      // Método 3: Download como arquivo HTML
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+      link.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -451,13 +664,14 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
       
     } catch (error) {
       console.error('Erro ao fazer download do ebook:', error);
-      alert('Erro ao gerar download. O ebook foi copiado para sua área de transferência.');
       
-      // Fallback: copiar para clipboard
+      // Fallback final: copiar para clipboard
       try {
         await navigator.clipboard.writeText(content);
+        alert('Erro ao gerar PDF. O conteúdo foi copiado para sua área de transferência. Cole em um editor de texto e salve como .txt para converter posteriormente.');
       } catch (clipboardError) {
         console.error('Erro ao copiar para clipboard:', clipboardError);
+        alert('Erro ao gerar download. Tente novamente ou entre em contato com o suporte.');
       }
     }
   }
