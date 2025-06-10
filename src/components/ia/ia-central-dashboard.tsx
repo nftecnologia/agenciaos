@@ -32,7 +32,6 @@ import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
 import { IASuggestions } from './ia-suggestions'
 import { IAAnalytics } from './ia-analytics'
-import { InstagramCarouselGenerator } from './instagram-carousel-generator'
 
 export function IACentralDashboard() {
   const [activeAssistant, setActiveAssistant] = useState<string | null>(null)

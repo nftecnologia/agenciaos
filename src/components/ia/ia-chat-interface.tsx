@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -98,7 +98,9 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
 
   const currentAssistant = assistants.find(a => a.id === activeAssistant)
   // Mensagens do assistente ativo (ou array vazio se não houver)
-  const messages = activeAssistant ? (assistantMessages[activeAssistant] || []) : []
+  const messages = useMemo(() => {
+    return activeAssistant ? (assistantMessages[activeAssistant] || []) : []
+  }, [activeAssistant, assistantMessages])
 
   // Função para retornar perguntas específicas de cada assistente
   const getAssistantQuestions = (assistantId: string | null): string[] => {

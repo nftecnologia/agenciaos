@@ -25,6 +25,36 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [activeJobs, setActiveJobs] = useState<JobProgress[]>([])
 
+  // Completar um job
+  const completeJob = useCallback((jobId: string, title: string, type: string, result?: unknown) => {
+    setActiveJobs(prevJobs => {
+      const updatedJobs = prevJobs.filter(job => job.id !== jobId)
+      localStorage.setItem('agenciaos-active-jobs', JSON.stringify(updatedJobs))
+      return updatedJobs
+    })
+    
+    // Criar notificação
+    const notification: Notification = {
+      id: jobId,
+      type: type as Notification['type'],
+      title: getCompletionTitle(type),
+      message: getCompletionMessage(type),
+      read: false,
+      timestamp: new Date().toISOString(),
+      jobId,
+      result
+    }
+    
+    setNotifications(prevNotifications => {
+      const updatedNotifications = [notification, ...prevNotifications]
+      localStorage.setItem('agenciaos-notifications', JSON.stringify(updatedNotifications))
+      return updatedNotifications
+    })
+    
+    // Log de conclusão (sem toast para evitar dependência)
+    console.log(`✅ ${notification.title}`)
+  }, [])
+
   // Carregar notificações do localStorage
   useEffect(() => {
     const stored = localStorage.getItem('agenciaos-notifications')
@@ -61,7 +91,7 @@ export function useNotifications() {
         console.error('Erro ao carregar jobs ativos:', error)
       }
     }
-  }, [])
+  }, [completeJob])
 
   // Salvar notificações no localStorage
   const saveNotifications = (newNotifications: Notification[]) => {
@@ -101,36 +131,6 @@ export function useNotifications() {
     
     return jobId
   }
-
-  // Completar um job
-  const completeJob = useCallback((jobId: string, title: string, type: string, result?: unknown) => {
-    setActiveJobs(prevJobs => {
-      const updatedJobs = prevJobs.filter(job => job.id !== jobId)
-      localStorage.setItem('agenciaos-active-jobs', JSON.stringify(updatedJobs))
-      return updatedJobs
-    })
-    
-    // Criar notificação
-    const notification: Notification = {
-      id: jobId,
-      type: type as Notification['type'],
-      title: getCompletionTitle(type),
-      message: getCompletionMessage(type),
-      read: false,
-      timestamp: new Date().toISOString(),
-      jobId,
-      result
-    }
-    
-    setNotifications(prevNotifications => {
-      const updatedNotifications = [notification, ...prevNotifications]
-      localStorage.setItem('agenciaos-notifications', JSON.stringify(updatedNotifications))
-      return updatedNotifications
-    })
-    
-    // Log de conclusão (sem toast para evitar dependência)
-    console.log(`✅ ${notification.title}`)
-  }, [])
 
   // Marcar notificação como lida
   const markAsRead = (notificationId: string) => {

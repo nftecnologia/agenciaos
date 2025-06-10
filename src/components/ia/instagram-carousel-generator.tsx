@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Instagram, Download, Loader2, Sparkles, Check, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react'
+import Image from 'next/image'
 
 interface SlideContent {
   id: number
@@ -54,7 +55,7 @@ export function InstagramCarouselGenerator() {
       const contentResult = await contentResponse.json()
 
       if (contentResult.success) {
-        const slides: SlideContent[] = contentResult.data.slides.map((slide: any, index: number) => ({
+        const slides: SlideContent[] = contentResult.data.slides.map((slide: { title: string; content: string }, index: number) => ({
           id: index + 1,
           slideNumber: `Slide ${index + 1}`,
           title: slide.title,
@@ -121,7 +122,7 @@ export function InstagramCarouselGenerator() {
       const result = await response.json()
 
       if (result.success && result.data && result.data.images) {
-        const imageUrls = result.data.images.map((img: any) => img.url)
+        const imageUrls = result.data.images.map((img: { url: string }) => img.url)
         setGeneratedCarousel(prev => prev ? { ...prev, images: imageUrls } : null)
         
         // Mostrar informação sobre backgrounds gerados
@@ -346,10 +347,11 @@ export function InstagramCarouselGenerator() {
             {generatedCarousel?.images?.map((imageUrl, index) => (
               <Card key={index} className="overflow-hidden group cursor-pointer">
                 <div className="aspect-square relative">
-                  <img 
+                  <Image 
                     src={imageUrl} 
                     alt={`Slide ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
