@@ -1,6 +1,6 @@
 # 🤖 AGÊNCIA OS - STATUS COMPLETO DO SISTEMA
-**Última atualização:** 10/06/2025 - 14:06 BRT  
-**Último commit:** `4e93cc0` - Fix Decimal conversion  
+**Última atualização:** 10/06/2025 - 14:52 BRT  
+**Último commit:** `em progresso` - Adiciona 16º Assistente: Gerador de Ebooks  
 **Build Status:** ✅ **APROVADO NO VERCEL**  
 **Deploy Status:** ✅ **PRODUÇÃO READY**
 
@@ -23,7 +23,7 @@ node seed-test-data.js
 
 ---
 
-## 🤖 ASSISTENTES IA IMPLEMENTADOS (15 TOTAL)
+## 🤖 ASSISTENTES IA IMPLEMENTADOS (16 TOTAL)
 
 ### 📱 ASSISTENTES DE PLATAFORMA (4)
 
@@ -64,19 +64,20 @@ node seed-test-data.js
 6. ✅ **🟢 Gerente de Projetos** - Otimização de fluxos e tarefas
 7. ✅ **🟡 Consultor Financeiro** - Análise financeira e previsões
 
-#### **CONTEÚDO E COPY (5)**
+#### **CONTEÚDO E COPY (6)**
 8. ✅ **🟣 Criador de Conteúdo** - Carrosséis Instagram visuais
 9. ✅ **🟠 Assistente de Copy** - Headlines e textos persuasivos
 10. ✅ **🔵 Geração de Blog** - Artigos completos por nicho
 11. ✅ **🟣 Gerador de Nicho** - Subnichos lucrativos
 12. ✅ **🟢 Ideias de Conteúdo** - Conceitos variados
+13. ✅ **📚 Gerador de Ebooks** - Ebooks completos: planejamento ao conteúdo final
 
 #### **VENDAS E JURÍDICO (3)**
-13. ✅ **🔴 Gerador de Funil** - 5 Order Bumps + vendas
-14. ✅ **⚫ Assistente Jurídico** - Contratos e documentos legais
-15. ✅ **🟤 Assistente Extra** - Funcionalidade adicional
+14. ✅ **🔴 Gerador de Funil** - 5 Order Bumps + vendas
+15. ✅ **⚫ Assistente Jurídico** - Contratos e documentos legais
+16. ✅ **🎯 Assistente Extra** - Funcionalidade adicional
 
-**TOTAL: 15 Assistentes com 35+ Funcionalidades Específicas**
+**TOTAL: 16 Assistentes com 38+ Funcionalidades Específicas**
 
 ---
 

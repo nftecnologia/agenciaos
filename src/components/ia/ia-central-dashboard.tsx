@@ -26,7 +26,8 @@ import {
   MessageCircle,
   Camera,
   Play,
-  Megaphone
+  Megaphone,
+  BookOpen
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -143,12 +144,20 @@ export function IACentralDashboard() {
     },
     {
       id: 'meta-ads',
-      name: 'Assistente Meta Ads',
-      description: 'Personas, segmentações, copies e testes A/B para Facebook/Instagram',
-      icon: Megaphone,
+      name: 'Meta Ads',
+      description: 'Gerador de personas, copies e segmentações para Facebook e Instagram Ads',
+      icon: Target,
       color: 'bg-blue-600',
-      available: true,
+      available: true
     },
+    {
+      id: 'ebook',
+      name: 'Gerador de Ebooks',
+      description: 'Cria ebooks completos: do planejamento ao conteúdo final estruturado',
+      icon: BookOpen,
+      color: 'bg-indigo-600',
+      available: true
+    }
   ]
 
   const quickActions = [

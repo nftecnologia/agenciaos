@@ -199,6 +199,13 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           '🔎 4. Segmentação Inteligente',
           '🧪 5. Testes A/B Automatizados'
         ]
+      case 'ebook':
+        return [
+          'Marketing Digital para Iniciantes',
+          'Gerar ebook sobre "Como Criar um Blog Lucrativo"',
+          'Preciso de um ebook sobre vendas online',
+          'Criar ebook completo sobre Instagram para Negócios'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -251,7 +258,8 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         whatsapp: '/api/ia/whatsapp-assistant',
         instagram: '/api/ia/instagram-assistant',
         youtube: '/api/ia/youtube-assistant',
-        'meta-ads': '/api/ia/meta-ads-assistant'
+        'meta-ads': '/api/ia/meta-ads-assistant',
+        ebook: '/api/ia/ebook-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
