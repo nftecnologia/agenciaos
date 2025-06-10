@@ -19,7 +19,9 @@ import {
   Clock,
   DollarSign,
   Scale,
-  PenTool
+  PenTool,
+  FileText,
+  Compass
 } from 'lucide-react'
 import { IAChatInterface } from './ia-chat-interface'
 import { IAInsights } from './ia-insights'
@@ -77,6 +79,30 @@ export function IACentralDashboard() {
       description: 'Headlines, CTAs e textos persuasivos',
       icon: PenTool,
       color: 'bg-orange-500',
+      available: true,
+    },
+    {
+      id: 'blog-content',
+      name: 'Geração de Conteúdo para Blog',
+      description: 'Artigos completos baseados em nicho + título',
+      icon: FileText,
+      color: 'bg-indigo-600',
+      available: true,
+    },
+    {
+      id: 'niche-generator',
+      name: 'Gerador de Nicho',
+      description: 'Subnichos lucrativos a partir de um assunto',
+      icon: Compass,
+      color: 'bg-pink-500',
+      available: true,
+    },
+    {
+      id: 'content-ideas',
+      name: 'Geração de Ideias de Conteúdo',
+      description: 'Ideias variadas de conteúdo para seu nicho',
+      icon: Lightbulb,
+      color: 'bg-emerald-500',
       available: true,
     },
   ]

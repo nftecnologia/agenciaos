@@ -139,6 +139,24 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
           'Desenvolva um CTA persuasivo para landing page',
           'Escreva um copy para email de marketing'
         ]
+      case 'blog-content':
+        return [
+          'Nicho: Marketing Digital - Título: Como Aumentar Vendas Online em 30 Dias',
+          'Nicho: Fitness - Título: 10 Exercícios para Perder Peso em Casa',
+          'Nicho: Empreendedorismo - Título: Guia Completo para Abrir Sua Primeira Empresa'
+        ]
+      case 'niche-generator':
+        return [
+          'Marketing Digital',
+          'Saúde e Bem-estar',
+          'Educação Online'
+        ]
+      case 'content-ideas':
+        return [
+          'Marketing para dentistas',
+          'Nutrição para diabéticos',
+          'Inglês para executivos'
+        ]
       default:
         return [
           'Como posso ajudar você hoje?',
@@ -183,7 +201,10 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
         projects: '/api/ia/projects-assistant', 
         financial: '/api/ia/financial-assistant',
         legal: '/api/ia/legal-assistant',
-        copy: '/api/ia/copy-assistant'
+        copy: '/api/ia/copy-assistant',
+        'blog-content': '/api/ia/blog-content-assistant',
+        'niche-generator': '/api/ia/niche-generator-assistant',
+        'content-ideas': '/api/ia/content-ideas-assistant'
       }
 
       const endpoint = apiEndpoints[assistantType as keyof typeof apiEndpoints]
