@@ -263,7 +263,7 @@ Responda em formato JSON com a estrutura:
     }
   }
 
-  static async generateMonthlyReport(input: MonthlyReportInput): Promise<{
+  static async generateMonthlyReport(): Promise<{
     insights: string[]
     recommendations: string[]
     highlights: string[]
