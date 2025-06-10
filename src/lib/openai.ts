@@ -305,17 +305,11 @@ Responda em formato JSON com a estrutura:
 
 // Serviços de imagem mantidos como fallback
 export class FreepikService {
-  static async generateCarouselBackground(input: {
-    topic: string
-    slideNumber: number
-    slideTitle: string
-    slideContent?: string
-    style?: 'professional' | 'modern' | 'colorful' | 'minimalist'
-  }): Promise<string | null> {
-    console.log(`🎨 Fallback: Gerando placeholder para slide ${input.slideNumber}`)
+  static async generateCarouselBackground(): Promise<string | null> {
+    console.log(`🎨 Fallback: Gerando placeholder`)
     
     // Retorna URL de placeholder temporário
-    return `https://via.placeholder.com/1080x1080/667eea/ffffff?text=Slide+${input.slideNumber}`
+    return `https://via.placeholder.com/1080x1080/667eea/ffffff?text=Placeholder`
   }
 
   static async generateCarouselBackgrounds(input: {
