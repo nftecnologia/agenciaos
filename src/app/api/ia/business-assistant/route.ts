@@ -73,10 +73,10 @@ DADOS DA AGÊNCIA:
 - Últimos Projetos: ${projects.slice(0, 3).map(p => `${p.name} (${p.status})`).join(', ')}
 
 💰 RECEITAS RECENTES:
-${revenues.slice(0, 5).map(r => `- R$ ${r.amount.toLocaleString('pt-BR')} - ${r.description} (${new Date(r.date).toLocaleDateString('pt-BR')})`).join('\n')}
+${revenues.slice(0, 5).map(r => `- R$ ${Number(r.amount).toLocaleString('pt-BR')} - ${r.description} (${new Date(r.date).toLocaleDateString('pt-BR')})`).join('\n')}
 
 💸 DESPESAS RECENTES:
-${expenses.slice(0, 5).map(e => `- R$ ${e.amount.toLocaleString('pt-BR')} - ${e.description} (${new Date(e.date).toLocaleDateString('pt-BR')})`).join('\n')}
+${expenses.slice(0, 5).map(e => `- R$ ${Number(e.amount).toLocaleString('pt-BR')} - ${e.description} (${new Date(e.date).toLocaleDateString('pt-BR')})`).join('\n')}
 `
 
     console.log('🤖 Assistente de Negócios: Analisando dados reais...')
