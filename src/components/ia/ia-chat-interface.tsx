@@ -39,6 +39,41 @@ export function IAChatInterface({ activeAssistant, assistants }: IAChatInterface
 
   const currentAssistant = assistants.find(a => a.id === activeAssistant)
 
+  // Função para retornar perguntas específicas de cada assistente
+  const getAssistantQuestions = (assistantId: string | null): string[] => {
+    switch (assistantId) {
+      case 'business':
+        return [
+          'Como está o desempenho da agência este mês?',
+          'Quais são as melhores oportunidades de crescimento?',
+          'Que estratégias posso usar para aumentar a receita?'
+        ]
+      case 'projects':
+        return [
+          'Que projetos devo priorizar agora?',
+          'Há tarefas em atraso que precisam de atenção?',
+          'Como otimizar o fluxo de trabalho da equipe?'
+        ]
+      case 'financial':
+        return [
+          'Qual é a situação financeira atual da agência?',
+          'Como está a margem de lucro dos projetos?',
+          'Que despesas posso otimizar para aumentar o lucro?'
+        ]
+      case 'content':
+        return [
+          'Crie um carrossel para Instagram sobre marketing digital',
+          'Gere conteúdo para redes sociais da minha empresa',
+          'Preciso de posts criativos para engajamento'
+        ]
+      default:
+        return [
+          'Como posso ajudar você hoje?',
+          'Qual análise você gostaria de ver?'
+        ]
+    }
+  }
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight
@@ -198,23 +233,19 @@ ${error instanceof Error ? `Erro: ${error.message}` : 'Erro desconhecido'}`,
                 <div className="mt-4 space-y-2">
                   <p className="text-xs text-muted-foreground">Exemplos:</p>
                   <div className="space-y-1">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs h-auto py-1 px-2"
-                      onClick={() => setInput('Como está o desempenho da agência este mês?')}
-                    >
-                      Como está o desempenho da agência este mês?
-                    </Button>
-                    <br />
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs h-auto py-1 px-2"
-                      onClick={() => setInput('Que projetos devo priorizar?')}
-                    >
-                      Que projetos devo priorizar?
-                    </Button>
+                    {getAssistantQuestions(activeAssistant).map((question, index) => (
+                      <div key={index}>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-xs h-auto py-1 px-2"
+                          onClick={() => setInput(question)}
+                        >
+                          {question}
+                        </Button>
+                        {index < getAssistantQuestions(activeAssistant).length - 1 && <br />}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
